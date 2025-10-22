@@ -35,18 +35,18 @@
 En tant que développeur, je veux un environnement Docker complet afin de développer localement avec tous les services.
 
 **Critères d'acceptation** :
-- [ ] docker-compose.yml contient tous les services (frontend, api-gateway, auth, recipe, label, production)
-- [ ] Réseau Docker `saas-network` configuré
-- [ ] Volumes persistants pour PostgreSQL, Redis, MinIO
-- [ ] `docker-compose up -d` démarre tous les services sans erreur
-- [ ] Healthchecks sur tous les services fonctionnels
+- [x] docker-compose.yml contient tous les services (frontend, api-gateway, auth, recipe, label, production)
+- [x] Réseau Docker `saas-network` configuré
+- [x] Volumes persistants pour PostgreSQL, Redis, MinIO
+- [x] `docker-compose up -d` démarre tous les services sans erreur
+- [x] Healthchecks sur tous les services fonctionnels
 
 **Tâches** :
-- [ ] Créer structure de dossiers (frontend/, backend/api-gateway/, backend/services/)
-- [ ] Créer docker-compose.yml avec network et volumes
-- [ ] Ajouter 6 services applicatifs (frontend, api-gateway, 4 microservices)
-- [ ] Configurer ports et depends_on
-- [ ] Tester démarrage complet
+- [x] Créer structure de dossiers (frontend/, backend/api-gateway/, backend/services/)
+- [x] Créer docker-compose.yml avec network et volumes
+- [x] Ajouter 6 services applicatifs (frontend, api-gateway, 4 microservices)
+- [x] Configurer ports et depends_on
+- [x] Tester démarrage complet
 
 ---
 
