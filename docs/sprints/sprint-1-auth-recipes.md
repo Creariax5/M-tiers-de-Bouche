@@ -8,8 +8,9 @@
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
 - **Points planifiés** : 73 (68 + 5 reset password)
-- **Points réalisés** : -
-- **Vélocité** : -
+- **Points réalisés** : 0/73 (0%)
+- **Vélocité estimée** : 43 points/semaine (basé sur Sprint 0)
+- **Statut** : 🟢 EN COURS
 
 ---
 
@@ -417,5 +418,6 @@ _À remplir quotidiennement_
 
 ---
 
-**Status** : 🔴 NOT STARTED  
-**Dernière mise à jour** : 22 octobre 2025
+**Status** : � EN COURS  
+**Date de début** : 23 octobre 2025  
+**Dernière mise à jour** : 23 octobre 2025
