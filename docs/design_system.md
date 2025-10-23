@@ -12,6 +12,7 @@
 2. **DRY** - Pas de duplication
 3. **YAGNI** - Ne pas sur-anticiper
 4. **Code qui va droit au but** - Pas de sur-ingénierie
+5. **🐳 Docker uniquement** - JAMAIS d'installations locales (npm install, etc.)
 
 ---
 
@@ -120,6 +121,19 @@ export const RecipeCard = ({ recipe, onEdit, onDelete }) => (
 - [ ] Pas de commentaires (sauf réglementations)
 - [ ] Validation Zod partout
 - [ ] Pas de `any` TypeScript
+- [ ] 🐳 Aucun `node_modules/` ou `package-lock.json` local committé
+
+### 🐳 Règle Docker
+**TOUJOURS utiliser Docker** :
+```bash
+# ✅ Bon
+docker-compose up -d
+docker-compose build
+
+# ❌ Interdit
+npm install
+npm run dev
+```
 
 ### shadcn/ui
 ```bash

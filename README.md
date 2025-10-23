@@ -65,6 +65,14 @@ cp .env.example .env
 # Lancer l'infrastructure
 docker-compose up -d
 
+# Stripe CLI pour webhooks locaux (développement uniquement)
+docker-compose --profile dev up stripe-cli
+# Copier le webhook secret (whsec_...) depuis les logs
+docker logs saas-stripe-cli
+# Coller dans .env → STRIPE_WEBHOOK_SECRET=whsec_...
+# Redémarrer auth-service
+docker-compose restart auth-service
+
 # Frontend
 cd frontend
 npm install

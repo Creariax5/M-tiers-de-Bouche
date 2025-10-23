@@ -263,3 +263,20 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+
+  # ========================================
+  # STRIPE CLI - Webhooks locaux (DEV ONLY)
+  # ========================================
+  stripe-cli:
+    image: stripe/stripe-cli:latest
+    container_name: saas-stripe-cli
+    restart: unless-stopped
+    command: listen --forward-to http://auth-service:3001/webhook/stripe --api-key ${STRIPE_SECRET_KEY}
+    environment:
+      STRIPE_API_KEY: ${STRIPE_SECRET_KEY}
+    depends_on:
+      - auth-service
+    networks:
+      - saas-network
+    profiles:
+      - dev  # Uniquement en développement

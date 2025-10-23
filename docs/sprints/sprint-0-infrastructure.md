@@ -130,21 +130,27 @@ En tant que développeur, je veux un pipeline CI/CD afin d'automatiser les tests
 ---
 
 ### US-006 : Variables d'environnement
-**Points** : 2 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 2 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant que développeur, je veux un fichier .env.example afin de configurer facilement l'environnement.
 
 **Critères d'acceptation** :
-- [ ] .env.example contient toutes les variables nécessaires
-- [ ] Documentation des variables dans le fichier
-- [ ] .env ajouté au .gitignore
+- [x] .env.example contient toutes les variables nécessaires
+- [x] Documentation des variables dans le fichier
+- [x] .env ajouté au .gitignore
+- [x] Configuration Stripe avec Stripe CLI via Docker
+- [x] Règle "Docker uniquement" documentée
 
 **Tâches** :
-- [ ] Créer `.env.example` à la racine
-- [ ] Documenter chaque variable
-- [ ] Ajouter `.env` dans `.gitignore`
-- [ ] README : instructions pour copier .env.example
+- [x] Créer `.env.example` à la racine
+- [x] Documenter chaque variable
+- [x] Ajouter `.env` dans `.gitignore`
+- [x] README : instructions pour copier .env.example
+- [x] Ajouter Stripe CLI au docker-compose.yml
+- [x] Configurer STRIPE_WEBHOOK_SECRET
+- [x] Documenter règle "Docker uniquement" dans design_system.md
+- [x] Mettre à jour .gitignore (bloquer package-lock.json local)
 
 ---
 

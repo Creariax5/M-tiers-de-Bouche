@@ -8,11 +8,11 @@ WORKDIR /app
 # Installer curl pour healthcheck
 RUN apk add --no-cache curl
 
-# Copier package.json et package-lock.json
+# Copier package.json
 COPY package*.json ./
 
-# Installer les dépendances
-RUN npm ci --only=production
+# Installer les dépendances (génère package-lock.json dans le conteneur)
+RUN npm install --omit=dev
 
 # Copier le code source
 COPY . .
