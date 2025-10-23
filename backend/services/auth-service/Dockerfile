@@ -17,8 +17,11 @@ RUN npm install --omit=dev
 # Copier le code source
 COPY . .
 
+# Générer le client Prisma
+RUN npx prisma generate
+
 # Exposer le port
 EXPOSE 3001
 
-# Démarrer l'application
-CMD ["node", "src/index.js"]
+# Démarrer l'application avec migration automatique
+CMD ["sh", "-c", "npx prisma migrate deploy && node src/index.js"]
