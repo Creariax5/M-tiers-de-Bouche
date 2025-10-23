@@ -8,7 +8,7 @@
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
 - **Points planifiés** : 73 (68 + 5 reset password)
-- **Points réalisés** : 13/73 (18%)
+- **Points réalisés** : 16/73 (22%)
 - **Vélocité estimée** : 43 points/semaine (basé sur Sprint 0)
 - **Statut** : 🟢 EN COURS
 
@@ -94,21 +94,21 @@ En tant qu'artisan, je veux réinitialiser mon mot de passe si je l'ai oublié.
 ---
 
 ### US-010 : Auth Service - Middleware JWT
-**Points** : 3 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 3 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant que développeur, je veux un middleware de vérification JWT afin de sécuriser toutes les routes API.
 
 **Critères d'acceptation** :
-- [ ] Middleware vérifie le JWT
-- [ ] Retourne 401 si token manquant
-- [ ] Retourne 403 si token invalide
-- [ ] Injecte req.user pour routes suivantes
+- [x] Middleware vérifie le JWT
+- [x] Retourne 401 si token manquant
+- [x] Retourne 403 si token invalide
+- [x] Injecte req.user pour routes suivantes
 
 **Tâches** :
-- [ ] Créer middleware auth
-- [ ] Vérification JWT + gestion erreurs
-- [ ] Tests unitaires
+- [x] Créer middleware auth
+- [x] Vérification JWT + gestion erreurs
+- [x] Tests d'intégration (5 tests, TDD)
 
 ---
 
