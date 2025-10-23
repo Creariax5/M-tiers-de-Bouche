@@ -8,8 +8,8 @@
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
 - **Points planifiés** : 43
-- **Points réalisés** : 42/43 (98%)
-- **Vélocité** : 42 points/semaine
+- **Points réalisés** : 43/43 (100%)
+- **Vélocité** : 43 points/semaine
 - **Statut** : ✅ SPRINT COMPLÉTÉ
 
 ---
@@ -52,63 +52,63 @@ En tant que développeur, je veux un environnement Docker complet afin de dével
 ---
 
 ### US-002 : Configuration PostgreSQL Multi-DB
-**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant que développeur, je veux plusieurs bases de données PostgreSQL isolées afin que chaque microservice ait sa propre DB.
 
 **Critères d'acceptation** :
-- [ ] Script `init-databases.sh` crée 3 bases : saas_auth, saas_recipes, saas_production
-- [ ] Chaque service peut se connecter à sa DB
-- [ ] Isolation complète entre les bases
+- [x] Script `init-databases.sh` crée 3 bases : saas_auth, saas_recipes, saas_production
+- [x] Chaque service peut se connecter à sa DB
+- [x] Isolation complète entre les bases
 
 **Tâches** :
-- [ ] Créer script `init-databases.sh`
-- [ ] Ajouter container postgres dans docker-compose.yml
-- [ ] Volume mount du script
-- [ ] Tester création des 3 bases
-- [ ] Documenter connexion depuis services
+- [x] Créer script `init-databases.sh`
+- [x] Ajouter container postgres dans docker-compose.yml
+- [x] Volume mount du script
+- [x] Tester création des 3 bases
+- [x] Documenter connexion depuis services
 
 ---
 
 ### US-003 : Setup Redis Cache
-**Points** : 3 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 3 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant que développeur, je veux un service Redis afin de cacher les calculs nutritionnels et gérer les sessions.
 
 **Critères d'acceptation** :
-- [ ] Container Redis démarré
-- [ ] Connexion depuis services backend OK
-- [ ] Persistance activée (appendonly yes)
+- [x] Container Redis démarré
+- [x] Connexion depuis services backend OK
+- [x] Persistance activée (appendonly yes)
 
 **Tâches** :
-- [ ] Ajouter service redis dans docker-compose.yml
-- [ ] Volume redis-data pour persistance
-- [ ] Command: `redis-server --appendonly yes`
-- [ ] Healthcheck avec `redis-cli ping`
-- [ ] Tester connexion depuis api-gateway
+- [x] Ajouter service redis dans docker-compose.yml
+- [x] Volume redis-data pour persistance
+- [x] Command: `redis-server --appendonly yes`
+- [x] Healthcheck avec `redis-cli ping`
+- [x] Tester connexion depuis api-gateway
 
 ---
 
 ### US-004 : Setup MinIO (S3 local)
-**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant que développeur, je veux un stockage S3-compatible afin de stocker photos et PDFs localement.
 
 **Critères d'acceptation** :
-- [ ] MinIO démarré avec console accessible (localhost:9001)
-- [ ] Buckets créés : recipes-photos, labels-pdf
-- [ ] Upload/download fonctionnel
+- [x] MinIO démarré avec console accessible (localhost:9001)
+- [x] Buckets créés : recipes-photos, labels-pdf
+- [x] Upload/download fonctionnel
 
 **Tâches** :
-- [ ] Ajouter service minio dans docker-compose.yml
-- [ ] Ports : 9000 (API), 9001 (Console)
-- [ ] Variables : MINIO_ROOT_USER, MINIO_ROOT_PASSWORD
-- [ ] Volume minio-data
-- [ ] Accéder à console http://localhost:9001
-- [ ] Créer les 2 buckets manuellement ou via script
+- [x] Ajouter service minio dans docker-compose.yml
+- [x] Ports : 9000 (API), 9001 (Console)
+- [x] Variables : MINIO_ROOT_USER, MINIO_ROOT_PASSWORD
+- [x] Volume minio-data
+- [x] Accéder à console http://localhost:9001
+- [x] Créer les 2 buckets manuellement ou via script
 
 ---
 
@@ -286,8 +286,8 @@ _Aucun bug pour l'instant (Sprint 0)_
 - [x] Health checks automatiques
 
 ### Résultats
-- ✅ **42/43 points réalisés (98%)**
-- ✅ **7 User Stories complétées**
+- ✅ **43/43 points réalisés (100%)**
+- ✅ **8 User Stories complétées**
 - ✅ **Infrastructure Docker complète**
 - ✅ **API Gateway avec sécurité**
 - ✅ **CI/CD GitHub Actions**
@@ -306,7 +306,7 @@ _Aucun bug pour l'instant (Sprint 0)_
 **Participants** : Équipe de développement
 
 ### ✅ What went well?
-- 🎯 Objectif du sprint atteint à 98%
+- 🎯 Objectif du sprint atteint à 100% 🎉
 - 🐳 Configuration Docker excellente et reproductible
 - 🔒 Sécurité intégrée dès le début (CORS, Rate Limiting, Helmet)
 - 📊 Monitoring Sentry en place
@@ -337,7 +337,9 @@ _Aucun bug pour l'instant (Sprint 0)_
 - [x] docs/sprints/complete/US-001-COMPLETED.md
 - [x] docs/sprints/complete/US-007-008-COMPLETED.md
 - [x] docs/sprints/complete/US-005-COMPLETED.md
+- [x] docs/sprints/complete/US-002-003-004-COMPLETED.md
 - [x] Règle "Docker uniquement" dans design_system.md
+- [x] VERIFICATION-FINALE.md avec tous les tests
 
 ---
 
