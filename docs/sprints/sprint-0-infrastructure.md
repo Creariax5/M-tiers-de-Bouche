@@ -8,8 +8,9 @@
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
 - **Points planifiés** : 43 (40 + 3 Sentry)
-- **Points réalisés** : -
-- **Vélocité** : -
+- **Points réalisés** : 34/43 (79%)
+- **Vélocité** : 34 points/semaine
+- **Statut** : 🟢 EN BONNE VOIE
 
 ---
 
