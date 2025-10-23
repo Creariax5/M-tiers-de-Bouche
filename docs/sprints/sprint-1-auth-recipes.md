@@ -8,7 +8,7 @@
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
 - **Points planifiés** : 73 (68 + 5 reset password)
-- **Points réalisés** : 21/73 (29%)
+- **Points réalisés** : 26/73 (36%)
 - **Vélocité estimée** : 43 points/semaine (basé sur Sprint 0)
 - **Statut** : 🟢 EN COURS
 
@@ -115,20 +115,25 @@ En tant que développeur, je veux un middleware de vérification JWT afin de sé
 ---
 
 ### US-011 : Auth Service - Profil utilisateur
-**Points** : 5 | **Priorité** : 🟡 SHOULD | **Assigné à** : -
+**Points** : 5 | **Priorité** : 🟡 SHOULD | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant qu'artisan, je veux voir et modifier mon profil afin de mettre à jour mes informations.
 
 **Critères d'acceptation** :
-- [ ] GET /auth/me retourne profil utilisateur
-- [ ] PUT /auth/me met à jour le profil
-- [ ] Upload logo entreprise vers MinIO
+- [x] GET /me retourne profil utilisateur
+- [x] PUT /me met à jour le profil (email, firstName, lastName, company, logoUrl)
+- [x] DELETE /me supprime le compte utilisateur
+- [x] Validation des champs avec Zod
+- [x] Sécurité : champs sensibles non modifiables (plan, password)
+- [x] Protection JWT sur toutes les routes
 
 **Tâches** :
-- [ ] Implémenter routes GET/PUT /auth/me
-- [ ] Upload logo vers MinIO
-- [ ] Tests
+- [x] Validator Zod pour update profile
+- [x] Service updateUserProfile et deleteUserAccount
+- [x] Controller avec gestion des erreurs
+- [x] Routes GET/PUT/DELETE /me protégées par authenticateToken
+- [x] Tests d'intégration (13 tests, TDD)
 
 ---
 
