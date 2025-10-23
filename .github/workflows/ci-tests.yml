@@ -46,6 +46,33 @@ jobs:
           done
         shell: bash
 
+  tests:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Start Docker Compose
+        run: docker compose up -d postgres redis minio
+      
+      - name: Wait for PostgreSQL
+        run: sleep 10
+      
+      - name: Build and test auth-service
+        run: |
+          docker compose build auth-service
+          docker compose run --rm auth-service npm test
+      
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs auth-service
+      
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
+
   health-check:
     name: Docker Health Check
     runs-on: ubuntu-latest

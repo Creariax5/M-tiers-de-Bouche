@@ -5,14 +5,14 @@ FROM node:20-alpine AS base
 
 WORKDIR /app
 
-# Installer curl pour healthcheck
-RUN apk add --no-cache curl
+# Installer curl pour healthcheck et openssl pour Prisma
+RUN apk add --no-cache curl openssl openssl-dev
 
 # Copier package.json
 COPY package*.json ./
 
-# Installer les dépendances (génère package-lock.json dans le conteneur)
-RUN npm install --omit=dev
+# Installer toutes les dépendances (y compris dev pour les tests)
+RUN npm install
 
 # Copier le code source
 COPY . .
