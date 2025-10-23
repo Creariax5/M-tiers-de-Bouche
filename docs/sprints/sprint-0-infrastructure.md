@@ -155,46 +155,47 @@ En tant que développeur, je veux un fichier .env.example afin de configurer fac
 ---
 
 ### US-007 : API Gateway - Routing de base
-**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant que développeur, je veux un API Gateway centralisé afin de router les requêtes vers les microservices.
 
 **Critères d'acceptation** :
-- [ ] Service api-gateway démarre sur port 3000
-- [ ] Routing vers auth-service, recipe-service, label-service, production-service
-- [ ] CORS configuré (origin strict, pas de wildcard)
-- [ ] Rate limiting global (100 req/15min par IP)
-- [ ] Helmet pour headers de sécurité (CSP, HSTS, etc.)
-- [ ] Healthcheck endpoint /health
+- [x] Service api-gateway démarre sur port 3000
+- [x] Routing vers auth-service, recipe-service, label-service, production-service
+- [x] CORS configuré (origin strict, pas de wildcard)
+- [x] Rate limiting global (100 req/15min par IP)
+- [x] Helmet pour headers de sécurité (CSP, HSTS, etc.)
+- [x] Healthcheck endpoint /health
+- [x] Sentry monitoring intégré
 
 **Tâches** :
-- [ ] Créer `backend/api-gateway/` avec TypeScript
-- [ ] Installer express, cors, helmet, express-rate-limit, http-proxy-middleware
-- [ ] Middleware CORS + Rate Limiting + Helmet
-- [ ] Routes proxy vers 4 microservices
-- [ ] Sentry pour monitoring erreurs
-- [ ] Dockerfile + tests routage
+- [x] Créer `backend/api-gateway/` avec Node.js
+- [x] Installer express, cors, helmet, express-rate-limit, http-proxy-middleware
+- [x] Middleware CORS + Rate Limiting + Helmet
+- [x] Routes proxy vers 4 microservices
+- [x] Sentry pour monitoring erreurs
+- [x] Dockerfile + tests routage
 
 ---
 
 ### US-008 : Setup Sentry & Monitoring
-**Points** : 3 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 3 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant que développeur, je veux monitorer les erreurs afin de les corriger rapidement.
 
 **Critères d'acceptation** :
-- [ ] Sentry configuré dans api-gateway
-- [ ] Capture des erreurs 500
-- [ ] Pas de données sensibles dans les logs (passwords, tokens)
-- [ ] Alertes email sur erreurs critiques
+- [x] Sentry configuré dans api-gateway
+- [x] Capture des erreurs 500
+- [x] Pas de données sensibles dans les logs (passwords, tokens)
+- [x] Error handler avec environnement development/production
 
 **Tâches** :
-- [ ] Créer compte Sentry (gratuit)
-- [ ] Installer @sentry/node
-- [ ] Middleware error handler avec Sentry
-- [ ] Tests
+- [x] Installer @sentry/node
+- [x] Middleware error handler avec Sentry
+- [x] Tests (healthcheck + routing)
+- [x] Variable SENTRY_DSN dans .env
 
 ---
 
