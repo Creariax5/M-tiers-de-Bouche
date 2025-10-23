@@ -6,11 +6,11 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# Copier package.json et package-lock.json
+# Copier package.json
 COPY package*.json ./
 
-# Installer les dépendances
-RUN npm ci
+# Installer les dépendances (génère package-lock.json dans le conteneur)
+RUN npm install
 
 # Copier le code source
 COPY . .
