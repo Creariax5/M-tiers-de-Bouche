@@ -25,10 +25,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: |
-            backend/api-gateway/package-lock.json
-            backend/services/*/package-lock.json
       
       - name: Install dependencies - API Gateway
         working-directory: backend/api-gateway
@@ -59,10 +55,10 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Start Docker Compose
-        run: docker-compose up -d postgres redis minio
+        run: docker compose up -d postgres redis minio
       
       - name: Wait for services
-        run: sleep 10
+        run: sleep 15
       
       - name: Check PostgreSQL health
         run: docker exec saas-postgres pg_isready -U postgres
@@ -81,8 +77,8 @@ jobs:
       
       - name: Show logs on failure
         if: failure()
-        run: docker-compose logs
+        run: docker compose logs
       
       - name: Cleanup
         if: always()
-        run: docker-compose down -v
+        run: docker compose down -v
