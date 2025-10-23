@@ -36,7 +36,8 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.use(express.json());
+// IMPORTANT: Ne pas parser le JSON ici, laisser le proxy s'en occuper
+// app.use(express.json()); // Commenté pour le proxy
 
 // Health check
 app.get('/health', (req, res) => {
@@ -47,7 +48,16 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', createProxyMiddleware({
   target: process.env.AUTH_SERVICE_URL || 'http://auth-service:3001',
   changeOrigin: true,
-  pathRewrite: { '^/api/auth': '' }
+  pathRewrite: { '^/api/auth': '' },
+  timeout: 30000,
+  proxyTimeout: 30000,
+  onProxyReq: (proxyReq, req, res) => {
+    console.log(`[Proxy] ${req.method} ${req.url} → ${proxyReq.path}`);
+  },
+  onError: (err, req, res) => {
+    console.error('[Proxy Error]', err.message);
+    res.status(500).json({ error: 'Proxy error', details: err.message });
+  }
 }));
 
 app.use('/api/recipes', createProxyMiddleware({
