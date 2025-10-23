@@ -1,0 +1,101 @@
+# ========================================
+# Docker Build - Métiers de Bouche
+# ========================================
+# Build et vérifie les images Docker
+# Exécuté sur chaque push sur main
+
+name: Docker Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}
+
+jobs:
+  build-services:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    strategy:
+      matrix:
+        service:
+          - name: api-gateway
+            path: backend/api-gateway
+          - name: auth-service
+            path: backend/services/auth-service
+          - name: recipe-service
+            path: backend/services/recipe-service
+          - name: label-service
+            path: backend/services/label-service
+          - name: production-service
+            path: backend/services/production-service
+          - name: frontend
+            path: frontend
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_PREFIX }}/metiers-de-bouche-${{ matrix.service.name }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+      
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.service.path }}
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Test image
+        run: |
+          docker build -t test-${{ matrix.service.name }} ${{ matrix.service.path }}
+          echo "✅ Image ${{ matrix.service.name }} built successfully"
+
+  build-status:
+    name: Build Status
+    runs-on: ubuntu-latest
+    needs: [build-services]
+    if: always()
+    
+    steps:
+      - name: Check build status
+        run: |
+          if [ "${{ needs.build-services.result }}" == "success" ]; then
+            echo "✅ All Docker images built successfully"
+            exit 0
+          else
+            echo "❌ Some Docker images failed to build"
+            exit 1
+          fi

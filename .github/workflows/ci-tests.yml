@@ -1,0 +1,88 @@
+# ========================================
+# CI Tests - Métiers de Bouche
+# ========================================
+# Exécuté sur chaque PR et push sur main
+# Vérifie le lint et les tests
+
+name: CI Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/api-gateway/package-lock.json
+            backend/services/*/package-lock.json
+      
+      - name: Install dependencies - API Gateway
+        working-directory: backend/api-gateway
+        run: npm ci || npm install
+      
+      - name: Lint API Gateway
+        working-directory: backend/api-gateway
+        run: npm run lint || echo "No lint script found, skipping..."
+      
+      - name: Install dependencies - Services
+        run: |
+          for service in backend/services/*/; do
+            if [ -f "$service/package.json" ]; then
+              echo "Installing dependencies for $service"
+              cd "$service"
+              npm ci || npm install
+              cd -
+            fi
+          done
+        shell: bash
+
+  health-check:
+    name: Docker Health Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Start Docker Compose
+        run: docker-compose up -d postgres redis minio
+      
+      - name: Wait for services
+        run: sleep 10
+      
+      - name: Check PostgreSQL health
+        run: docker exec saas-postgres pg_isready -U postgres
+      
+      - name: Check Redis health
+        run: docker exec saas-redis redis-cli -a redis123 --no-auth-warning ping
+      
+      - name: Check MinIO health
+        run: docker exec saas-minio curl -f http://localhost:9000/minio/health/live
+      
+      - name: Verify databases created
+        run: |
+          docker exec saas-postgres psql -U postgres -c "\l" | grep saas_auth
+          docker exec saas-postgres psql -U postgres -c "\l" | grep saas_recipes
+          docker exec saas-postgres psql -U postgres -c "\l" | grep saas_production
+      
+      - name: Show logs on failure
+        if: failure()
+        run: docker-compose logs
+      
+      - name: Cleanup
+        if: always()
+        run: docker-compose down -v

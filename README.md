@@ -2,6 +2,10 @@
 
 > Plateforme SaaS pour artisans des métiers de bouche : fiches techniques, étiquettes nutritionnelles et gestion de production conformes HACCP.
 
+![CI Tests](https://github.com/Creariax5/M-tiers-de-Bouche/workflows/CI%20Tests/badge.svg)
+![Docker Build](https://github.com/Creariax5/M-tiers-de-Bouche/workflows/Docker%20Build/badge.svg)
+![Deploy](https://github.com/Creariax5/M-tiers-de-Bouche/workflows/Deploy/badge.svg)
+
 ---
 
 ## 🎯 Objectif

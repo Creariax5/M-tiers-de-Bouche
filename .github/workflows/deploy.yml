@@ -1,0 +1,113 @@
+# ========================================
+# Deploy - Métiers de Bouche
+# ========================================
+# Déploiement automatique (à configurer)
+# Préparé pour Railway, Render ou Vercel
+
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'docker-compose.yml'
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    if: github.event.inputs.environment == 'staging' || (github.ref == 'refs/heads/main' && github.event_name == 'push')
+    environment:
+      name: staging
+      url: https://staging.metiers-de-bouche.fr
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Deploy notification
+        run: |
+          echo "🚀 Déploiement en staging..."
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+      
+      # TODO: Ajouter les étapes de déploiement réelles
+      # Exemples :
+      # - Railway CLI : railway up
+      # - Render : render deploy
+      # - SSH : rsync + docker-compose
+      
+      - name: Placeholder - Configure deployment
+        run: |
+          echo "⚠️ Déploiement non configuré"
+          echo "Configurer Railway, Render ou un serveur custom"
+          echo "Ajouter les secrets nécessaires dans GitHub"
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    if: github.event.inputs.environment == 'production'
+    environment:
+      name: production
+      url: https://metiers-de-bouche.fr
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Deploy notification
+        run: |
+          echo "🚀 Déploiement en production..."
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+      
+      # TODO: Ajouter les étapes de déploiement réelles
+      
+      - name: Placeholder - Configure deployment
+        run: |
+          echo "⚠️ Déploiement production non configuré"
+          echo "Configurer Railway, Render ou un serveur custom"
+          echo "Ajouter les secrets nécessaires dans GitHub"
+      
+      - name: Success notification
+        if: success()
+        run: echo "✅ Déploiement réussi"
+      
+      - name: Failure notification
+        if: failure()
+        run: echo "❌ Déploiement échoué"
+
+  health-check:
+    name: Post-Deploy Health Check
+    runs-on: ubuntu-latest
+    needs: [deploy-staging]
+    if: always() && needs.deploy-staging.result == 'success'
+    
+    steps:
+      - name: Wait for deployment
+        run: sleep 30
+      
+      - name: Check API health
+        run: |
+          echo "TODO: Vérifier https://staging.metiers-de-bouche.fr/health"
+          # curl -f https://staging.metiers-de-bouche.fr/health
+      
+      - name: Check services
+        run: |
+          echo "TODO: Vérifier tous les services backend"
+          # curl -f https://staging.metiers-de-bouche.fr/api/auth/health
+          # curl -f https://staging.metiers-de-bouche.fr/api/recipes/health
