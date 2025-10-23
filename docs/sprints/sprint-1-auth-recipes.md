@@ -8,7 +8,7 @@
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
 - **Points planifiés** : 73 (68 + 5 reset password)
-- **Points réalisés** : 0/73 (0%)
+- **Points réalisés** : 13/73 (18%)
 - **Vélocité estimée** : 43 points/semaine (basé sur Sprint 0)
 - **Statut** : 🟢 EN COURS
 
@@ -30,46 +30,46 @@
 ## 📝 USER STORIES DU SPRINT
 
 ### US-008 : Auth Service - Inscription utilisateur
-**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant qu'artisan, je veux créer un compte afin d'utiliser l'application.
 
 **Critères d'acceptation** :
-- [ ] POST /auth/register crée un utilisateur
-- [ ] Password hashé avec bcrypt
-- [ ] Validation email unique
-- [ ] Email de bienvenue envoyé (Resend)
-- [ ] Essai gratuit 14 jours activé
+- [x] POST /auth/register crée un utilisateur
+- [x] Password hashé avec bcrypt
+- [x] Validation email unique
+- [ ] Email de bienvenue envoyé (Resend) - Non implémenté
+- [x] Essai gratuit 14 jours activé
 
 **Tâches** :
-- [ ] Créer auth-service avec Prisma
-- [ ] Implémenter route POST /auth/register
-- [ ] Hashage password + validation Zod
+- [x] Créer auth-service avec Prisma
+- [x] Implémenter route POST /auth/register
+- [x] Hashage password + validation Zod
 - [ ] Envoi email bienvenue
-- [ ] Tests unitaires
+- [x] Tests unitaires (validateurs)
 
 ---
 
 ### US-009 : Auth Service - Connexion JWT
-**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant qu'artisan, je veux me connecter afin d'accéder à mes recettes.
 
 **Critères d'acceptation** :
-- [ ] POST /auth/login retourne JWT token (7 jours)
-- [ ] Validation email/password
-- [ ] Token contient userId + email + plan
-- [ ] Rate limiting : 5 tentatives / 15 min
-- [ ] httpOnly cookies (production) ou localStorage (dev)
+- [x] POST /auth/login retourne JWT token (7 jours)
+- [x] Validation email/password
+- [x] Token contient userId + email + plan
+- [ ] Rate limiting : 5 tentatives / 15 min - Global rate limiting en place (100/15min)
+- [ ] httpOnly cookies (production) ou localStorage (dev) - À implémenter frontend
 
 **Tâches** :
-- [ ] Implémenter route POST /auth/login
-- [ ] Vérification password + génération JWT
+- [x] Implémenter route POST /auth/login
+- [x] Vérification password + génération JWT
 - [ ] Rate limiting spécifique login
-- [ ] Gestion erreurs (credentials invalides)
-- [ ] Tests unitaires
+- [x] Gestion erreurs (credentials invalides)
+- [x] Tests unitaires (validateurs)
 
 ---
 
