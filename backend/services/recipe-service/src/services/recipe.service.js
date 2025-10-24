@@ -1,5 +1,6 @@
 import prisma from '../lib/prisma.js';
 import { detectAllergens } from './allergen.service.js';
+import { calculateNutrition } from './nutrition.service.js';
 
 export const createRecipe = async (userId, data) => {
   return await prisma.recipe.create({
@@ -57,9 +58,13 @@ export const getRecipeById = async (userId, recipeId) => {
   // Ajouter les allergènes détectés
   const allergens = await detectAllergens(recipeId);
   
+  // Ajouter les valeurs nutritionnelles
+  const nutrition = await calculateNutrition(recipeId);
+  
   return {
     ...recipe,
-    allergens
+    allergens,
+    nutrition
   };
 };
 

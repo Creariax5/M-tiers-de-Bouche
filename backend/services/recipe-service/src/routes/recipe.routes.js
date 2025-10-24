@@ -2,6 +2,7 @@ import express from 'express';
 import * as recipeController from '../controllers/recipe.controller.js';
 import * as ingredientController from '../controllers/ingredient.controller.js';
 import * as allergenController from '../controllers/allergen.controller.js';
+import * as nutritionController from '../controllers/nutrition.controller.js';
 import { authenticateToken } from '../middleware/auth.middleware.js';
 import { validateCreateRecipe, validateUpdateRecipe } from '../validators/recipe.validator.js';
 import { validateAddIngredient, validateUpdateIngredient } from '../validators/ingredient.validator.js';
@@ -23,5 +24,8 @@ router.delete('/recipes/:id/ingredients/:ingredientId', authenticateToken, ingre
 
 // Allergen routes
 router.get('/recipes/:id/allergens', authenticateToken, allergenController.getRecipeAllergens);
+
+// Nutrition routes
+router.get('/recipes/:id/nutrition', authenticateToken, nutritionController.getRecipeNutrition);
 
 export default router;
