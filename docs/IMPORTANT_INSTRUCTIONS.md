@@ -8,6 +8,41 @@
 - ❌ `npm run dev` en local
 - ❌ `node src/index.js` en local
 
+---
+
+## ⚖️ RÈGLE #2 : CONFORMITÉ LÉGALE OBLIGATOIRE
+
+**Règlement (UE) n°1169/2011 (INCO) - Étiquetage alimentaire**
+
+### Allergènes (14 ADO)
+- ✅ Liste complète : gluten, crustacés, œufs, poissons, arachides, soja, lait, fruits-à-coque, céleri, moutarde, sésame, sulfites, lupin, mollusques
+- ✅ Mise en évidence typographique (GRAS, MAJUSCULES)
+- ✅ Ordre pondéral décroissant dans liste d'ingrédients
+
+### Déclaration nutritionnelle (pour 100g)
+- ✅ Valeur énergétique : **kJ ET kcal** (obligatoire)
+  - Formule : `1 kcal = 4.184 kJ`
+- ✅ Matières grasses + **dont acides gras saturés**
+- ✅ Glucides + **dont sucres**
+- ✅ Protéines
+- ✅ Sel (arrondi à **2 décimales**)
+
+### Arrondis (Annexe XV INCO)
+- Énergie : entier (ex: `295 kcal`)
+- Matières grasses, glucides, protéines : 1 décimale (ex: `12.5 g`)
+- Sel : **2 décimales** (ex: `0.45 g`)
+
+### ⚠️ Sanctions
+- Amende administrative : jusqu'à **300 000€**
+- Sanctions pénales : jusqu'à 2 ans prison + 300 000€
+- Responsabilité civile en cas d'accident allergique
+
+### 📚 Documentation
+- **docs/CONFORMITE_LEGALE.md** : Analyse complète (720 lignes)
+- **docs/PLAN_MISE_EN_CONFORMITE.md** : Plan d'action (667 lignes)
+
+**Avant chaque commit** : Vérifier conformité INCO
+
 **TOUJOURS via Docker**
 - ✅ `docker-compose build <service>`
 - ✅ `docker-compose up -d <service>`
@@ -160,6 +195,55 @@ minio             → Storage S3
 6. ❌ Utiliser `any` en TypeScript
 7. ❌ Copier node_modules dans Docker (utiliser .dockerignore)
 8. ❌ Oublier NODE_ENV=test dans les tests
+9. ❌ **Bidouiller au lieu d'utiliser les outils correctement**
+10. ❌ **Inventer des solutions sans lire la documentation**
+
+---
+
+## ⚠️ RÈGLE #3 : FAIRE LES CHOSES PROPREMENT
+
+**TOUJOURS utiliser les outils officiels, JAMAIS bidouiller**
+
+### Exemples de bonnes pratiques
+
+✅ **Prisma migrations** : 
+- Utiliser `npx prisma migrate dev --name <description>`
+- Laisser Prisma générer les migrations depuis le schema
+- Ne JAMAIS modifier manuellement les migrations
+- Ne JAMAIS éditer directement la base de données
+
+✅ **Quand un problème survient** :
+1. Lire la documentation officielle de l'outil
+2. Chercher la solution "propre" recommandée
+3. Nettoyer complètement si nécessaire (reset DB, rebuild)
+4. Réappliquer avec les outils officiels
+
+❌ **NE JAMAIS** :
+- Éditer manuellement le SQL des migrations
+- Modifier la base de données avec des requêtes SQL directes
+- Créer des fichiers de migration à la main
+- Patcher au lieu de reconstruire proprement
+
+### Documentation à TOUJOURS consulter
+
+**AVANT de coder une US** :
+1. 📖 **docs/cahier_des_charges.md** → Vision d'ensemble, objectifs métier
+2. 📐 **docs/design_system.md** → Standards de code, patterns à suivre
+3. ⚖️ **docs/CONFORMITE_LEGALE.md** → Obligations légales INCO (si nutrition/allergènes)
+4. 📋 **docs/sprints/sprint-X.md** → Critères d'acceptation de la US
+5. 🔧 **docs/technical_specs.md** → Schémas Prisma, structure API
+
+**PENDANT le développement** :
+- 🔍 Relire les critères d'acceptation régulièrement
+- 🎯 Vérifier qu'on répond bien au besoin métier
+- 📚 Consulter la doc officielle des outils (Prisma, Zod, Jest, etc.)
+
+**Pourquoi c'est critique** :
+- ✅ Évite de partir dans la mauvaise direction
+- ✅ Garantit la conformité légale (300k€ d'amende en jeu)
+- ✅ Maintient la cohérence du code
+- ✅ Empêche les bugs silencieux
+- ✅ Gagne du temps (pas de refactoring massif après)
 
 ---
 

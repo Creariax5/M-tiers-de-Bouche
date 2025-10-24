@@ -37,15 +37,21 @@ model Ingredient {
   unit        String   @default("g") // g, kg, L, ml, pièce
   pricePerUnit Float   @default(0) // Prix par unité
   
-  // Valeurs nutritionnelles pour 100g/100ml
-  calories    Float?
-  proteins    Float?
-  carbs       Float?
-  fats        Float?
-  salt        Float?
+  // Valeurs nutritionnelles pour 100g/100ml (CONFORMITÉ INCO)
+  calories       Float? // kcal (sera converti en kJ automatiquement)
+  proteins       Float? // g - Protéines
+  carbs          Float? // g - Glucides totaux
+  sugars         Float? // g - dont sucres (OBLIGATOIRE INCO)
+  fats           Float? // g - Matières grasses totales
+  saturatedFats  Float? // g - dont acides gras saturés (OBLIGATOIRE INCO)
+  salt           Float? // g - Sel (arrondi 2 décimales)
   
-  // Allergènes (14 ADO - liste séparée par virgules)
-  allergens   String?  // Ex: "gluten,lait,oeufs"
+  // Valeurs nutritionnelles facultatives
+  fiber          Float? // g - Fibres alimentaires
+  
+  // Allergènes (14 ADO - Allergènes à Déclaration Obligatoire)
+  allergens      String?  // CSV: "gluten,lait,oeufs"
+  allergenTraces String?  // Traces possibles: "fruits-a-coque,arachides"
   
   // Relations
   recipes     RecipeIngredient[]

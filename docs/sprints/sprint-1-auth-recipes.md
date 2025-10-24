@@ -10,7 +10,7 @@
 - **Points planifiés** : 73 (68 + 5 reset password)
 - **Points réalisés** : 68/73 (93%)
 - **Vélocité estimée** : 43 points/semaine (basé sur Sprint 0)
-- **Statut** : 🟢 EN COURS
+- **Statut** : 🟢 EN COURS - US-016 en cours
 
 ---
 
@@ -212,20 +212,26 @@ En tant qu'artisan, je veux voir automatiquement les allergènes de ma recette a
 ---
 
 ### US-015 : Recipe Service - Calcul valeurs nutritionnelles
-**Points** : 13 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
+**Points** : 13 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE (INCO conforme)
 
 **Description** :  
 En tant qu'artisan, je veux voir automatiquement les valeurs nutritionnelles afin de les afficher sur mes étiquettes.
 
 **Critères d'acceptation** :
 - [x] Service calcule pour 100g
-- [x] Calories, protéines, glucides, lipides, sel
-- [x] Calcul automatique à la sauvegarde
+- [x] **Énergie : kJ ET kcal (OBLIGATOIRE INCO)**
+- [x] **Glucides + dont sucres (OBLIGATOIRE INCO)**
+- [x] **Matières grasses + dont acides gras saturés (OBLIGATOIRE INCO)**
+- [x] **Sel arrondi 2 décimales (OBLIGATOIRE INCO)**
+- [x] Protéines
 - [ ] Mise en cache Redis (1h) - Non implémenté (pas critique)
 
 **Tâches** :
 - [x] Créer service nutrition
-- [x] Fonction calcul pour 100g
+- [x] Fonction calcul pour 100g avec INCO
+- [x] Migration Prisma : ajout sugars, saturatedFats, fiber, allergenTraces
+- [x] Formule kJ : 1 kcal = 4.184 kJ
+- [x] Gestion lossPercent
 - [ ] Cache Redis avec TTL 1h - Non implémenté
 - [x] Tests unitaires
 
@@ -234,13 +240,16 @@ En tant qu'artisan, je veux voir automatiquement les valeurs nutritionnelles afi
 - Route `GET /recipes/:id/nutrition` : endpoint dédié pour les valeurs nutritionnelles
 - Intégration dans `GET /recipes/:id` : champ `nutrition` inclus dans la réponse
 - 8 tests d'intégration (100%) : calcul 100g, par portion, pertes cuisson, auth
-- Format : `{ per100g: {...}, perServing: {...}, totalWeight: number }`
+- Format INCO complet : `{ per100g: { energyKj, energyKcal, proteins, carbs, sugars, fats, saturatedFats, salt }, perServing: {...}, totalWeight }`
 - Gestion lossPercent : poids final = poids initial * (1 - loss%), nutriments concentrés
+- **Conformité légale** : kJ+kcal, sugars, saturatedFats, salt 2 décimales
+
+**Résultat** : ✅ 8/8 tests passent - Calculs INCO 100% conformes
 
 ---
 
 ### US-016 : Recipe Service - Calcul coût de revient
-**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : 🔄 EN COURS
 
 **Description** :  
 En tant qu'artisan, je veux voir le coût de revient automatique afin de fixer mon prix de vente.

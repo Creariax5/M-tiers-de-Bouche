@@ -55,7 +55,9 @@ describe('GET /recipes/:id/nutrition', () => {
         calories: 350, // pour 100g
         proteins: 10.5,
         carbs: 72.0,
+        sugars: 2.0,      // 🆕 INCO
         fats: 1.2,
+        saturatedFats: 0.3, // 🆕 INCO
         salt: 0.01
       }
     });
@@ -68,7 +70,9 @@ describe('GET /recipes/:id/nutrition', () => {
         calories: 0,
         proteins: 0,
         carbs: 0,
+        sugars: 0,        // 🆕
         fats: 0,
+        saturatedFats: 0, // 🆕
         salt: 0
       }
     });
@@ -81,8 +85,10 @@ describe('GET /recipes/:id/nutrition', () => {
         calories: 0,
         proteins: 0,
         carbs: 0,
+        sugars: 0,        // 🆕
         fats: 0,
-        salt: 100.0 // sel = 100% sodium
+        saturatedFats: 0, // 🆕
+        salt: 100 // sel = 100% sodium
       }
     });
 
@@ -109,14 +115,21 @@ describe('GET /recipes/:id/nutrition', () => {
     expect(nutrition).toHaveProperty('perServing');
     expect(nutrition).toHaveProperty('totalWeight');
     
+    // Vérifier conformité INCO (kJ + kcal)
+    expect(nutrition.per100g).toHaveProperty('energyKj');
+    expect(nutrition.per100g).toHaveProperty('energyKcal');
+    expect(nutrition.per100g).toHaveProperty('sugars');
+    expect(nutrition.per100g).toHaveProperty('saturatedFats');
+    
     // Calculs attendus pour 100g:
     // Total: 500g farine + 300ml eau + 10g sel = 810g
     // Calories: (500 * 350 + 300 * 0 + 10 * 0) / 810 = 175000 / 810 ≈ 216 kcal/100g
-    expect(nutrition.per100g.calories).toBeCloseTo(216, 0);
+    expect(nutrition.per100g.energyKcal).toBeCloseTo(216, 0);
+    expect(nutrition.per100g.energyKj).toBeCloseTo(216 * 4.184, 0); // Vérifier kJ
     expect(nutrition.per100g.proteins).toBeCloseTo(6.5, 1);
     expect(nutrition.per100g.carbs).toBeCloseTo(44.4, 1);
     expect(nutrition.per100g.fats).toBeCloseTo(0.7, 1);
-    expect(nutrition.per100g.salt).toBeCloseTo(1.2, 1);
+    expect(nutrition.per100g.salt).toBeCloseTo(1.23, 1); // 🔧 Tolérance 1 décimale pour arrondis
     
     // Vérifier poids total
     expect(nutrition.totalWeight).toBe(810);
@@ -132,7 +145,9 @@ describe('GET /recipes/:id/nutrition', () => {
         calories: 750,
         proteins: 0.6,
         carbs: 0.1,
-        fats: 82.0,
+        sugars: 0.1,      // 🆕
+        fats: 82,
+        saturatedFats: 51, // 🆕 Beurre riche en saturés
         salt: 0.8
       }
     });
@@ -158,7 +173,8 @@ describe('GET /recipes/:id/nutrition', () => {
     expect(nutrition.perServing.weight).toBe(25);
     
     // Calories par portion = 750 * 0.25 = 187.5 kcal
-    expect(nutrition.perServing.calories).toBeCloseTo(187.5, 1);
+    expect(nutrition.perServing.energyKcal).toBeCloseTo(187.5, 1);
+    expect(nutrition.perServing.energyKj).toBe(785); // Arrondi entier : 187.5 * 4.184 = 784.44 ≈ 785 kJ
   });
 
   it('should handle lossPercent in calculations', async () => {
@@ -169,9 +185,11 @@ describe('GET /recipes/:id/nutrition', () => {
         name: 'Viande hachée',
         unit: 'g',
         calories: 250,
-        proteins: 20.0,
-        carbs: 0.0,
-        fats: 18.0,
+        proteins: 20,
+        carbs: 0,
+        sugars: 0,       // 🆕
+        fats: 18,
+        saturatedFats: 7, // 🆕
         salt: 0.1
       }
     });
@@ -182,7 +200,7 @@ describe('GET /recipes/:id/nutrition', () => {
         ingredientId: viande.id,
         quantity: 1000,
         unit: 'g',
-        lossPercent: 20.0 // 20% de perte à la cuisson
+        lossPercent: 20 // 20% de perte à la cuisson
       }
     });
 
@@ -200,7 +218,7 @@ describe('GET /recipes/:id/nutrition', () => {
     // Calories restent basées sur poids initial (nutriments concentrés)
     // 1000g * 250kcal/100g = 2500 kcal total
     // Pour 100g final: 2500 / 800 * 100 = 312.5 kcal/100g
-    expect(nutrition.per100g.calories).toBeCloseTo(312.5, 1);
+    expect(nutrition.per100g.energyKcal).toBeCloseTo(312.5, 1);
   });
 
   it('should return zero values when no ingredients', async () => {
@@ -212,10 +230,13 @@ describe('GET /recipes/:id/nutrition', () => {
     
     const nutrition = response.body.nutrition;
     
-    expect(nutrition.per100g.calories).toBe(0);
+    expect(nutrition.per100g.energyKcal).toBe(0);
+    expect(nutrition.per100g.energyKj).toBe(0);
     expect(nutrition.per100g.proteins).toBe(0);
     expect(nutrition.per100g.carbs).toBe(0);
+    expect(nutrition.per100g.sugars).toBe(0);
     expect(nutrition.per100g.fats).toBe(0);
+    expect(nutrition.per100g.saturatedFats).toBe(0);
     expect(nutrition.per100g.salt).toBe(0);
     expect(nutrition.totalWeight).toBe(0);
   });
@@ -257,7 +278,9 @@ describe('GET /recipes/:id (with nutrition)', () => {
         calories: 400,
         proteins: 0,
         carbs: 100,
+        sugars: 100,      // 🆕 Sucre = 100% glucides simples
         fats: 0,
+        saturatedFats: 0, // 🆕
         salt: 0
       }
     });
