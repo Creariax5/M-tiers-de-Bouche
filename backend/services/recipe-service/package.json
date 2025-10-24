@@ -3,14 +3,38 @@
   "version": "1.0.0",
   "description": "Recipe Service for Métiers de Bouche SaaS",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --forceExit",
+    "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test:coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage --forceExit",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "@prisma/client": "^5.7.0",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "@jest/globals": "^29.7.0",
+    "cross-env": "^10.1.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "prisma": "^5.7.0",
+    "supertest": "^6.3.3"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {},
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "setupFiles": [
+      "<rootDir>/tests/setup.js"
+    ]
   }
 }

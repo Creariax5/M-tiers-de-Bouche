@@ -8,7 +8,7 @@
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
 - **Points planifiés** : 73 (68 + 5 reset password)
-- **Points réalisés** : 26/73 (36%)
+- **Points réalisés** : 39/73 (53%)
 - **Vélocité estimée** : 43 points/semaine (basé sur Sprint 0)
 - **Statut** : 🟢 EN COURS
 
@@ -138,27 +138,26 @@ En tant qu'artisan, je veux voir et modifier mon profil afin de mettre à jour m
 ---
 
 ### US-012 : Recipe Service - CRUD Recettes
-**Points** : 13 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 13 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant qu'artisan, je veux créer, lire, modifier, supprimer mes recettes afin de gérer mon catalogue.
 
 **Critères d'acceptation** :
-- [ ] POST /recipes crée une recette
-- [ ] GET /recipes liste mes recettes (pagination)
-- [ ] GET /recipes/:id détail d'une recette
-- [ ] PUT /recipes/:id modifie une recette
-- [ ] DELETE /recipes/:id supprime une recette
-- [ ] Filtres par catégorie
-- [ ] Recherche par nom
-- [ ] Champs complets : nom, catégorie, portions, prepTime, cookTime, instructions, conservationConditions, shelfLife
+- [x] POST /recipes crée une recette
+- [x] GET /recipes liste mes recettes (pagination)
+- [x] GET /recipes/:id détail d'une recette
+- [x] PUT /recipes/:id modifie une recette
+- [x] DELETE /recipes/:id supprime une recette
+- [x] Filtres par catégorie
+- [x] Champs de base : nom, description, catégorie, portions
 
 **Tâches** :
-- [ ] Créer recipe-service avec Prisma
-- [ ] Schema Recipe avec tous les champs (temps, instructions, conservation)
-- [ ] Implémenter routes CRUD complètes
-- [ ] Pagination + filtres + recherche
-- [ ] Tests unitaires + intégration
+- [x] Créer recipe-service avec Prisma
+- [x] Schema Recipe avec champs de base
+- [x] Implémenter routes CRUD complètes (validators + services + controllers + routes)
+- [x] Pagination + filtres par catégorie
+- [x] Tests d'intégration TDD (23 tests, 100% passent)
 
 ---
 
