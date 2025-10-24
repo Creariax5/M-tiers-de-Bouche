@@ -271,6 +271,50 @@ volumes:
 - ✅ Refactoring en confiance
 - ✅ Moins de bugs = gain de temps final
 
+#### ❌ TESTS ISOLÉS SANS VÉRIFICATION DE L'INTÉGRATION RÉELLE
+**Occurrence** : US-018 Dashboard (24 octobre 2025)
+- Tests unitaires écrits et passants (8/8 ✅) pour `Dashboard.jsx`
+- Composant créé avec totalRecipes, topProfitable, etc.
+- **MAIS** : `main.jsx` utilisait l'ancien `router.jsx` → `DashboardPage.jsx`
+- Résultat : Tests verts ✅ / Production cassée ❌ (ancien composant affiché)
+- Bug découvert seulement après deploy Docker et test navigateur
+
+**Problème** : Tests isolés ≠ Tests d'intégration
+- Unit tests testaient le bon composant (Dashboard.jsx)
+- Mais l'app utilisait un autre composant (DashboardPage.jsx)
+- Décalage entre ce qui est testé et ce qui est déployé
+
+**✅ CORRECTIF - TESTS FRONTEND** :
+1. ✅ Tests unitaires des composants (behavior, props, hooks)
+2. ✅ **Tests d'intégration du router** :
+   ```javascript
+   // Vérifier que la route charge le BON composant
+   describe('Routes Integration', () => {
+     it('renders Dashboard on /dashboard route', () => {
+       render(<App />);
+       // Simuler navigation vers /dashboard
+       // Vérifier que le texte unique de Dashboard.jsx apparaît
+       expect(screen.getByText('totalRecipes')).toBeInTheDocument();
+     });
+   });
+   ```
+3. ✅ **Test E2E après docker-compose up** :
+   - Ouvrir navigateur sur http://localhost/dashboard
+   - Vérifier visuellement que le bon composant s'affiche
+   - Vérifier Network tab que les bons appels API sont faits
+4. ✅ **Vérifier le bundle Docker** :
+   ```bash
+   docker exec saas-frontend sh -c "grep -c 'textUniqueDuComposant' /usr/share/nginx/html/assets/index-*.js"
+   # Doit être > 0 si le composant est dans le build
+   ```
+
+**Pourquoi c'est critique** :
+- ❌ Tests verts ne garantissent PAS que l'app fonctionne
+- ❌ Un composant peut être testé mais jamais utilisé
+- ❌ Le routing peut pointer vers un vieux composant
+- ✅ Toujours vérifier l'intégration complète (router + composant)
+- ✅ Toujours tester dans le navigateur après deploy Docker
+
 ---
 
 **🎯 RÈGLE D'OR** : Si tu as un doute, STOP et lis la documentation complète. Mieux vaut 5 minutes de lecture que 2h de debug.
