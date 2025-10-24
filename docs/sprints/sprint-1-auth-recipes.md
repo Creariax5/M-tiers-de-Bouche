@@ -326,7 +326,7 @@ En tant qu'artisan, je veux voir le coût de revient automatique afin de fixer m
 **Prochaines US Frontend** : US-018, US-019, US-020 (26 points restants)
 
 ### US-017 : Frontend - Pages Auth (Login/Register)
-**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
+**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE ✨
 
 **Description** :  
 En tant qu'artisan, je veux des pages de connexion et inscription afin d'accéder à l'application.
@@ -338,6 +338,8 @@ En tant qu'artisan, je veux des pages de connexion et inscription afin d'accéde
 - [x] Affichage erreurs serveur
 - [x] Redirection après login réussi
 - [x] Token stocké dans localStorage
+- [x] **BONUS** : CORS fix complet (nginx /api/ proxy)
+- [x] **BONUS** : 38 tests frontend passent (100%)
 
 **Tâches** :
 - [x] Setup Frontend Docker + Vite + React
