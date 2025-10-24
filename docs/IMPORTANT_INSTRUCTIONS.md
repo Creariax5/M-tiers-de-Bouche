@@ -187,6 +187,7 @@ minio             → Storage S3
 
 ## 🚨 ERREURS FRÉQUENTES À ÉVITER
 
+### Erreurs générales
 1. ❌ Oublier Docker et lancer npm en local
 2. ❌ Créer des fichiers de 500 lignes
 3. ❌ Oublier la validation Zod
@@ -197,6 +198,62 @@ minio             → Storage S3
 8. ❌ Oublier NODE_ENV=test dans les tests
 9. ❌ **Bidouiller au lieu d'utiliser les outils correctement**
 10. ❌ **Inventer des solutions sans lire la documentation**
+
+### 📋 Erreurs identifiées dans ce projet (à ne JAMAIS refaire)
+
+#### ❌ LECTURE INCOMPLÈTE DE DOCUMENTATION
+**Occurrences** : 2 fois détectées
+- **Exemple 1** : Migration Prisma `20251023_init` - seulement lu "recipes" dans le fichier, raté que la migration était incomplète (manquait ingredients et recipe_ingredients)
+- **Exemple 2** : Sprint 1 marqué "complet" - seulement lu la section backend, raté toute la section frontend (34 points)
+
+**✅ CORRECTIF** :
+- **TOUJOURS lire UN FICHIER EN ENTIER** avant d'agir
+- Ne jamais se baser sur les 50 premières lignes
+- Chercher "et après ?" dans le document
+- Vérifier s'il y a d'autres sections/parties
+
+#### ❌ FAUX TOKENS AU LIEU DE VRAIS JWT
+**Occurrence** : Tests de pricing initiaux
+- Utilisé `Authorization: Bearer test-token-${userId}` au lieu de vrais JWT
+- Résultat : 403 Forbidden sur tous les tests
+
+**✅ CORRECTIF** :
+```javascript
+// ❌ Faux token
+.set('Authorization', `Bearer test-token-${testUser.id}`)
+
+// ✅ Vrai JWT
+const token = jwt.sign({ userId: testUser.id }, 'test-secret', { expiresIn: '1h' });
+.set('Authorization', `Bearer ${token}`)
+```
+
+#### ❌ SQL MANUEL AU LIEU DE PRISMA MIGRATE
+**Occurrence** : Tentative d'ajouter champs INCO avec ALTER TABLE
+- Essayé de modifier la base avec `docker-compose exec postgres psql ...`
+- Créé un état incohérent (DB modifiée mais pas le schema Prisma)
+
+**✅ CORRECTIF** :
+1. Modifier `prisma/schema.prisma`
+2. `npx prisma migrate dev --name description_du_changement`
+3. Laisser Prisma générer et appliquer le SQL
+4. Ne JAMAIS toucher directement à PostgreSQL
+
+#### ❌ VOLUMES DOCKER NON MONTÉS
+**Occurrence** : Migrations créées localement mais invisibles dans container
+- Créé migrations dans `./prisma/migrations` localement
+- Container ne les voyait pas (volume non monté)
+
+**✅ CORRECTIF** :
+- Vérifier `docker-compose.yml` : 
+```yaml
+volumes:
+  - ./backend/services/recipe-service/prisma/migrations:/app/prisma/migrations
+```
+- Rebuilder le container après ajout de volume
+
+---
+
+**🎯 RÈGLE D'OR** : Si tu as un doute, STOP et lis la documentation complète. Mieux vaut 5 minutes de lecture que 2h de debug.
 
 ---
 

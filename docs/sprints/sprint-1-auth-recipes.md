@@ -7,10 +7,10 @@
 
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
-- **Points planifiés** : 73 (68 + 5 reset password)
-- **Points réalisés** : 68/73 (93%)
+- **Points planifiés** : 73 backend + 34 frontend = 107 total
+- **Points réalisés** : 73/107 (68% - Backend complété)
 - **Vélocité estimée** : 43 points/semaine (basé sur Sprint 0)
-- **Statut** : 🟢 EN COURS - US-016 en cours
+- **Statut** : 🟡 EN COURS - Backend ✅ DONE, Frontend à venir
 
 ---
 
@@ -249,27 +249,59 @@ En tant qu'artisan, je veux voir automatiquement les valeurs nutritionnelles afi
 ---
 
 ### US-016 : Recipe Service - Calcul coût de revient
-**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : 🔄 EN COURS
+**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant qu'artisan, je veux voir le coût de revient automatique afin de fixer mon prix de vente.
 
 **Critères d'acceptation** :
-- [ ] Service calcule le coût avec pertes
-- [ ] Coût = somme(quantité * prix * (1 + perte%))
-- [ ] Suggestion prix de vente avec coefficient
-- [ ] Affichage marge en %
+- [x] Service calcule le coût avec pertes ✅
+- [x] Coût = somme(quantité * prix * (1 + perte%)) ✅
+- [x] Suggestion prix de vente avec coefficient ✅
+- [x] Affichage marge en % ✅
 
 **Tâches** :
-- [ ] Créer service pricing
-- [ ] Calcul coût avec pertes
-- [ ] Calcul marge et suggestion prix
-- [ ] Tests
+- [x] Créer service pricing ✅
+- [x] Calcul coût avec pertes ✅
+- [x] Calcul marge et suggestion prix ✅
+- [x] Tests (7/7 passing) ✅
+
+**Tests** : 7/7 passing
+- Calcul coût avec ingrédients (farine + beurre = 3.5€)
+- Calcul avec perte cuisson (viande × 1.2 = 18€)
+- Coefficient personnalisé (coeff=5, marge 80%)
+- Coût zéro sans ingrédients
+- Validation ownership (404)
+- Auth requise (401)
+- Pricing inclus dans GET /recipes/:id
 
 ---
 
+## 🎉 BACKEND COMPLÉTÉ - 73/73 points (100%)
+
+**Tests** : 65/65 passing ✅
+- Auth: 35 tests
+- Recipes: 23 tests  
+- Ingredients: 19 tests
+- Allergens: 8 tests
+- Nutrition: 8 tests (INCO conforme)
+- Pricing: 7 tests
+
+**Conformité INCO** : 100% (tous les champs obligatoires implémentés)
+
+**Services déployés** :
+- ✅ auth-service (3001)
+- ✅ recipe-service (3002)
+- ✅ PostgreSQL multi-DB
+- ✅ Redis cache
+- ✅ MinIO S3
+
+---
+
+## 🚧 FRONTEND À VENIR (34 points)
+
 ### US-017 : Frontend - Pages Auth (Login/Register)
-**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ⏳ TODO
 
 **Description** :  
 En tant qu'artisan, je veux des pages de connexion et inscription afin d'accéder à l'application.

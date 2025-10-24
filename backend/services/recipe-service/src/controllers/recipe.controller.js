@@ -1,4 +1,5 @@
 import * as recipeService from '../services/recipe.service.js';
+import { calculatePricing } from '../services/pricing.service.js';
 
 export const create = async (req, res) => {
   try {
@@ -37,6 +38,16 @@ export const getById = async (req, res) => {
     
     if (!recipe) {
       return res.status(404).json({ error: 'Recette non trouvée' });
+    }
+
+    // Ajouter le pricing au résultat
+    try {
+      const pricing = await calculatePricing(recipeId, 3);
+      recipe.pricing = pricing;
+    } catch (pricingError) {
+      console.error('Error calculating pricing:', pricingError);
+      // Ne pas bloquer si pricing échoue
+      recipe.pricing = null;
     }
 
     return res.status(200).json(recipe);
