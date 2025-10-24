@@ -1,6 +1,7 @@
 import express from 'express';
 import * as recipeController from '../controllers/recipe.controller.js';
 import * as ingredientController from '../controllers/ingredient.controller.js';
+import * as allergenController from '../controllers/allergen.controller.js';
 import { authenticateToken } from '../middleware/auth.middleware.js';
 import { validateCreateRecipe, validateUpdateRecipe } from '../validators/recipe.validator.js';
 import { validateAddIngredient, validateUpdateIngredient } from '../validators/ingredient.validator.js';
@@ -19,5 +20,8 @@ router.post('/recipes/:id/ingredients', authenticateToken, validateAddIngredient
 router.get('/recipes/:id/ingredients', authenticateToken, ingredientController.listIngredients);
 router.put('/recipes/:id/ingredients/:ingredientId', authenticateToken, validateUpdateIngredient, ingredientController.updateIngredient);
 router.delete('/recipes/:id/ingredients/:ingredientId', authenticateToken, ingredientController.removeIngredient);
+
+// Allergen routes
+router.get('/recipes/:id/allergens', authenticateToken, allergenController.getRecipeAllergens);
 
 export default router;

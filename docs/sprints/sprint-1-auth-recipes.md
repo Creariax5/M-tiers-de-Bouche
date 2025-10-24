@@ -8,7 +8,7 @@
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
 - **Points planifiés** : 73 (68 + 5 reset password)
-- **Points réalisés** : 47/73 (64%)
+- **Points réalisés** : 55/73 (75%)
 - **Vélocité estimée** : 43 points/semaine (basé sur Sprint 0)
 - **Statut** : 🟢 EN COURS
 
@@ -185,22 +185,29 @@ En tant qu'artisan, je veux ajouter des ingrédients à ma recette afin de défi
 ---
 
 ### US-014 : Recipe Service - Calcul allergènes
-**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant qu'artisan, je veux voir automatiquement les allergènes de ma recette afin de respecter la réglementation (14 ADO).
 
 **Critères d'acceptation** :
-- [ ] Service détecte les 14 allergènes obligatoires
-- [ ] Calcul automatique à la sauvegarde de la recette
-- [ ] Affichage dans GET /recipes/:id
-- [ ] Allergènes : gluten, crustacés, œufs, poissons, arachides, soja, lait, fruits à coque, céleri, moutarde, sésame, sulfites, lupin, mollusques
+- [x] Service détecte les 14 allergènes obligatoires
+- [x] Calcul automatique à la sauvegarde de la recette
+- [x] Affichage dans GET /recipes/:id
+- [x] Allergènes : gluten, crustacés, œufs, poissons, arachides, soja, lait, fruits à coque, céleri, moutarde, sésame, sulfites, lupin, mollusques
 
 **Tâches** :
-- [ ] Créer service allergen
-- [ ] Fonction de détection automatique
-- [ ] Hook après sauvegarde recette
-- [ ] Tests unitaires
+- [x] Créer service allergen
+- [x] Fonction de détection automatique
+- [x] Hook après sauvegarde recette
+- [x] Tests unitaires
+
+**Implémentation** :
+- Service `allergen.service.js` : détection automatique via parsing CSV des ingrédients
+- Route `GET /recipes/:id/allergens` : endpoint dédié pour la liste d'allergènes
+- Intégration dans `GET /recipes/:id` : champ `allergens[]` inclus dans la réponse
+- 8 tests d'intégration (100%) : détection unique, déduplication, multi-allergènes, auth
+- Liste de référence ADO : 14 allergènes obligatoires en constante `MANDATORY_ALLERGENS`
 
 ---
 
