@@ -8,9 +8,9 @@
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
 - **Points planifiés** : 73 backend + 34 frontend = 107 total
-- **Points réalisés** : 73/107 (68% - Backend complété)
+- **Points réalisés** : 81/107 (76% - Backend ✅ + US-017 Frontend ✅)
 - **Vélocité estimée** : 43 points/semaine (basé sur Sprint 0)
-- **Statut** : 🟡 EN COURS - Backend ✅ DONE, Frontend à venir
+- **Statut** : � EN COURS - Backend ✅ DONE, Frontend en cours (US-017 ✅)
 
 ---
 
@@ -298,28 +298,70 @@ En tant qu'artisan, je veux voir le coût de revient automatique afin de fixer m
 
 ---
 
-## 🚧 FRONTEND À VENIR (34 points)
+## 🚧 FRONTEND EN COURS (34 points → 8 points complétés)
+
+### ✅ US-017 : Frontend - Pages Auth (Login/Register) - 8 points ✅ DONE
+
+**Implémentation complète** :
+- Pages Login + Register avec React Router
+- Validation Zod + React Hook Form
+- Store Zustand pour authentification
+- Client API Axios (JWT + intercepteurs)
+- Design Tailwind CSS conforme au design system
+- Routes protégées avec redirection
+- Gestion d'erreurs serveur
+
+**Stack technique** :
+- React 18 + Vite
+- React Router v6
+- Zustand (state management)
+- Axios (API calls)
+- Zod + React Hook Form (validation)
+- Tailwind CSS (styling)
+
+**Services déployés** :
+- ✅ Frontend sur http://localhost (port 80)
+- ✅ Intégration API Gateway (port 3000)
+
+**Prochaines US Frontend** : US-018, US-019, US-020 (26 points restants)
 
 ### US-017 : Frontend - Pages Auth (Login/Register)
-**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ⏳ TODO
+**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant qu'artisan, je veux des pages de connexion et inscription afin d'accéder à l'application.
 
 **Critères d'acceptation** :
-- [ ] Page /login avec formulaire
-- [ ] Page /register avec formulaire complet
-- [ ] Validation formulaire (Zod + React Hook Form)
-- [ ] Affichage erreurs serveur
-- [ ] Redirection après login réussi
-- [ ] Token stocké dans localStorage
+- [x] Page /login avec formulaire
+- [x] Page /register avec formulaire complet
+- [x] Validation formulaire (Zod + React Hook Form)
+- [x] Affichage erreurs serveur
+- [x] Redirection après login réussi
+- [x] Token stocké dans localStorage
 
 **Tâches** :
-- [ ] Setup Frontend Docker + Vite + React
-- [ ] Créer pages Login/Register
-- [ ] Validation formulaires
-- [ ] Store Zustand pour auth
-- [ ] Tests
+- [x] Setup Frontend Docker + Vite + React
+- [x] Créer pages Login/Register
+- [x] Validation formulaires
+- [x] Store Zustand pour auth
+- [x] Client API Axios avec intercepteurs
+- [x] Routes protégées avec React Router
+
+**Implémentation** :
+- Structure créée :
+  - `stores/authStore.js` : État global avec Zustand (login/logout/token)
+  - `lib/api.js` : Client Axios avec intercepteurs JWT + 401
+  - `features/auth/LoginPage.jsx` : Page connexion avec validation Zod
+  - `features/auth/RegisterPage.jsx` : Page inscription (6 champs)
+  - `features/dashboard/DashboardPage.jsx` : Dashboard protégé
+  - `router.jsx` : Routes avec ProtectedRoute
+  - `components/ui/Button.jsx` + `Input.jsx` : Design system
+- Dépendances installées :
+  - react-router-dom, zustand, axios, zod, react-hook-form, @hookform/resolvers
+  - tailwindcss, autoprefixer, postcss
+- Frontend déployé sur http://localhost (port 80)
+
+**Tests manuels** : ✅ Build réussi, services démarrés
 
 ---
 

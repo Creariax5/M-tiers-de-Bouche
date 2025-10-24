@@ -251,6 +251,26 @@ volumes:
 ```
 - Rebuilder le container après ajout de volume
 
+#### ❌ SKIP TDD - IMPLÉMENTATION DIRECTE SANS TESTS
+**Occurrence** : US-017 Frontend Auth Pages
+- Implémenté directement LoginPage/RegisterPage sans écrire tests d'abord
+- Bugs découverts en production : validation "required" + 404 forgot-password
+- Violation de la méthodologie RED → GREEN → REFACTOR
+
+**✅ CORRECTIF** :
+1. **TOUJOURS** écrire les tests AVANT le code (Phase RED)
+2. Lancer les tests (doivent échouer)
+3. Implémenter le code minimal (Phase GREEN)
+4. Refactoriser si nécessaire
+5. **Ne JAMAIS** coder sans tests, même "pour aller vite"
+
+**Pourquoi c'est critique** :
+- ✅ Détecte les bugs avant la production
+- ✅ Force à penser aux cas limites
+- ✅ Documentation vivante du comportement
+- ✅ Refactoring en confiance
+- ✅ Moins de bugs = gain de temps final
+
 ---
 
 **🎯 RÈGLE D'OR** : Si tu as un doute, STOP et lis la documentation complète. Mieux vaut 5 minutes de lecture que 2h de debug.
