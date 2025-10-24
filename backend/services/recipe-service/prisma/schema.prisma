@@ -18,6 +18,9 @@ model Recipe {
   category    String?  // "Viennoiserie", "Pâtisserie", "Boulangerie", etc.
   servings    Int      @default(1) // Nombre de portions
   
+  // Relations
+  ingredients RecipeIngredient[]
+  
   // Métadonnées
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -25,4 +28,54 @@ model Recipe {
   @@index([userId])
   @@index([category])
   @@map("recipes")
+}
+
+model Ingredient {
+  id          String   @id @default(uuid())
+  userId      String   // Propriétaire de l'ingrédient (custom) ou "system" pour base commune
+  name        String
+  unit        String   @default("g") // g, kg, L, ml, pièce
+  pricePerUnit Float   @default(0) // Prix par unité
+  
+  // Valeurs nutritionnelles pour 100g/100ml
+  calories    Float?
+  proteins    Float?
+  carbs       Float?
+  fats        Float?
+  salt        Float?
+  
+  // Allergènes (14 ADO - liste séparée par virgules)
+  allergens   String?  // Ex: "gluten,lait,oeufs"
+  
+  // Relations
+  recipes     RecipeIngredient[]
+  
+  // Métadonnées
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([name])
+  @@map("ingredients")
+}
+
+model RecipeIngredient {
+  id           String   @id @default(uuid())
+  recipeId     String
+  ingredientId String
+  quantity     Float    // Quantité utilisée
+  unit         String   // Unité (g, kg, L, ml, pièce)
+  lossPercent  Float    @default(0) // Pourcentage de perte (0-100)
+  
+  // Relations
+  recipe       Recipe      @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient  @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  
+  // Métadonnées
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([recipeId])
+  @@index([ingredientId])
+  @@map("recipe_ingredients")
 }
