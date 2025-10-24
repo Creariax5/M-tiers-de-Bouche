@@ -8,7 +8,7 @@
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
 - **Points planifiés** : 73 (68 + 5 reset password)
-- **Points réalisés** : 39/73 (53%)
+- **Points réalisés** : 47/73 (64%)
 - **Vélocité estimée** : 43 points/semaine (basé sur Sprint 0)
 - **Statut** : 🟢 EN COURS
 
@@ -162,22 +162,25 @@ En tant qu'artisan, je veux créer, lire, modifier, supprimer mes recettes afin 
 ---
 
 ### US-013 : Recipe Service - Ajout ingrédients à recette
-**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant qu'artisan, je veux ajouter des ingrédients à ma recette afin de définir sa composition.
 
 **Critères d'acceptation** :
-- [ ] POST /recipes/:id/ingredients ajoute un ingrédient
-- [ ] Quantité + unité (g, kg, L, ml, pièce)
-- [ ] Pourcentage de perte configurable
-- [ ] DELETE /recipes/:id/ingredients/:ingredientId
+- [x] POST /recipes/:id/ingredients ajoute un ingrédient
+- [x] Quantité + unité (g, kg, L, ml, pièce, cl, mg)
+- [x] Pourcentage de perte configurable (0-100%)
+- [x] GET /recipes/:id/ingredients liste les ingrédients
+- [x] PUT /recipes/:id/ingredients/:ingredientId modifie un ingrédient
+- [x] DELETE /recipes/:id/ingredients/:ingredientId supprime un ingrédient
 
 **Tâches** :
-- [ ] Créer schema RecipeIngredient
-- [ ] Implémenter routes POST/DELETE ingredients
-- [ ] Validation quantité + unités
-- [ ] Tests
+- [x] Créer schemas Ingredient et RecipeIngredient dans Prisma
+- [x] Migration DB avec foreign keys et cascade delete
+- [x] Implémenter routes POST/GET/PUT/DELETE ingredients
+- [x] Validation Zod (quantité positive, unités valides, loss percent 0-100)
+- [x] Tests d'intégration TDD (19 tests, 100% passent)
 
 ---
 
