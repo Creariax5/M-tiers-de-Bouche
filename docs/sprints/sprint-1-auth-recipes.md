@@ -8,9 +8,9 @@
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
 - **Points planifiés** : 73 backend + 34 frontend = 107 total
-- **Points réalisés** : 107/107 (100%) ✅
-- **Vélocité réelle** : 54 points/semaine
-- **Statut** : ✅ TERMINÉ - Backend 100% ✅ (73/73 pts) | Frontend 100% ✅ (34/34 pts)
+- **Points réalisés** : 94/107 (88%) 🟡
+- **Vélocité réelle** : 47 points/semaine
+- **Statut** : 🟡 EN COURS - Backend 87% (65/73 pts) | Frontend 100% ✅ (34/34 pts) | Restant : US-021 (8 pts) + US-022 (5 pts)
 
 ---
 
@@ -495,7 +495,7 @@ En tant qu'artisan, je veux un formulaire intuitif afin de créer une recette en
 ---
 
 ### US-021 : Recipe Service - Sous-recettes (compositions)
-**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : 🟡 TODO
 
 **Description** :  
 En tant qu'artisan, je veux utiliser une recette comme ingrédient d'une autre recette afin de gérer mes compositions complexes.
@@ -506,32 +506,32 @@ En tant qu'artisan, je veux utiliser une recette comme ingrédient d'une autre r
 - [ ] Pas de boucle infinie (validation)
 
 **Tâches** :
-- [ ] Ajouter champ subRecipes dans RecipeIngredient
-- [ ] Fonction récursive pour calculs
-- [ ] Validation anti-boucle
-- [ ] Tests
+- [ ] Ajouter champ subRecipeId dans RecipeIngredient (optionnel, exclusif avec ingredientId)
+- [ ] Fonction récursive pour calculs (detectAllergensRecursive, calculateNutritionRecursive, calculatePricingRecursive)
+- [ ] Validation anti-boucle (detectCircularDependency)
+- [ ] Tests d'intégration (sous-recette simple, cascade 3 niveaux, boucle infinie rejetée)
 
 ---
 
 ### US-022 : Recipe Service - Upload photo recette
-**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : 🟡 TODO
 
 **Description** :  
 En tant qu'artisan, je veux ajouter une photo à ma recette afin d'avoir un visuel.
 
 **Critères d'acceptation** :
 - [ ] POST /recipes/:id/image upload vers MinIO
-- [ ] Formats acceptés : JPG, PNG, WebP
-- [ ] Taille max : 5MB
-- [ ] Compression automatique
+- [ ] Formats acceptés : JPG, PNG, WebP (max 5MB)
+- [ ] Compression automatique avec Sharp (max width 1200px, quality 80%)
 - [ ] URL stockée dans Recipe.imageUrl
+- [ ] Gestion erreurs (fichier trop gros, format non supporté)
 
 **Tâches** :
-- [ ] Route upload image
-- [ ] Validation format + taille
-- [ ] Upload MinIO bucket recipe-images
-- [ ] Compression avec Sharp
-- [ ] Tests
+- [ ] Installer multer (file upload) + sharp (image processing)
+- [ ] Configurer multer (memory storage, file filter, size limit)
+- [ ] Route POST /recipes/:id/image (validation + compression + upload MinIO)
+- [ ] Update Recipe.imageUrl avec URL MinIO
+- [ ] Tests d'intégration (upload JPG, rejet 6MB, rejet PDF)
 
 ---
 
