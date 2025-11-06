@@ -198,6 +198,9 @@ minio             → Storage S3
 8. ❌ Oublier NODE_ENV=test dans les tests
 9. ❌ **Bidouiller au lieu d'utiliser les outils correctement**
 10. ❌ **Inventer des solutions sans lire la documentation**
+11. ❌ **Coder de gros morceaux sans tester entre chaque étape**
+12. ❌ **Ne pas lire la doc complète avant de commencer**
+13. ❌ **Affirmer que tout fonctionne sans vérifier les tests**
 
 ### 📋 Erreurs identifiées dans ce projet (à ne JAMAIS refaire)
 
@@ -271,6 +274,38 @@ volumes:
 - ✅ Refactoring en confiance
 - ✅ Moins de bugs = gain de temps final
 
+#### ❌ AFFIRMER QUE TOUT FONCTIONNE SANS VÉRIFIER LES TESTS
+**Occurrence** : 6 novembre 2025 - Après refactor PrismaClient
+- Agent affirme : "Maintenant 100% des tests passent"
+- Réalité : auth-service 35/35 ✅ mais recipe-service 39/88 ❌ (49 échecs)
+- Conséquence : Fausse impression de stabilité, bugs non détectés
+
+**Problème** : Assumer sans vérifier
+- ❌ "Je pense que ça marche" ≠ "J'ai vérifié que ça marche"
+- ❌ Optimisme sans preuve = Dette technique silencieuse
+- ❌ Ne pas lancer les tests = Bombe à retardement
+
+**✅ CORRECTIF - TOUJOURS VÉRIFIER** :
+```powershell
+# Après CHAQUE modification de code
+docker-compose build <service>
+docker-compose up -d <service>
+docker-compose exec <service> npm test
+
+# Lire le résultat complet, pas juste "PASS" ou "FAIL"
+# Compter les tests : "Tests: X passed, Y total"
+# SI Y - X > 0 → Il y a des échecs à investiguer
+```
+
+**Pourquoi c'est critique** :
+- ❌ Affirmer sans preuve = Mensonge involontaire
+- ❌ Fausse confiance = Bugs en production
+- ✅ Vérifier systématiquement = Confiance réelle
+- ✅ Lire les résultats = Comprendre l'état réel
+
+**Règle absolue** :
+> **"Ne JAMAIS dire que ça marche sans avoir lancé les tests et lu le résultat complet"**
+
 #### ❌ TESTS ISOLÉS SANS VÉRIFICATION DE L'INTÉGRATION RÉELLE
 **Occurrence** : US-018 Dashboard (24 octobre 2025)
 - Tests unitaires écrits et passants (8/8 ✅) pour `Dashboard.jsx`
@@ -321,7 +356,246 @@ volumes:
 
 ---
 
-## ⚠️ RÈGLE #3 : FAIRE LES CHOSES PROPREMENT
+## ⚠️ RÈGLE #3 : DÉVELOPPEMENT INCRÉMENTAL OBLIGATOIRE
+
+### 🐢 LENTEMENT MAIS SÛREMENT - TOUT PETIT BOUT PAR TOUT PETIT BOUT
+
+**PRINCIPE FONDAMENTAL** : Coder par micro-étapes et TOUT VALIDER avant de passer à la suite.
+
+#### ✅ La bonne approche (OBLIGATOIRE)
+
+**Étape 1 : LIRE ET RÉFLÉCHIR** (30% du temps)
+```
+1. 📖 Lire la User Story COMPLÈTE dans docs/sprints/sprint-X.md
+2. 📖 Lire TOUTE la documentation pertinente :
+   - docs/design_system.md (standards)
+   - docs/technical_specs.md (schémas Prisma)
+   - docs/CONFORMITE_LEGALE.md (si allergènes/nutrition)
+3. 🤔 Réfléchir à la structure AVANT de coder :
+   - Quels fichiers créer ? (validators, services, controllers, routes)
+   - Quelles dépendances entre eux ?
+   - Quel ordre d'implémentation ?
+4. ✍️ Noter le plan d'action étape par étape
+```
+
+**Étape 2 : CODER PAR MICRO-ÉTAPES** (50% du temps)
+```
+1. Créer UN fichier validator (ex: recipe.validator.js)
+   → Tester dans Docker : Importer le fichier, vérifier pas d'erreur
+   
+2. Créer UN service (ex: recipe.service.js) avec UNE fonction
+   → Tester dans Docker : Importer, appeler la fonction, vérifier résultat
+   
+3. Créer UN controller (ex: recipe.controller.js) avec UNE route
+   → Tester dans Docker : Appel API avec curl/PowerShell, vérifier réponse
+   
+4. Intégrer dans routes (ex: recipe.routes.js)
+   → Tester dans Docker : npm test, vérifier que la route répond
+   
+5. Passer à la fonction suivante
+   → Répéter pour chaque endpoint
+```
+
+**Étape 3 : VALIDER À CHAQUE MICRO-ÉTAPE** (20% du temps)
+```
+Après CHAQUE ajout :
+✅ docker-compose build recipe-service (si besoin)
+✅ docker-compose up -d recipe-service
+✅ docker logs saas-recipe-service (vérifier pas d'erreur)
+✅ docker-compose exec recipe-service npm test (tests passent ?)
+✅ Curl/PowerShell pour tester l'endpoint
+
+SI UN TEST ÉCHOUE → STOP et corriger AVANT de continuer
+Ne JAMAIS accumuler des erreurs
+```
+
+#### ❌ Les mauvaises approches (INTERDITES)
+
+**❌ Approche "Big Bang"** (INTERDIT)
+```
+1. Créer tous les fichiers d'un coup (validators, services, controllers, routes)
+2. Tout coder en une fois
+3. Tester à la fin
+4. Découvrir 50 erreurs
+5. Passer 3h à débugger
+```
+
+**❌ Approche "Optimiste"** (INTERDIT)
+```
+1. Coder sans tester
+2. Assumer que ça marche
+3. Commit
+4. Découvrir que rien ne fonctionne
+5. Git revert
+```
+
+**❌ Approche "Cow-boy"** (INTERDIT)
+```
+1. Coder vite sans réfléchir
+2. Ne pas lire la documentation
+3. Inventer des solutions
+4. Créer un code incompatible avec l'architecture
+5. Refactoring massif obligatoire
+```
+
+#### 🎯 Exemples concrets de micro-étapes
+
+**Exemple 1 : Créer POST /recipes**
+
+```
+✅ Étape 1 : Validator (5 min)
+- Créer validators/recipe.validator.js
+- Exporter createRecipeSchema (Zod)
+- Tester import dans un test isolé
+→ Valider : Pas d'erreur ESM
+
+✅ Étape 2 : Service création (10 min)
+- Créer services/recipe.service.js
+- Fonction createRecipe(userId, data)
+- Tester avec prisma.create()
+→ Valider : docker-compose exec recipe-service node -e "import('./src/services/recipe.service.js')"
+
+✅ Étape 3 : Controller (5 min)
+- Créer controllers/recipe.controller.js
+- Fonction create(req, res)
+- Appeler le service
+→ Valider : Pas d'erreur d'import
+
+✅ Étape 4 : Route (5 min)
+- Ajouter dans routes/recipe.routes.js
+- router.post('/', auth, validate, controller.create)
+→ Valider : docker-compose restart + npm test
+
+✅ Étape 5 : Test d'intégration (10 min)
+- Créer tests/recipes.integration.test.js
+- Test POST avec vraies données
+→ Valider : Le test passe
+
+TOTAL : 35 minutes, 0 erreur, tout fonctionne
+```
+
+**Exemple 2 : Ajouter champ nutrition à Ingredient**
+
+```
+✅ Étape 1 : Schéma Prisma (3 min)
+- Modifier prisma/schema.prisma
+- Ajouter proteins Float? dans Ingredient
+→ Valider : Pas d'erreur de syntaxe Prisma
+
+✅ Étape 2 : Migration (2 min)
+- docker-compose exec recipe-service npx prisma migrate dev --name add_proteins
+→ Valider : Migration appliquée sans erreur
+
+✅ Étape 3 : Tester insertion (5 min)
+- docker-compose exec recipe-service node
+- Créer un ingredient avec proteins
+→ Valider : Insertion OK, lecture OK
+
+✅ Étape 4 : Service nutrition (10 min)
+- Modifier services/nutrition.service.js
+- Ajouter calcul proteins
+→ Valider : Fonction retourne bien proteins
+
+✅ Étape 5 : Test (5 min)
+- Ajouter test avec proteins
+→ Valider : Test passe
+
+TOTAL : 25 minutes, 0 cassure, tout cohérent
+```
+
+#### 📏 Règles de taille maximum
+
+**AVANT de commencer à coder** :
+- Estimer le nombre de fichiers à créer
+- Si > 5 fichiers → Découper la US en sous-tâches
+- Implémenter sous-tâche par sous-tâche
+
+**PENDANT le dev** :
+- 1 fichier = 1 commit (si indépendant)
+- 1 endpoint = 1 commit (validator + service + controller + route + test)
+- Ne JAMAIS avoir plus de 3 fichiers modifiés non testés
+
+**Taille maximum par étape** :
+- Validator : < 50 lignes
+- Service : < 100 lignes (1 fonction = 1 étape)
+- Controller : < 30 lignes par fonction
+- Routes : < 10 lignes par ajout
+
+#### 🚦 Indicateurs qu'on va trop vite
+
+**🔴 STOP immédiatement si** :
+- Tu as 5+ fichiers modifiés non testés
+- Tu écris > 100 lignes sans tester
+- Tu ne sais plus où tu en es
+- Tu as oublié pourquoi tu codes ça
+- Les tests échouent et tu ne sais pas pourquoi
+- Tu te dis "je testerai après"
+
+**🟡 Ralentir si** :
+- Tu hésites sur la structure
+- Tu relis le code 3 fois
+- Tu cherches comment faire sur Google
+→ RETOUR à la documentation
+
+**🟢 Bon rythme si** :
+- Chaque micro-étape prend 5-15 minutes
+- Les tests passent à chaque étape
+- Tu comprends ce que tu fais
+- Les commits sont petits et fréquents
+
+#### 📋 Checklist avant CHAQUE micro-étape
+
+**Avant de coder** :
+- [ ] J'ai lu la doc complète de cette fonctionnalité
+- [ ] Je sais exactement quels fichiers créer/modifier
+- [ ] Je connais l'ordre d'implémentation
+- [ ] Je sais comment tester cette étape
+
+**Après avoir codé** :
+- [ ] Le fichier fait < 200 lignes
+- [ ] Pas d'erreur ESM à l'import
+- [ ] docker-compose build OK
+- [ ] docker logs → Pas d'erreur au démarrage
+- [ ] npm test → Tests de cette étape passent
+- [ ] Curl/PowerShell → Endpoint répond correctement
+
+**Si UNE case n'est pas cochée → STOP et corriger**
+
+#### 💡 Avantages du développement incrémental
+
+✅ **Zéro dette technique** : Code propre dès le départ  
+✅ **Zéro bug silencieux** : Testé à chaque étape  
+✅ **Zéro confusion** : On sait toujours où on en est  
+✅ **Zéro perte de temps** : Pas de debug massif  
+✅ **Commits propres** : Historique git compréhensible  
+✅ **Revue de code facile** : Petits changements clairs  
+✅ **Rollback possible** : Chaque commit est stable  
+
+#### ⏱️ Temps réel vs temps perçu
+
+```
+❌ Approche rapide (Big Bang) :
+- Dev : 1h (sensation d'avancer vite)
+- Debug : 3h (50 erreurs à corriger)
+- TOTAL : 4h + frustration
+
+✅ Approche incrémentale (Micro-étapes) :
+- Dev : 2h (sensation de lenteur)
+- Debug : 0h (aucun bug)
+- TOTAL : 2h + confiance
+
+GAIN : 50% de temps + 0 stress
+```
+
+### 🎯 RÈGLE ABSOLUE
+
+**"Tout petit bout par tout petit bout, et tout doit marcher avant de passer à la suite"**
+
+Si tu ne peux pas tester une étape → Elle est trop grosse → La découper en 2
+
+---
+
+## ⚠️ RÈGLE #4 : FAIRE LES CHOSES PROPREMENT
 
 **TOUJOURS utiliser les outils officiels, JAMAIS bidouiller**
 
@@ -370,13 +644,18 @@ volumes:
 
 ## 📝 CHECKLIST AVANT COMMIT
 
-- [ ] 🐳 Tout testé dans Docker (pas en local)
+- [ ] � **J'ai lu TOUTE la documentation pertinente AVANT de coder**
+- [ ] 🤔 **J'ai réfléchi à la structure AVANT d'écrire du code**
+- [ ] 🐢 **J'ai codé par micro-étapes (< 100 lignes par étape)**
+- [ ] ✅ **CHAQUE micro-étape a été testée et fonctionne**
+- [ ] �🐳 Tout testé dans Docker (pas en local)
 - [ ] 🧪 Tests passent : `docker-compose exec <service> npm test`
 - [ ] 📏 Fichiers < 200 lignes, fonctions < 30 lignes
 - [ ] ✅ Validation Zod sur tous les inputs
 - [ ] 📦 Pas de node_modules ou .env committé
 - [ ] 📖 User Story marquée DONE si terminée
 - [ ] 🔄 Build Docker OK : `docker-compose build <service>`
+- [ ] 🎯 **Je peux expliquer POURQUOI j'ai codé ça comme ça**
 
 ---
 
@@ -419,12 +698,33 @@ docker-compose down -v
 
 ## 🔥 SI BLOQUÉ
 
-1. **Lire cette doc en entier**
-2. **Vérifier docs/design_system.md** pour standards
-3. **Regarder auth-service** (exemple complet et fonctionnel)
-4. **Checker les logs Docker** : `docker logs <service>`
-5. **Tester dans Docker** pas en local !
+1. **STOP et RESPIRER** 🧘
+2. **Lire cette doc en entier** (oui, TOUTE)
+3. **Lire la doc de la US dans docs/sprints/sprint-X.md** (TOUTE)
+4. **Vérifier docs/design_system.md** pour standards
+5. **Regarder auth-service** (exemple complet et fonctionnel)
+6. **Revenir en arrière** : Git reset au dernier état stable
+7. **Recommencer en micro-étapes** : 1 fichier → test → 1 fichier → test
+8. **Checker les logs Docker** : `docker logs <service>`
+9. **Tester dans Docker** pas en local !
+
+### 🎯 Questions à se poser quand bloqué
+
+- ❓ Ai-je lu TOUTE la documentation avant de coder ?
+- ❓ Ai-je réfléchi à la structure globale ?
+- ❓ Ai-je testé la dernière micro-étape ?
+- ❓ Mes fichiers font-ils < 200 lignes ?
+- ❓ Ai-je accumulé trop de changements non testés ?
+- ❓ Est-ce que je comprends vraiment ce que je fais ?
+
+**Si réponse "non" à UNE question → Revenir en arrière et recommencer proprement**
 
 ---
 
-**TL;DR** : 🐳 Docker TOUJOURS - TDD - Microservices - Code simple < 200 lignes
+**TL;DR** : 
+- 🐳 Docker TOUJOURS
+- 📖 Lire AVANT de coder
+- 🤔 Réfléchir à la structure
+- 🐢 Coder tout petit bout par tout petit bout
+- ✅ TOUT tester avant de passer à la suite
+- 🧪 TDD - Microservices - Code simple < 200 lignes
