@@ -17,6 +17,7 @@ model Recipe {
   description String?
   category    String?  // "Viennoiserie", "Pâtisserie", "Boulangerie", etc.
   servings    Int      @default(1) // Nombre de portions
+  imageUrl    String?  // URL de l'image (MinIO S3)
   
   // Relations
   ingredients RecipeIngredient[] // Ingrédients utilisés dans cette recette

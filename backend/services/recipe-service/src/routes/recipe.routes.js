@@ -5,6 +5,7 @@ import * as allergenController from '../controllers/allergen.controller.js';
 import * as nutritionController from '../controllers/nutrition.controller.js';
 import * as pricingController from '../controllers/pricing.controller.js';
 import * as statsController from '../controllers/stats.controller.js';
+import * as imageController from '../controllers/image.controller.js';
 import { authenticateToken } from '../middleware/auth.middleware.js';
 import { validateCreateRecipe, validateUpdateRecipe } from '../validators/recipe.validator.js';
 import { validateAddIngredient, validateUpdateIngredient } from '../validators/ingredient.validator.js';
@@ -35,5 +36,8 @@ router.get('/:id/nutrition', authenticateToken, nutritionController.getRecipeNut
 
 // Pricing routes
 router.get('/:id/pricing', authenticateToken, pricingController.getPricing);
+
+// Image upload routes
+router.post('/:id/image', authenticateToken, imageController.uploadMiddleware, imageController.uploadImage);
 
 export default router;
