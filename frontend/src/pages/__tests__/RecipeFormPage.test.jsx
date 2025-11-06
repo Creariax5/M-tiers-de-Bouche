@@ -50,8 +50,8 @@ describe('RecipeFormPage', () => {
       // Titre
       expect(screen.getByText(/nouvelle recette/i)).toBeInTheDocument();
 
-      // Stepper
-      expect(screen.getByText(/informations/i)).toBeInTheDocument();
+      // Stepper (utiliser getAllByText car "Informations" apparaît 2 fois)
+      expect(screen.getAllByText(/informations/i).length).toBeGreaterThan(0);
       expect(screen.getByText(/ingrédients/i)).toBeInTheDocument();
       expect(screen.getByText(/révision/i)).toBeInTheDocument();
 
@@ -265,36 +265,44 @@ describe('RecipeFormPage', () => {
   describe('Step 3 - Révision', () => {
     beforeEach(() => {
       api.post = vi.fn().mockResolvedValue({ data: { id: 'recipe-123' } });
-      api.get = vi.fn()
-        .mockResolvedValueOnce({ data: [] }) // /ingredients search
-        .mockResolvedValueOnce({ // /recipes/:id/allergens
-          data: { allergens: ['gluten', 'lait'] },
-        })
-        .mockResolvedValueOnce({ // /recipes/:id/nutrition
-          data: {
-            nutrition: {
-              per100g: {
-                energy: 350,
-                energyKj: 1464,
-                fat: 15.2,
-                saturatedFat: 9.1,
-                carbs: 42.5,
-                sugars: 5.3,
-                protein: 8.1,
-                salt: 0.45,
+      
+      // Mock api.get pour retourner les bonnes données selon l'URL
+      api.get = vi.fn().mockImplementation((url) => {
+        if (url.includes('/allergens')) {
+          return Promise.resolve({ data: { allergens: ['gluten', 'lait'] } });
+        }
+        if (url.includes('/nutrition')) {
+          return Promise.resolve({
+            data: {
+              nutrition: {
+                per100g: {
+                  energy: 350,
+                  energyKj: 1464,
+                  fat: 15.2,
+                  saturatedFat: 9.1,
+                  carbs: 42.5,
+                  sugars: 5.3,
+                  protein: 8.1,
+                  salt: 0.45,
+                },
               },
             },
-          },
-        })
-        .mockResolvedValueOnce({ // /recipes/:id/pricing
-          data: {
-            pricing: {
-              totalCost: 2.45,
-              costPer100g: 0.82,
-              costPerServing: 0.20,
+          });
+        }
+        if (url.includes('/pricing')) {
+          return Promise.resolve({
+            data: {
+              pricing: {
+                totalCost: 2.45,
+                costPer100g: 0.82,
+                costPerServing: 0.20,
+              },
             },
-          },
-        });
+          });
+        }
+        // Par défaut (ingredients search)
+        return Promise.resolve({ data: [] });
+      });
     });
 
     it('should display recipe summary and calculations', async () => {

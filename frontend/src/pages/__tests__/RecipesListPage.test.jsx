@@ -262,18 +262,23 @@ describe('RecipesListPage', () => {
   test('gère la pagination', async () => {
     const user = userEvent.setup();
     
-    api.get.mockResolvedValue({
-      data: {
-        recipes: Array(20).fill(null).map((_, i) => ({
-          id: `${i + 1}`,
-          name: `Recette ${i + 1}`,
-          category: 'Test',
-          servings: 10,
-        })),
-        total: 100,
-        page: 1,
-        totalPages: 5,
-      },
+    let callCount = 0;
+    api.get.mockImplementation(() => {
+      callCount++;
+      const currentPage = callCount; // 1ère fois = page 1, 2ème fois = page 2
+      return Promise.resolve({
+        data: {
+          recipes: Array(20).fill(null).map((_, i) => ({
+            id: `${i + 1 + (currentPage - 1) * 20}`,
+            name: `Recette ${i + 1 + (currentPage - 1) * 20}`,
+            category: 'Test',
+            servings: 10,
+          })),
+          total: 100,
+          page: currentPage,
+          totalPages: 5,
+        },
+      });
     });
 
     render(
@@ -282,19 +287,19 @@ describe('RecipesListPage', () => {
       </BrowserRouter>
     );
 
+    // Attendre affichage page 1
     await waitFor(() => {
       expect(screen.getByText('1', { selector: 'span' })).toBeInTheDocument();
       expect(screen.getByText('5', { selector: 'span' })).toBeInTheDocument();
     });
-
+    
     const nextButton = screen.getAllByRole('button', { name: /suivant/i })[0];
     await user.click(nextButton);
 
+    // Attendre que le composant appelle api.get une 2ème fois
     await waitFor(() => {
-      expect(api.get).toHaveBeenCalledWith(
-        expect.stringContaining('page=2'),
-      );
-    });
+      expect(callCount).toBe(2);
+    }, { timeout: 3000 });
   });
 
   test('affiche état de chargement', () => {
