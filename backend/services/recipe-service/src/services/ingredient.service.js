@@ -1,4 +1,5 @@
 import prisma from '../lib/prisma.js';
+import { canAddSubRecipe } from './circular-dependency.service.js';
 
 export const addIngredientToRecipe = async (userId, recipeId, data) => {
   // Vérifier que la recette appartient à l'utilisateur
@@ -13,30 +14,76 @@ export const addIngredientToRecipe = async (userId, recipeId, data) => {
     return { error: 'Recette non trouvée', status: 404 };
   }
 
-  // Vérifier que l'ingrédient existe
-  const ingredient = await prisma.ingredient.findUnique({
-    where: { id: data.ingredientId }
-  });
+  // Cas 1 : Ingrédient normal
+  if (data.ingredientId) {
+    // Vérifier que l'ingrédient existe
+    const ingredient = await prisma.ingredient.findUnique({
+      where: { id: data.ingredientId }
+    });
 
-  if (!ingredient) {
-    return { error: 'Ingrédient non trouvé', status: 404 };
+    if (!ingredient) {
+      return { error: 'Ingrédient non trouvé', status: 404 };
+    }
+
+    // Ajouter l'ingrédient à la recette
+    const recipeIngredient = await prisma.recipeIngredient.create({
+      data: {
+        recipeId,
+        ingredientId: data.ingredientId,
+        quantity: data.quantity,
+        unit: data.unit,
+        lossPercent: data.lossPercent || 0
+      },
+      include: {
+        ingredient: true
+      }
+    });
+
+    return { data: recipeIngredient };
   }
 
-  // Ajouter l'ingrédient à la recette
-  const recipeIngredient = await prisma.recipeIngredient.create({
-    data: {
-      recipeId,
-      ingredientId: data.ingredientId,
-      quantity: data.quantity,
-      unit: data.unit,
-      lossPercent: data.lossPercent || 0
-    },
-    include: {
-      ingredient: true
-    }
-  });
+  // Cas 2 : Sous-recette 🆕
+  if (data.subRecipeId) {
+    // Vérifier que la sous-recette existe et appartient au même user
+    const subRecipe = await prisma.recipe.findFirst({
+      where: {
+        id: data.subRecipeId,
+        userId
+      }
+    });
 
-  return { data: recipeIngredient };
+    if (!subRecipe) {
+      return { error: 'Sous-recette non trouvée', status: 404 };
+    }
+
+    // ✅ Vérifier qu'il n'y a pas de dépendance circulaire
+    const isValid = await canAddSubRecipe(recipeId, data.subRecipeId);
+    if (!isValid) {
+      return {
+        error: 'Dépendance circulaire détectée : cette sous-recette ne peut pas être ajoutée',
+        status: 400
+      };
+    }
+
+    // Ajouter la sous-recette comme ingrédient
+    const recipeIngredient = await prisma.recipeIngredient.create({
+      data: {
+        recipeId,
+        subRecipeId: data.subRecipeId,
+        quantity: data.quantity,
+        unit: data.unit,
+        lossPercent: data.lossPercent || 0
+      },
+      include: {
+        subRecipe: true
+      }
+    });
+
+    return { data: recipeIngredient };
+  }
+
+  // Ne devrait jamais arriver (validation Zod)
+  return { error: 'ingredientId ou subRecipeId requis', status: 400 };
 };
 
 export const getRecipeIngredients = async (userId, recipeId) => {
@@ -55,7 +102,8 @@ export const getRecipeIngredients = async (userId, recipeId) => {
   const ingredients = await prisma.recipeIngredient.findMany({
     where: { recipeId },
     include: {
-      ingredient: true
+      ingredient: true,
+      subRecipe: true // 🆕 Inclure les sous-recettes
     },
     orderBy: { createdAt: 'asc' }
   });

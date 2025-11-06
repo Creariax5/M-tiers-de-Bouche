@@ -21,12 +21,19 @@ export const MANDATORY_ALLERGENS = [
 ];
 
 /**
- * Détecte les allergènes d'une recette en fonction de ses ingrédients
+ * Détecte les allergènes d'une recette en fonction de ses ingrédients (RÉCURSIF)
  * @param {string} recipeId - ID de la recette
+ * @param {Set<string>} visited - Set des recettes déjà visitées (éviter boucles infinies)
  * @returns {Promise<string[]>} Liste unique des allergènes détectés
  */
-export const detectAllergens = async (recipeId) => {
-  // Récupérer tous les ingrédients de la recette
+export const detectAllergens = async (recipeId, visited = new Set()) => {
+  // Protection anti-boucle infinie
+  if (visited.has(recipeId)) {
+    return [];
+  }
+  visited.add(recipeId);
+
+  // Récupérer tous les ingrédients de la recette (normaux + sous-recettes)
   const recipeIngredients = await prisma.recipeIngredient.findMany({
     where: { recipeId },
     include: {
@@ -34,7 +41,8 @@ export const detectAllergens = async (recipeId) => {
         select: {
           allergens: true
         }
-      }
+      },
+      subRecipe: true // 🆕 Inclure sous-recettes
     }
   });
 
@@ -43,18 +51,27 @@ export const detectAllergens = async (recipeId) => {
 
   // Parcourir chaque ingrédient
   for (const ri of recipeIngredients) {
-    const allergensString = ri.ingredient.allergens;
-    
-    // Si l'ingrédient a des allergènes
-    if (allergensString && allergensString.trim() !== '') {
-      // Parser le CSV (format: "gluten,lait,oeufs")
-      const allergens = allergensString
-        .split(',')
-        .map(a => a.trim())
-        .filter(a => a.length > 0);
+    // Cas 1 : Ingrédient normal
+    if (ri.ingredient) {
+      const allergensString = ri.ingredient.allergens;
       
-      // Ajouter au Set
-      allergens.forEach(allergen => allergensSet.add(allergen));
+      // Si l'ingrédient a des allergènes
+      if (allergensString && allergensString.trim() !== '') {
+        // Parser le CSV (format: "gluten,lait,oeufs")
+        const allergens = allergensString
+          .split(',')
+          .map(a => a.trim())
+          .filter(a => a.length > 0);
+        
+        // Ajouter au Set
+        allergens.forEach(allergen => allergensSet.add(allergen));
+      }
+    }
+
+    // Cas 2 : Sous-recette 🆕 (appel récursif)
+    if (ri.subRecipe) {
+      const subAllergens = await detectAllergens(ri.subRecipe.id, visited);
+      subAllergens.forEach(allergen => allergensSet.add(allergen));
     }
   }
 

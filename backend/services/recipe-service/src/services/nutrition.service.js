@@ -1,11 +1,18 @@
 import prisma from '../lib/prisma.js';
 
 /**
- * Calcule les valeurs nutritionnelles d'une recette
+ * Calcule les valeurs nutritionnelles d'une recette (RÉCURSIF)
  * @param {string} recipeId - ID de la recette
+ * @param {Set<string>} visited - Set des recettes visitées (protection boucle)
  * @returns {Promise<Object>} Valeurs nutritionnelles (per100g, perServing, totalWeight)
  */
-export const calculateNutrition = async (recipeId) => {
+export const calculateNutrition = async (recipeId, visited = new Set()) => {
+  // Protection anti-boucle
+  if (visited.has(recipeId)) {
+    return null;
+  }
+  visited.add(recipeId);
+
   // Récupérer la recette avec ses ingrédients
   const recipe = await prisma.recipe.findUnique({
     where: { id: recipeId },
@@ -22,7 +29,8 @@ export const calculateNutrition = async (recipeId) => {
               saturatedFats: true, // 🆕 INCO
               salt: true
             }
-          }
+          },
+          subRecipe: true // 🆕 Sous-recettes
         }
       }
     }
@@ -47,26 +55,55 @@ export const calculateNutrition = async (recipeId) => {
   for (const ri of recipe.ingredients) {
     const quantity = ri.quantity;
     const lossPercent = ri.lossPercent || 0;
-    const ing = ri.ingredient;
 
-    // Poids initial (avant cuisson)
-    totalWeightInitial += quantity;
+    // Cas 1 : Ingrédient normal
+    if (ri.ingredient) {
+      const ing = ri.ingredient;
 
-    // Poids final (après perte)
-    const finalWeight = quantity * (1 - lossPercent / 100);
-    totalWeightFinal += finalWeight;
+      // Poids initial (avant cuisson)
+      totalWeightInitial += quantity;
 
-    // Les nutriments sont calculés sur le poids INITIAL
-    // (la cuisson concentre les nutriments mais ne les détruit pas)
-    const factor = quantity / 100; // conversion pour 100g
+      // Poids final (après perte)
+      const finalWeight = quantity * (1 - lossPercent / 100);
+      totalWeightFinal += finalWeight;
 
-    totalCalories += (ing.calories || 0) * factor;
-    totalProteins += (ing.proteins || 0) * factor;
-    totalCarbs += (ing.carbs || 0) * factor;
-    totalSugars += (ing.sugars || 0) * factor;               // 🆕 INCO
-    totalFats += (ing.fats || 0) * factor;
-    totalSaturatedFats += (ing.saturatedFats || 0) * factor; // 🆕 INCO
-    totalSalt += (ing.salt || 0) * factor;
+      // Les nutriments sont calculés sur le poids INITIAL
+      // (la cuisson concentre les nutriments mais ne les détruit pas)
+      const factor = quantity / 100; // conversion pour 100g
+
+      totalCalories += (ing.calories || 0) * factor;
+      totalProteins += (ing.proteins || 0) * factor;
+      totalCarbs += (ing.carbs || 0) * factor;
+      totalSugars += (ing.sugars || 0) * factor;               // 🆕 INCO
+      totalFats += (ing.fats || 0) * factor;
+      totalSaturatedFats += (ing.saturatedFats || 0) * factor; // 🆕 INCO
+      totalSalt += (ing.salt || 0) * factor;
+    }
+
+    // Cas 2 : Sous-recette 🆕 (récursif)
+    if (ri.subRecipe) {
+      // Calculer nutrition de la sous-recette
+      const subNutrition = await calculateNutrition(ri.subRecipe.id, new Set(visited));
+
+      if (subNutrition && subNutrition.totalWeight > 0) {
+        // Poids de la sous-recette
+        totalWeightInitial += quantity;
+        const finalWeight = quantity * (1 - lossPercent / 100);
+        totalWeightFinal += finalWeight;
+
+        // Facteur de conversion : quantité utilisée / 100g
+        const factor = quantity / 100;
+
+        // Additionner les nutriments (valeurs per100g × facteur)
+        totalCalories += subNutrition.per100g.energyKcal * factor;
+        totalProteins += subNutrition.per100g.proteins * factor;
+        totalCarbs += subNutrition.per100g.carbs * factor;
+        totalSugars += subNutrition.per100g.sugars * factor;
+        totalFats += subNutrition.per100g.fats * factor;
+        totalSaturatedFats += subNutrition.per100g.saturatedFats * factor;
+        totalSalt += subNutrition.per100g.salt * factor;
+      }
+    }
   }
 
   // Arrondir le poids final

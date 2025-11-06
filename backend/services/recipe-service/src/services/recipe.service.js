@@ -48,6 +48,14 @@ export const getRecipeById = async (userId, recipeId) => {
     where: {
       id: recipeId,
       userId
+    },
+    include: {
+      ingredients: {
+        include: {
+          ingredient: true,
+          subRecipe: true // 🆕 Inclure sous-recettes
+        }
+      }
     }
   });
 
@@ -55,10 +63,10 @@ export const getRecipeById = async (userId, recipeId) => {
     return null;
   }
 
-  // Ajouter les allergènes détectés
+  // Ajouter les allergènes détectés (récursif)
   const allergens = await detectAllergens(recipeId);
   
-  // Ajouter les valeurs nutritionnelles
+  // Ajouter les valeurs nutritionnelles (récursif)
   const nutrition = await calculateNutrition(recipeId);
   
   return {

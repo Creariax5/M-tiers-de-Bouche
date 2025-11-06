@@ -19,7 +19,8 @@ model Recipe {
   servings    Int      @default(1) // Nombre de portions
   
   // Relations
-  ingredients RecipeIngredient[]
+  ingredients RecipeIngredient[] // Ingrédients utilisés dans cette recette
+  usedInRecipes RecipeIngredient[] @relation("SubRecipe") // Recettes qui utilisent celle-ci
   
   // Métadonnées
   createdAt   DateTime @default(now())
@@ -68,14 +69,16 @@ model Ingredient {
 model RecipeIngredient {
   id           String   @id @default(uuid())
   recipeId     String
-  ingredientId String
+  ingredientId String?  // 🆕 Optionnel (exclusif avec subRecipeId)
+  subRecipeId  String?  // 🆕 Sous-recette utilisée comme ingrédient
   quantity     Float    // Quantité utilisée
   unit         String   // Unité (g, kg, L, ml, pièce)
   lossPercent  Float    @default(0) // Pourcentage de perte (0-100)
   
   // Relations
   recipe       Recipe      @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  ingredient   Ingredient  @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient? @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  subRecipe    Recipe?     @relation("SubRecipe", fields: [subRecipeId], references: [id], onDelete: Cascade)
   
   // Métadonnées
   createdAt    DateTime @default(now())
@@ -83,5 +86,6 @@ model RecipeIngredient {
 
   @@index([recipeId])
   @@index([ingredientId])
+  @@index([subRecipeId])
   @@map("recipe_ingredients")
 }
