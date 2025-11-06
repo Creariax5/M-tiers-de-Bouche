@@ -17,8 +17,9 @@ RUN npm install
 # Copier le code source
 COPY . .
 
-# Rendre le script d'entrée exécutable
-RUN chmod +x docker-entrypoint.sh
+# Rendre le script d'entrée exécutable et corriger les fins de ligne
+RUN chmod +x docker-entrypoint.sh && \
+    sed -i 's/\r$//' docker-entrypoint.sh
 
 # Générer le client Prisma
 RUN npx prisma generate
@@ -27,4 +28,4 @@ RUN npx prisma generate
 EXPOSE 3002
 
 # Démarrer l'application avec migrations
-CMD ["./docker-entrypoint.sh"]
+CMD ["/bin/sh", "-c", "./docker-entrypoint.sh"]
