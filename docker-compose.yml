@@ -168,6 +168,7 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: 3002
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/saas_recipes
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis123}@redis:6379
       MINIO_ENDPOINT: minio
       MINIO_PORT: 9000
