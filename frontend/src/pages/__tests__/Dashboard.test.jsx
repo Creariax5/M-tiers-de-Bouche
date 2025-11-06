@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import Dashboard from '../Dashboard';
+import DashboardPage from '../../features/dashboard/DashboardPage';
 import api from '../../lib/api';
 import { useAuthStore } from '../../stores/authStore';
 
@@ -21,7 +21,7 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-describe('Dashboard', () => {
+describe('DashboardPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
@@ -37,19 +37,17 @@ describe('Dashboard', () => {
       data: {
         totalRecipes: 0,
         topProfitable: [],
-        createdByMonth: [],
       },
     });
 
     render(
       <BrowserRouter>
-        <Dashboard />
+        <DashboardPage />
       </BrowserRouter>
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /tableau de bord/i })).toBeInTheDocument();
-      expect(screen.getByText(/bienvenue/i)).toBeInTheDocument();
+      expect(screen.getByText(/bienvenue john/i)).toBeInTheDocument();
     });
   });
 
@@ -58,21 +56,18 @@ describe('Dashboard', () => {
       data: {
         totalRecipes: 42,
         topProfitable: [],
-        createdByMonth: [],
       },
     });
 
     render(
       <BrowserRouter>
-        <Dashboard />
+        <DashboardPage />
       </BrowserRouter>
     );
 
     await waitFor(() => {
       expect(screen.getByText('42')).toBeInTheDocument();
-      // Utiliser getAllByText car "Recettes créées" apparaît 2 fois (stat + titre graphique)
-      const elements = screen.getAllByText(/recettes créées/i);
-      expect(elements.length).toBeGreaterThan(0);
+      expect(screen.getByText(/recettes créées/i)).toBeInTheDocument();
     });
   });
 
@@ -81,75 +76,47 @@ describe('Dashboard', () => {
       data: {
         totalRecipes: 10,
         topProfitable: [
-          { id: 1, name: 'Croissant', margin: 65.5 },
-          { id: 2, name: 'Pain au chocolat', margin: 58.2 },
-          { id: 3, name: 'Tarte citron', margin: 52.0 },
-          { id: 4, name: 'Éclair', margin: 48.5 },
-          { id: 5, name: 'Macaron', margin: 45.0 },
+          { id: 1, name: 'Croissant', totalCost: 1.20, suggestedPrice: 3.50, margin: 65.5 },
+          { id: 2, name: 'Pain au chocolat', totalCost: 1.50, suggestedPrice: 3.60, margin: 58.2 },
+          { id: 3, name: 'Tarte citron', totalCost: 4.80, suggestedPrice: 10.00, margin: 52.0 },
+          { id: 4, name: 'Éclair', totalCost: 1.80, suggestedPrice: 3.50, margin: 48.5 },
+          { id: 5, name: 'Macaron', totalCost: 0.55, suggestedPrice: 1.00, margin: 45.0 },
         ],
-        createdByMonth: [],
       },
     });
 
     render(
       <BrowserRouter>
-        <Dashboard />
+        <DashboardPage />
       </BrowserRouter>
     );
 
     await waitFor(() => {
       expect(screen.getByText(/recettes les plus rentables/i)).toBeInTheDocument();
       expect(screen.getByText('Croissant')).toBeInTheDocument();
-      expect(screen.getByText('65.5%')).toBeInTheDocument();
+      expect(screen.getByText('65.5 %')).toBeInTheDocument();
       expect(screen.getByText('Pain au chocolat')).toBeInTheDocument();
       expect(screen.getByText('Macaron')).toBeInTheDocument();
     });
   });
 
-  test('affiche un message si aucune recette', async () => {
+  test('affiche un message et CTA si aucune recette', async () => {
     api.get.mockResolvedValue({
       data: {
         totalRecipes: 0,
         topProfitable: [],
-        createdByMonth: [],
       },
     });
 
     render(
       <BrowserRouter>
-        <Dashboard />
+        <DashboardPage />
       </BrowserRouter>
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/aucune recette/i)).toBeInTheDocument();
-    });
-  });
-
-  test('affiche le graphique des recettes par mois', async () => {
-    api.get.mockResolvedValue({
-      data: {
-        totalRecipes: 15,
-        topProfitable: [],
-        createdByMonth: [
-          { month: '2024-10', count: 5 },
-          { month: '2024-11', count: 7 },
-          { month: '2024-12', count: 3 },
-        ],
-      },
-    });
-
-    render(
-      <BrowserRouter>
-        <Dashboard />
-      </BrowserRouter>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText(/recettes créées par mois/i)).toBeInTheDocument();
-      // Vérifier que les données du graphique sont présentes
-      expect(screen.getByText(/octobre/i)).toBeInTheDocument();
-      expect(screen.getByText(/novembre/i)).toBeInTheDocument();
+      expect(screen.getByText(/vous n'avez pas encore de recettes/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /créer ma première recette/i })).toBeInTheDocument();
     });
   });
 
@@ -158,11 +125,11 @@ describe('Dashboard', () => {
 
     render(
       <BrowserRouter>
-        <Dashboard />
+        <DashboardPage />
       </BrowserRouter>
     );
 
-    expect(screen.getByText(/chargement/i)).toBeInTheDocument();
+    expect(screen.getByText(/chargement des statistiques/i)).toBeInTheDocument();
   });
 
   test('affiche erreur si échec API', async () => {
@@ -170,12 +137,12 @@ describe('Dashboard', () => {
 
     render(
       <BrowserRouter>
-        <Dashboard />
+        <DashboardPage />
       </BrowserRouter>
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/erreur/i)).toBeInTheDocument();
+      expect(screen.getByText(/erreur de chargement/i)).toBeInTheDocument();
     });
   });
 
@@ -184,13 +151,12 @@ describe('Dashboard', () => {
       data: {
         totalRecipes: 0,
         topProfitable: [],
-        createdByMonth: [],
       },
     });
 
     render(
       <BrowserRouter>
-        <Dashboard />
+        <DashboardPage />
       </BrowserRouter>
     );
 
