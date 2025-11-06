@@ -44,7 +44,7 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
-describe('GET /recipes/:id/allergens', () => {
+describe('GET //:id/allergens', () => {
   it('should detect allergens from ingredients', async () => {
     // Créer des ingrédients avec allergènes
     const farine = await prisma.ingredient.create({
@@ -84,7 +84,7 @@ describe('GET /recipes/:id/allergens', () => {
     });
 
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/allergens`)
+      .get(`/${testRecipe.id}/allergens`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -117,7 +117,7 @@ describe('GET /recipes/:id/allergens', () => {
     });
 
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/allergens`)
+      .get(`/${testRecipe.id}/allergens`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -148,7 +148,7 @@ describe('GET /recipes/:id/allergens', () => {
     });
 
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/allergens`)
+      .get(`/${testRecipe.id}/allergens`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -183,7 +183,7 @@ describe('GET /recipes/:id/allergens', () => {
     });
 
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/allergens`)
+      .get(`/${testRecipe.id}/allergens`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -194,7 +194,7 @@ describe('GET /recipes/:id/allergens', () => {
     const token2 = generateToken({ id: 'other-user', email: 'other@example.com' });
 
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/allergens`)
+      .get(`/${testRecipe.id}/allergens`)
       .set('Authorization', `Bearer ${token2}`);
 
     expect(response.status).toBe(404);
@@ -202,7 +202,7 @@ describe('GET /recipes/:id/allergens', () => {
 
   it('should fail when recipe does not exist', async () => {
     const response = await request(app)
-      .get('/recipes/non-existent-id/allergens')
+      .get('//non-existent-id/allergens')
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(404);
@@ -210,13 +210,13 @@ describe('GET /recipes/:id/allergens', () => {
 
   it('should fail without authentication', async () => {
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/allergens`);
+      .get(`/${testRecipe.id}/allergens`);
 
     expect(response.status).toBe(401);
   });
 });
 
-describe('GET /recipes/:id (with allergens)', () => {
+describe('GET //:id (with allergens)', () => {
   it('should include allergens in recipe detail', async () => {
     // Créer ingrédient avec allergènes
     const noisettes = await prisma.ingredient.create({
@@ -238,7 +238,7 @@ describe('GET /recipes/:id (with allergens)', () => {
     });
 
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}`)
+      .get(`/${testRecipe.id}`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);

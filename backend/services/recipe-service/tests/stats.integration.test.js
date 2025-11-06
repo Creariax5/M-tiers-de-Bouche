@@ -32,7 +32,7 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
-describe('GET /stats', () => {
+describe('GET /recipes/stats', () => {
   it('should return stats with zero recipes', async () => {
     const res = await request(app)
       .get('/stats')

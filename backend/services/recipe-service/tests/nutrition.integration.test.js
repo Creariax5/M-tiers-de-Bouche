@@ -44,7 +44,7 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
-describe('GET /recipes/:id/nutrition', () => {
+describe('GET //:id/nutrition', () => {
   it('should calculate nutrition values for 100g', async () => {
     // Créer ingrédients avec valeurs nutritionnelles
     const farine = await prisma.ingredient.create({
@@ -102,7 +102,7 @@ describe('GET /recipes/:id/nutrition', () => {
     });
 
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/nutrition`)
+      .get(`/${testRecipe.id}/nutrition`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -162,7 +162,7 @@ describe('GET /recipes/:id/nutrition', () => {
     });
 
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/nutrition`)
+      .get(`/${testRecipe.id}/nutrition`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -205,7 +205,7 @@ describe('GET /recipes/:id/nutrition', () => {
     });
 
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/nutrition`)
+      .get(`/${testRecipe.id}/nutrition`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -223,7 +223,7 @@ describe('GET /recipes/:id/nutrition', () => {
 
   it('should return zero values when no ingredients', async () => {
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/nutrition`)
+      .get(`/${testRecipe.id}/nutrition`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -245,7 +245,7 @@ describe('GET /recipes/:id/nutrition', () => {
     const token2 = generateToken({ id: 'other-user', email: 'other@example.com' });
 
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/nutrition`)
+      .get(`/${testRecipe.id}/nutrition`)
       .set('Authorization', `Bearer ${token2}`);
 
     expect(response.status).toBe(404);
@@ -253,7 +253,7 @@ describe('GET /recipes/:id/nutrition', () => {
 
   it('should fail when recipe does not exist', async () => {
     const response = await request(app)
-      .get('/recipes/non-existent-id/nutrition')
+      .get('//non-existent-id/nutrition')
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(404);
@@ -261,13 +261,13 @@ describe('GET /recipes/:id/nutrition', () => {
 
   it('should fail without authentication', async () => {
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/nutrition`);
+      .get(`/${testRecipe.id}/nutrition`);
 
     expect(response.status).toBe(401);
   });
 });
 
-describe('GET /recipes/:id (with nutrition)', () => {
+describe('GET //:id (with nutrition)', () => {
   it('should include nutrition in recipe detail', async () => {
     // Créer ingrédient
     const sucre = await prisma.ingredient.create({
@@ -295,7 +295,7 @@ describe('GET /recipes/:id (with nutrition)', () => {
     });
 
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}`)
+      .get(`/${testRecipe.id}`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);

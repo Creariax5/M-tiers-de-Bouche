@@ -68,7 +68,7 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
-describe('POST /recipes/:id/ingredients', () => {
+describe('POST //:id/ingredients', () => {
   it('should add an ingredient to a recipe', async () => {
     const ingredientData = {
       ingredientId: testIngredient.id,
@@ -78,7 +78,7 @@ describe('POST /recipes/:id/ingredients', () => {
     };
 
     const response = await request(app)
-      .post(`/recipes/${testRecipe.id}/ingredients`)
+      .post(`/${testRecipe.id}/ingredients`)
       .set('Authorization', `Bearer ${token}`)
       .send(ingredientData);
 
@@ -101,7 +101,7 @@ describe('POST /recipes/:id/ingredients', () => {
     };
 
     const response = await request(app)
-      .post(`/recipes/${testRecipe.id}/ingredients`)
+      .post(`/${testRecipe.id}/ingredients`)
       .set('Authorization', `Bearer ${token}`)
       .send(ingredientData);
 
@@ -117,7 +117,7 @@ describe('POST /recipes/:id/ingredients', () => {
     };
 
     const response = await request(app)
-      .post(`/recipes/${testRecipe.id}/ingredients`)
+      .post(`/${testRecipe.id}/ingredients`)
       .set('Authorization', `Bearer ${token2}`)
       .send(ingredientData);
 
@@ -133,7 +133,7 @@ describe('POST /recipes/:id/ingredients', () => {
     };
 
     const response = await request(app)
-      .post('/recipes/non-existent-id/ingredients')
+      .post('//non-existent-id/ingredients')
       .set('Authorization', `Bearer ${token}`)
       .send(ingredientData);
 
@@ -148,7 +148,7 @@ describe('POST /recipes/:id/ingredients', () => {
     };
 
     const response = await request(app)
-      .post(`/recipes/${testRecipe.id}/ingredients`)
+      .post(`/${testRecipe.id}/ingredients`)
       .set('Authorization', `Bearer ${token}`)
       .send(ingredientData);
 
@@ -164,7 +164,7 @@ describe('POST /recipes/:id/ingredients', () => {
     };
 
     const response = await request(app)
-      .post(`/recipes/${testRecipe.id}/ingredients`)
+      .post(`/${testRecipe.id}/ingredients`)
       .set('Authorization', `Bearer ${token}`)
       .send(ingredientData);
 
@@ -181,7 +181,7 @@ describe('POST /recipes/:id/ingredients', () => {
     };
 
     const response = await request(app)
-      .post(`/recipes/${testRecipe.id}/ingredients`)
+      .post(`/${testRecipe.id}/ingredients`)
       .set('Authorization', `Bearer ${token}`)
       .send(ingredientData);
 
@@ -196,14 +196,14 @@ describe('POST /recipes/:id/ingredients', () => {
     };
 
     const response = await request(app)
-      .post(`/recipes/${testRecipe.id}/ingredients`)
+      .post(`/${testRecipe.id}/ingredients`)
       .send(ingredientData);
 
     expect(response.status).toBe(401);
   });
 });
 
-describe('GET /recipes/:id/ingredients', () => {
+describe('GET //:id/ingredients', () => {
   beforeEach(async () => {
     // Ajouter quelques ingrédients à la recette
     const ingredient2 = await prisma.ingredient.create({
@@ -239,7 +239,7 @@ describe('GET /recipes/:id/ingredients', () => {
 
   it('should list all ingredients of a recipe', async () => {
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/ingredients`)
+      .get(`/${testRecipe.id}/ingredients`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -250,7 +250,7 @@ describe('GET /recipes/:id/ingredients', () => {
 
   it('should fail when recipe does not belong to user', async () => {
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/ingredients`)
+      .get(`/${testRecipe.id}/ingredients`)
       .set('Authorization', `Bearer ${token2}`);
 
     expect(response.status).toBe(404);
@@ -258,13 +258,13 @@ describe('GET /recipes/:id/ingredients', () => {
 
   it('should fail without authentication', async () => {
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/ingredients`);
+      .get(`/${testRecipe.id}/ingredients`);
 
     expect(response.status).toBe(401);
   });
 });
 
-describe('DELETE /recipes/:id/ingredients/:ingredientId', () => {
+describe('DELETE //:id/ingredients/:ingredientId', () => {
   let recipeIngredient;
 
   beforeEach(async () => {
@@ -281,7 +281,7 @@ describe('DELETE /recipes/:id/ingredients/:ingredientId', () => {
 
   it('should delete an ingredient from a recipe', async () => {
     const response = await request(app)
-      .delete(`/recipes/${testRecipe.id}/ingredients/${recipeIngredient.id}`)
+      .delete(`/${testRecipe.id}/ingredients/${recipeIngredient.id}`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -296,7 +296,7 @@ describe('DELETE /recipes/:id/ingredients/:ingredientId', () => {
 
   it('should fail when recipe does not belong to user', async () => {
     const response = await request(app)
-      .delete(`/recipes/${testRecipe.id}/ingredients/${recipeIngredient.id}`)
+      .delete(`/${testRecipe.id}/ingredients/${recipeIngredient.id}`)
       .set('Authorization', `Bearer ${token2}`);
 
     expect(response.status).toBe(404);
@@ -310,7 +310,7 @@ describe('DELETE /recipes/:id/ingredients/:ingredientId', () => {
 
   it('should fail when recipe ingredient does not exist', async () => {
     const response = await request(app)
-      .delete(`/recipes/${testRecipe.id}/ingredients/non-existent-id`)
+      .delete(`/${testRecipe.id}/ingredients/non-existent-id`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(404);
@@ -318,13 +318,13 @@ describe('DELETE /recipes/:id/ingredients/:ingredientId', () => {
 
   it('should fail without authentication', async () => {
     const response = await request(app)
-      .delete(`/recipes/${testRecipe.id}/ingredients/${recipeIngredient.id}`);
+      .delete(`/${testRecipe.id}/ingredients/${recipeIngredient.id}`);
 
     expect(response.status).toBe(401);
   });
 });
 
-describe('PUT /recipes/:id/ingredients/:ingredientId', () => {
+describe('PUT //:id/ingredients/:ingredientId', () => {
   let recipeIngredient;
 
   beforeEach(async () => {
@@ -346,7 +346,7 @@ describe('PUT /recipes/:id/ingredients/:ingredientId', () => {
     };
 
     const response = await request(app)
-      .put(`/recipes/${testRecipe.id}/ingredients/${recipeIngredient.id}`)
+      .put(`/${testRecipe.id}/ingredients/${recipeIngredient.id}`)
       .set('Authorization', `Bearer ${token}`)
       .send(updateData);
 
@@ -361,7 +361,7 @@ describe('PUT /recipes/:id/ingredients/:ingredientId', () => {
     };
 
     const response = await request(app)
-      .put(`/recipes/${testRecipe.id}/ingredients/${recipeIngredient.id}`)
+      .put(`/${testRecipe.id}/ingredients/${recipeIngredient.id}`)
       .set('Authorization', `Bearer ${token2}`)
       .send(updateData);
 
@@ -374,7 +374,7 @@ describe('PUT /recipes/:id/ingredients/:ingredientId', () => {
     };
 
     const response = await request(app)
-      .put(`/recipes/${testRecipe.id}/ingredients/${recipeIngredient.id}`)
+      .put(`/${testRecipe.id}/ingredients/${recipeIngredient.id}`)
       .set('Authorization', `Bearer ${token}`)
       .send(updateData);
 
@@ -387,7 +387,7 @@ describe('PUT /recipes/:id/ingredients/:ingredientId', () => {
     };
 
     const response = await request(app)
-      .put(`/recipes/${testRecipe.id}/ingredients/${recipeIngredient.id}`)
+      .put(`/${testRecipe.id}/ingredients/${recipeIngredient.id}`)
       .send(updateData);
 
     expect(response.status).toBe(401);

@@ -14,7 +14,7 @@ const generateToken = (user) => {
   );
 };
 
-describe('GET /recipes/:id/pricing', () => {
+describe('GET //:id/pricing', () => {
   let testRecipe;
   let testUser = { id: 'test-user-pricing', email: 'pricing@test.com' };
   let testUser2 = { id: 'test-user-other', email: 'other@test.com' };
@@ -89,7 +89,7 @@ describe('GET /recipes/:id/pricing', () => {
 
     // Appeler endpoint
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/pricing`)
+      .get(`/${testRecipe.id}/pricing`)
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
@@ -130,7 +130,7 @@ describe('GET /recipes/:id/pricing', () => {
     });
 
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/pricing`)
+      .get(`/${testRecipe.id}/pricing`)
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
@@ -162,7 +162,7 @@ describe('GET /recipes/:id/pricing', () => {
 
     // Coeff personnalisé = 5
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/pricing?coefficient=5`)
+      .get(`/${testRecipe.id}/pricing?coefficient=5`)
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
@@ -180,7 +180,7 @@ describe('GET /recipes/:id/pricing', () => {
 
   it('should return zero cost when no ingredients', async () => {
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}/pricing`)
+      .get(`/${testRecipe.id}/pricing`)
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
@@ -194,18 +194,18 @@ describe('GET /recipes/:id/pricing', () => {
 
   it('should fail when recipe does not belong to user', async () => {
     await request(app)
-      .get(`/recipes/${testRecipe.id}/pricing`)
+      .get(`/${testRecipe.id}/pricing`)
       .set('Authorization', `Bearer ${token2}`)
       .expect(404);
   });
 
   it('should fail without authentication', async () => {
     await request(app)
-      .get(`/recipes/${testRecipe.id}/pricing`)
+      .get(`/${testRecipe.id}/pricing`)
       .expect(401);
   });
 
-  it('should include pricing in GET /recipes/:id', async () => {
+  it('should include pricing in GET //:id', async () => {
     // Ajouter un ingrédient
     const sucre = await prisma.ingredient.create({
       data: {
@@ -227,7 +227,7 @@ describe('GET /recipes/:id/pricing', () => {
     });
 
     const response = await request(app)
-      .get(`/recipes/${testRecipe.id}`)
+      .get(`/${testRecipe.id}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
