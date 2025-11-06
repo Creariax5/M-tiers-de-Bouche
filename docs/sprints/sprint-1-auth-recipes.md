@@ -7,10 +7,10 @@
 
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
-- **Points planifiés** : 73 backend + 34 frontend = 107 total
-- **Points réalisés** : 102/107 (95%) ✅
-- **Vélocité réelle** : 51 points/semaine
-- **Statut** : � QUASI-COMPLET - Backend 95% (73/73 pts) ✅ | Frontend 100% ✅ (34/34 pts) | Restant : US-022 (5 pts - photo upload)
+- **Points planifiés** : 78 backend + 34 frontend = 112 total
+- **Points réalisés** : 112/112 (100%) ✅
+- **Vélocité réelle** : 56 points/semaine
+- **Statut** : 🎉 TERMINÉ - Backend 100% (78/78 pts) ✅ | Frontend 100% (34/34 pts) ✅
 
 ---
 
@@ -22,7 +22,8 @@
 - ✅ Inscription et connexion fonctionnelles avec JWT
 - ✅ CRUD recettes complet via API
 - ✅ Calculs automatiques (allergènes, nutrition, coûts) fonctionnels
-- ⏳ Frontend : pages auth ✅ + liste recettes ❌ + formulaire création ❌
+- ✅ Frontend : pages auth ✅ + liste recettes ✅ + formulaire création ✅
+- ✅ Upload photo recette vers MinIO
 - ✅ Tests unitaires sur services de calculs
 
 ---
@@ -547,24 +548,26 @@ En tant qu'artisan, je veux utiliser une recette comme ingrédient d'une autre r
 ---
 
 ### US-022 : Recipe Service - Upload photo recette
-**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : 🟡 TODO
+**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : - | **Status** : ✅ DONE
 
 **Description** :  
 En tant qu'artisan, je veux ajouter une photo à ma recette afin d'avoir un visuel.
 
 **Critères d'acceptation** :
-- [ ] POST /recipes/:id/image upload vers MinIO
-- [ ] Formats acceptés : JPG, PNG, WebP (max 5MB)
-- [ ] Compression automatique avec Sharp (max width 1200px, quality 80%)
-- [ ] URL stockée dans Recipe.imageUrl
-- [ ] Gestion erreurs (fichier trop gros, format non supporté)
+- [x] POST /recipes/:id/image upload vers MinIO
+- [x] Formats acceptés : JPG, PNG, WebP (max 5MB)
+- [x] Compression automatique avec Sharp (max width 1200px, quality 80%)
+- [x] URL stockée dans Recipe.imageUrl
+- [x] Gestion erreurs (fichier trop gros, format non supporté)
 
 **Tâches** :
-- [ ] Installer multer (file upload) + sharp (image processing)
-- [ ] Configurer multer (memory storage, file filter, size limit)
-- [ ] Route POST /recipes/:id/image (validation + compression + upload MinIO)
-- [ ] Update Recipe.imageUrl avec URL MinIO
-- [ ] Tests d'intégration (upload JPG, rejet 6MB, rejet PDF)
+- [x] Installer multer (file upload) + sharp (image processing) + minio
+- [x] Configurer multer (memory storage, file filter, size limit)
+- [x] Route POST /recipes/:id/image (validation + compression + upload MinIO)
+- [x] Migration Prisma : ajout Recipe.imageUrl
+- [x] Client MinIO (lib/minio.js) avec ensureBucket
+- [x] Update Recipe.imageUrl avec URL MinIO
+- [x] Tests d'intégration (7/7 passing : upload JPG/PNG, rejet >5MB, rejet PDF, auth, ownership)
 
 ---
 
@@ -647,11 +650,12 @@ En tant qu'artisan, je veux ajouter une photo à ma recette afin d'avoir un visu
 
 ### Points réalisés : 102/107 (95%)
 
-**Backend** : 73/73 points (100%) ✅
+**Backend** : 78/78 points (100%) ✅
 - Auth Service : 26 points (US-008, 009, 009-bis, 010, 011)
-- Recipe Service : 47 points (US-012, 013, 014, 015, 016, **US-021**)
-- Tests : **107/107 passing** (+7 depuis dernière maj)
+- Recipe Service : 52 points (US-012, 013, 014, 015, 016, **US-021**, **US-022**)
+- Tests : **114/114 passing** (+7 US-022)
 - Conformité INCO : 100%
+- MinIO : Upload images + Sharp compression
 
 **Frontend** : 34/34 points (100%) ✅
 - US-017 (Auth Pages) : 8 points ✅ DONE
@@ -659,23 +663,22 @@ En tant qu'artisan, je veux ajouter une photo à ma recette afin d'avoir un visu
 - US-019 (Liste recettes) : 8 points ✅ DONE
 - US-020 (Formulaire recette) : 13 points ✅ DONE
 
-**Restant** :
-- US-022 (Upload photo recette) : 5 points (optionnel, reporté Sprint 2)
+**Restant** : Aucun ✅
 
 ### Vélocité réelle : 51 points/semaine
 - Sprint 0 : 43 points/semaine estimés
 - Sprint 1 : 51 points/semaine réels (**+18% vs estimation** ✅)
 
-### ✅ Sprint 1 QUASI-COMPLET !
+### ✅ Sprint 1 TERMINÉ ! 🎉
 - **Durée réelle** : 14 jours (23 oct - 6 nov 2025)
-- **Points livrés** : 102/107 (95%)
-- **Tests** : **107/107 backend** ✅ + 68/68 frontend ✅ = **175 tests** ✅
-- **Features critiques** : 100% livrées (upload photo non-critique)
+- **Points livrés** : 112/112 (100%) ✅
+- **Tests** : **114/114 backend** ✅ + 68/68 frontend ✅ = **182 tests** ✅
+- **Features critiques** : 100% livrées
 - **Bloqueurs rencontrés** : 1 (JWT_SECRET manquant - résolu)
 
 ---
 
-**Status** : 🟢 QUASI-TERMINÉ (95% complété - Backend 100% ✅ | Frontend 100% ✅ | US-022 reportée)  
+**Status** : 🎉 TERMINÉ (100% complété - Backend 100% ✅ | Frontend 100% ✅)  
 **Date de début** : 23 octobre 2025  
 **Date de fin** : 6 novembre 2025  
-**Dernière mise à jour** : 06 novembre 2025 - 14:30 UTC (US-021 complétée)
+**Dernière mise à jour** : 06 novembre 2025 - 15:30 UTC (US-022 complétée - Sprint 1 fini !)
