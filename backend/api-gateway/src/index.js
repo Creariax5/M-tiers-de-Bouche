@@ -22,9 +22,30 @@ if (process.env.SENTRY_DSN) {
 
 // Security middleware
 app.use(helmet());
+
+// CORS configuration - accepte plusieurs origins
+const allowedOrigins = [
+  'http://localhost',
+  'http://localhost:80',
+  'http://localhost:5173', // Vite dev server
+  process.env.CORS_ORIGIN
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:80',
-  credentials: true
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`⚠️  CORS blocked origin: ${origin}`);
+      callback(null, false);
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Rate limiting
@@ -36,7 +57,8 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.use(express.json());
+// IMPORTANT: Ne pas parser le JSON ici, laisser le proxy s'en occuper
+// app.use(express.json()); // Commenté pour le proxy
 
 // Health check
 app.get('/health', (req, res) => {
@@ -47,7 +69,16 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', createProxyMiddleware({
   target: process.env.AUTH_SERVICE_URL || 'http://auth-service:3001',
   changeOrigin: true,
-  pathRewrite: { '^/api/auth': '' }
+  pathRewrite: { '^/api/auth': '' },
+  timeout: 30000,
+  proxyTimeout: 30000,
+  onProxyReq: (proxyReq, req, res) => {
+    console.log(`[Proxy] ${req.method} ${req.url} → ${proxyReq.path}`);
+  },
+  onError: (err, req, res) => {
+    console.error('[Proxy Error]', err.message);
+    res.status(500).json({ error: 'Proxy error', details: err.message });
+  }
 }));
 
 app.use('/api/recipes', createProxyMiddleware({

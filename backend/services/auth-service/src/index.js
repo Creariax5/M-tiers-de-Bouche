@@ -1,4 +1,10 @@
-const express = require('express');
+import express from 'express';
+import { register, login } from './controllers/auth.controller.js';
+import { getMe } from './controllers/user.controller.js';
+import { authenticateToken } from './middleware/auth.middleware.js';
+import { forgotPassword, resetPassword } from './controllers/reset-password.controller.js';
+import { updateProfile, deleteProfile } from './controllers/profile.controller.js';
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -8,6 +14,18 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'auth-service' });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Auth Service running on port ${PORT}`);
-});
+app.post('/register', register);
+app.post('/login', login);
+app.post('/forgot-password', forgotPassword);
+app.post('/reset-password', resetPassword);
+app.get('/me', authenticateToken, getMe);
+app.put('/me', authenticateToken, updateProfile);
+app.delete('/me', authenticateToken, deleteProfile);
+
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Auth Service running on port ${PORT}`);
+  });
+}
+
+export default app;

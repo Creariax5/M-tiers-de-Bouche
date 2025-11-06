@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Recipe {
+  id          String   @id @default(uuid())
+  userId      String   // Propriétaire de la recette
+  name        String
+  description String?
+  category    String?  // "Viennoiserie", "Pâtisserie", "Boulangerie", etc.
+  servings    Int      @default(1) // Nombre de portions
+  imageUrl    String?  // URL de l'image (MinIO S3)
+  
+  // Relations
+  ingredients RecipeIngredient[] // Ingrédients utilisés dans cette recette
+  usedInRecipes RecipeIngredient[] @relation("SubRecipe") // Recettes qui utilisent celle-ci
+  
+  // Métadonnées
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([category])
+  @@map("recipes")
+}
+
+model Ingredient {
+  id          String   @id @default(uuid())
+  userId      String   // Propriétaire de l'ingrédient (custom) ou "system" pour base commune
+  name        String
+  unit        String   @default("g") // g, kg, L, ml, pièce
+  pricePerUnit Float   @default(0) // Prix par unité
+  
+  // Valeurs nutritionnelles pour 100g/100ml (CONFORMITÉ INCO)
+  calories       Float? // kcal (sera converti en kJ automatiquement)
+  proteins       Float? // g - Protéines
+  carbs          Float? // g - Glucides totaux
+  sugars         Float? // g - dont sucres (OBLIGATOIRE INCO)
+  fats           Float? // g - Matières grasses totales
+  saturatedFats  Float? // g - dont acides gras saturés (OBLIGATOIRE INCO)
+  salt           Float? // g - Sel (arrondi 2 décimales)
+  
+  // Valeurs nutritionnelles facultatives
+  fiber          Float? // g - Fibres alimentaires
+  
+  // Allergènes (14 ADO - Allergènes à Déclaration Obligatoire)
+  allergens      String?  // CSV: "gluten,lait,oeufs"
+  allergenTraces String?  // Traces possibles: "fruits-a-coque,arachides"
+  
+  // Relations
+  recipes     RecipeIngredient[]
+  
+  // Métadonnées
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([name])
+  @@map("ingredients")
+}
+
+model RecipeIngredient {
+  id           String   @id @default(uuid())
+  recipeId     String
+  ingredientId String?  // 🆕 Optionnel (exclusif avec subRecipeId)
+  subRecipeId  String?  // 🆕 Sous-recette utilisée comme ingrédient
+  quantity     Float    // Quantité utilisée
+  unit         String   // Unité (g, kg, L, ml, pièce)
+  lossPercent  Float    @default(0) // Pourcentage de perte (0-100)
+  
+  // Relations
+  recipe       Recipe      @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient? @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  subRecipe    Recipe?     @relation("SubRecipe", fields: [subRecipeId], references: [id], onDelete: Cascade)
+  
+  // Métadonnées
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([recipeId])
+  @@index([ingredientId])
+  @@index([subRecipeId])
+  @@map("recipe_ingredients")
+}

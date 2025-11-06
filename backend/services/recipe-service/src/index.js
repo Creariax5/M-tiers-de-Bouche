@@ -1,4 +1,6 @@
-const express = require('express');
+import express from 'express';
+import recipeRoutes from './routes/recipe.routes.js';
+
 const app = express();
 const PORT = process.env.PORT || 3002;
 
@@ -8,6 +10,12 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'recipe-service' });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Recipe Service running on port ${PORT}`);
-});
+app.use('/', recipeRoutes);
+
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`✅ Recipe Service running on port ${PORT}`);
+  });
+}
+
+export default app;
