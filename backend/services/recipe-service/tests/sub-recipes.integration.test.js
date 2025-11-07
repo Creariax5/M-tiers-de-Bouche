@@ -59,7 +59,7 @@ describe('Sub-Recipes (Compositions)', () => {
           fats: 82,
           saturatedFats: 51,
           salt: 0.8,
-          allergens: 'lait'
+          allergens: ['lait']
         }
       });
 
@@ -76,15 +76,15 @@ describe('Sub-Recipes (Compositions)', () => {
           fats: 1.2,
           saturatedFats: 0.3,
           salt: 0.01,
-          allergens: 'gluten'
+          allergens: ['gluten']
         }
       });
 
       // Ajouter ingrédients à la sous-recette
       await prisma.recipeIngredient.createMany({
         data: [
-          { recipeId: pateFeuilletee.id, ingredientId: beurre.id, quantity: 250, unit: 'g' },
-          { recipeId: pateFeuilletee.id, ingredientId: farine.id, quantity: 500, unit: 'g' }
+          { recipeId: pateFeuilletee.id, baseIngredientId: beurre.id, quantity: 250, unit: 'G' },
+          { recipeId: pateFeuilletee.id, baseIngredientId: farine.id, quantity: 500, unit: 'G' }
         ]
       });
 
@@ -129,7 +129,7 @@ describe('Sub-Recipes (Compositions)', () => {
         data: {
           
           name: 'Test Ingredient',
-          unit: 'g'
+          unit: 'G'
         }
       });
 
@@ -145,10 +145,10 @@ describe('Sub-Recipes (Compositions)', () => {
         .post(`/${recipe.id}/ingredients`)
         .set('Authorization', `Bearer ${token}`)
         .send({
-          ingredientId: ingredient.id,
+          baseIngredientId: ingredient.id,
           subRecipeId: subRecipe.id, // ❌ Pas les deux en même temps
           quantity: 100,
-          unit: 'g'
+          unit: 'G'
         });
 
       expect(response.status).toBe(400);
@@ -169,7 +169,7 @@ describe('Sub-Recipes (Compositions)', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({
           quantity: 100,
-          unit: 'g'
+          unit: 'G'
         });
 
       expect(response.status).toBe(400);
@@ -185,7 +185,7 @@ describe('Sub-Recipes (Compositions)', () => {
           
           name: 'Beurre',
           
-          allergens: 'lait'
+          allergens: ['lait']
         }
       });
 
@@ -203,14 +203,14 @@ describe('Sub-Recipes (Compositions)', () => {
           
           name: 'Farine',
           
-          allergens: 'gluten'
+          allergens: ['gluten']
         }
       });
 
       await prisma.recipeIngredient.createMany({
         data: [
-          { recipeId: pate.id, ingredientId: beurre.id, quantity: 100, unit: 'g' },
-          { recipeId: pate.id, ingredientId: farine.id, quantity: 300, unit: 'g' }
+          { recipeId: pate.id, baseIngredientId: beurre.id, quantity: 100, unit: 'G' },
+          { recipeId: pate.id, baseIngredientId: farine.id, quantity: 300, unit: 'G' }
         ]
       });
 
@@ -228,7 +228,7 @@ describe('Sub-Recipes (Compositions)', () => {
           
           name: 'Œufs',
           
-          allergens: 'oeufs'
+          allergens: ['oeufs']
         }
       });
 
@@ -239,16 +239,16 @@ describe('Sub-Recipes (Compositions)', () => {
         .send({
           subRecipeId: pate.id,
           quantity: 400,
-          unit: 'g'
+          unit: 'G'
         });
 
       await request(app)
         .post(`/${croissant.id}/ingredients`)
         .set('Authorization', `Bearer ${token}`)
         .send({
-          ingredientId: oeufs.id,
+          baseIngredientId: oeufs.id,
           quantity: 2,
-          unit: 'pièce'
+          unit: 'PIECE'
         });
 
       // Récupérer allergènes (doit être récursif)
@@ -313,8 +313,8 @@ describe('Sub-Recipes (Compositions)', () => {
 
       await prisma.recipeIngredient.createMany({
         data: [
-          { recipeId: pate.id, ingredientId: farine.id, quantity: 500, unit: 'g' },
-          { recipeId: pate.id, ingredientId: eau.id, quantity: 500, unit: 'ml' }
+          { recipeId: pate.id, baseIngredientId: farine.id, quantity: 500, unit: 'G' },
+          { recipeId: pate.id, baseIngredientId: eau.id, quantity: 500, unit: 'ML' }
         ]
       });
 
@@ -333,7 +333,7 @@ describe('Sub-Recipes (Compositions)', () => {
         .send({
           subRecipeId: pate.id,
           quantity: 1000,
-          unit: 'g'
+          unit: 'G'
         });
 
       // Calculer nutrition (doit inclure les ingrédients de la sous-recette)
@@ -380,8 +380,8 @@ describe('Sub-Recipes (Compositions)', () => {
 
       await prisma.recipeIngredient.createMany({
         data: [
-          { recipeId: pate.id, ingredientId: beurre.id, quantity: 250, unit: 'g' },
-          { recipeId: pate.id, ingredientId: farine.id, quantity: 500, unit: 'g' }
+          { recipeId: pate.id, baseIngredientId: beurre.id, quantity: 250, unit: 'G' },
+          { recipeId: pate.id, baseIngredientId: farine.id, quantity: 500, unit: 'G' }
         ]
       });
 
@@ -409,16 +409,16 @@ describe('Sub-Recipes (Compositions)', () => {
         .send({
           subRecipeId: pate.id,
           quantity: 750,
-          unit: 'g'
+          unit: 'G'
         });
 
       await request(app)
         .post(`/${croissant.id}/ingredients`)
         .set('Authorization', `Bearer ${token}`)
         .send({
-          ingredientId: chocolat.id,
+          baseIngredientId: chocolat.id,
           quantity: 50,
-          unit: 'g'
+          unit: 'G'
         });
 
       // Calculer coût (doit inclure le coût de la sous-recette)
@@ -464,7 +464,7 @@ describe('Sub-Recipes (Compositions)', () => {
         .send({
           subRecipeId: recipeB.id,
           quantity: 100,
-          unit: 'g'
+          unit: 'G'
         });
 
       // B essaie d'utiliser A (boucle)
@@ -474,7 +474,7 @@ describe('Sub-Recipes (Compositions)', () => {
         .send({
           subRecipeId: recipeA.id,
           quantity: 100,
-          unit: 'g'
+          unit: 'G'
         });
 
       expect(response.status).toBe(400);
@@ -514,7 +514,7 @@ describe('Sub-Recipes (Compositions)', () => {
         .send({
           subRecipeId: recipeB.id,
           quantity: 100,
-          unit: 'g'
+          unit: 'G'
         });
 
       // B → C
@@ -524,7 +524,7 @@ describe('Sub-Recipes (Compositions)', () => {
         .send({
           subRecipeId: recipeC.id,
           quantity: 100,
-          unit: 'g'
+          unit: 'G'
         });
 
       // C → A (boucle)
@@ -534,7 +534,7 @@ describe('Sub-Recipes (Compositions)', () => {
         .send({
           subRecipeId: recipeA.id,
           quantity: 100,
-          unit: 'g'
+          unit: 'G'
         });
 
       expect(response.status).toBe(400);
@@ -582,7 +582,7 @@ describe('Sub-Recipes (Compositions)', () => {
         .send({
           subRecipeId: recipeB.id,
           quantity: 100,
-          unit: 'g'
+          unit: 'G'
         });
       expect(res1.status).toBe(201);
 
@@ -593,7 +593,7 @@ describe('Sub-Recipes (Compositions)', () => {
         .send({
           subRecipeId: recipeD.id,
           quantity: 100,
-          unit: 'g'
+          unit: 'G'
         });
       expect(res2.status).toBe(201);
     });
@@ -626,7 +626,7 @@ describe('Sub-Recipes (Compositions)', () => {
         .send({
           subRecipeId: subRecipe.id,
           quantity: 500,
-          unit: 'g'
+          unit: 'G'
         });
 
       // Récupérer recette

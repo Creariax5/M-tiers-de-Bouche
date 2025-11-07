@@ -44,15 +44,14 @@ beforeEach(async () => {
   // Créer un ingrédient de test
   testIngredient = await prisma.baseIngredient.create({
     data: {
-      
+      category: 'FARINES',
       name: 'Farine T55',
-      
-      pricePerUnit: 0.002,
       calories: 364,
       proteins: 10,
       carbs: 76,
       fats: 1.5,
-      allergens: 'gluten'
+      salt: 0,
+      allergens: ['gluten']
     }
   });
 });
@@ -71,9 +70,9 @@ afterAll(async () => {
 describe('POST //:id/ingredients', () => {
   it('should add an ingredient to a recipe', async () => {
     const ingredientData = {
-      ingredientId: testIngredient.id,
+      baseIngredientId: testIngredient.id,
       quantity: 500,
-      
+      unit: 'G',
       lossPercent: 5
     };
 
@@ -95,9 +94,9 @@ describe('POST //:id/ingredients', () => {
 
   it('should add an ingredient with default loss percent (0)', async () => {
     const ingredientData = {
-      ingredientId: testIngredient.id,
+      baseIngredientId: testIngredient.id,
       quantity: 200,
-      unit: 'g'
+      unit: 'G'
     };
 
     const response = await request(app)
@@ -111,9 +110,9 @@ describe('POST //:id/ingredients', () => {
 
   it('should fail when recipe does not belong to user', async () => {
     const ingredientData = {
-      ingredientId: testIngredient.id,
+      baseIngredientId: testIngredient.id,
       quantity: 500,
-      unit: 'g'
+      unit: 'G'
     };
 
     const response = await request(app)
@@ -127,9 +126,9 @@ describe('POST //:id/ingredients', () => {
 
   it('should fail when recipe does not exist', async () => {
     const ingredientData = {
-      ingredientId: testIngredient.id,
+      baseIngredientId: testIngredient.id,
       quantity: 500,
-      unit: 'g'
+      unit: 'G'
     };
 
     const response = await request(app)
@@ -142,9 +141,9 @@ describe('POST //:id/ingredients', () => {
 
   it('should fail when ingredient does not exist', async () => {
     const ingredientData = {
-      ingredientId: '00000000-0000-0000-0000-000000000000', // UUID valide mais inexistant
+      baseIngredientId: '00000000-0000-0000-0000-000000000000', // UUID valide mais inexistant
       quantity: 500,
-      unit: 'g'
+      unit: 'G'
     };
 
     const response = await request(app)
@@ -158,9 +157,9 @@ describe('POST //:id/ingredients', () => {
 
   it('should fail with invalid quantity (negative)', async () => {
     const ingredientData = {
-      ingredientId: testIngredient.id,
+      baseIngredientId: testIngredient.id,
       quantity: -100,
-      unit: 'g'
+      unit: 'G'
     };
 
     const response = await request(app)
@@ -174,9 +173,9 @@ describe('POST //:id/ingredients', () => {
 
   it('should fail with invalid loss percent (>100)', async () => {
     const ingredientData = {
-      ingredientId: testIngredient.id,
+      baseIngredientId: testIngredient.id,
       quantity: 500,
-      
+      unit: 'G',
       lossPercent: 150
     };
 
@@ -190,9 +189,9 @@ describe('POST //:id/ingredients', () => {
 
   it('should fail without authentication', async () => {
     const ingredientData = {
-      ingredientId: testIngredient.id,
+      baseIngredientId: testIngredient.id,
       quantity: 500,
-      unit: 'g'
+      unit: 'G'
     };
 
     const response = await request(app)
@@ -208,12 +207,14 @@ describe('GET //:id/ingredients', () => {
     // Ajouter quelques ingrédients à la recette
     const ingredient2 = await prisma.baseIngredient.create({
       data: {
-        
+        category: 'SUCRES',
         name: 'Sucre',
-        
-        pricePerUnit: 0.001,
         calories: 400,
-        carbs: 100
+        proteins: 0,
+        carbs: 100,
+        fats: 0,
+        salt: 0,
+        allergens: []
       }
     });
 
@@ -221,16 +222,16 @@ describe('GET //:id/ingredients', () => {
       data: [
         {
           recipeId: testRecipe.id,
-          ingredientId: testIngredient.id,
+          baseIngredientId: testIngredient.id,
           quantity: 500,
-          
+          unit: 'G',
           lossPercent: 5
         },
         {
           recipeId: testRecipe.id,
-          ingredientId: ingredient2.id,
+          baseIngredientId: ingredient2.id,
           quantity: 200,
-          
+          unit: 'G',
           lossPercent: 0
         }
       ]
@@ -271,7 +272,7 @@ describe('DELETE //:id/ingredients/:ingredientId', () => {
     recipeIngredient = await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: testIngredient.id,
+        baseIngredientId: testIngredient.id,
         quantity: 500,
         
         lossPercent: 5
@@ -331,7 +332,7 @@ describe('PUT //:id/ingredients/:ingredientId', () => {
     recipeIngredient = await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: testIngredient.id,
+        baseIngredientId: testIngredient.id,
         quantity: 500,
         
         lossPercent: 5
@@ -393,4 +394,5 @@ describe('PUT //:id/ingredients/:ingredientId', () => {
     expect(response.status).toBe(401);
   });
 });
+
 

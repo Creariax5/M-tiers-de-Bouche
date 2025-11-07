@@ -98,9 +98,9 @@ describe('GET //:id/nutrition', () => {
     // Ajouter ingrédients à la recette
     await prisma.recipeIngredient.createMany({
       data: [
-        { recipeId: testRecipe.id, ingredientId: farine.id, quantity: 500, unit: 'g' },
-        { recipeId: testRecipe.id, ingredientId: eau.id, quantity: 300, unit: 'ml' },
-        { recipeId: testRecipe.id, ingredientId: sel.id, quantity: 10, unit: 'g' }
+        { recipeId: testRecipe.id, baseIngredientId: farine.id, quantity: 500, unit: 'G' },
+        { recipeId: testRecipe.id, baseIngredientId: eau.id, quantity: 300, unit: 'ML' },
+        { recipeId: testRecipe.id, baseIngredientId: sel.id, quantity: 10, unit: 'G' }
       ]
     });
 
@@ -162,9 +162,9 @@ describe('GET //:id/nutrition', () => {
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: beurre.id,
+        baseIngredientId: beurre.id,
         quantity: 250,
-        unit: 'g'
+        unit: 'G'
       }
     });
 
@@ -208,7 +208,7 @@ describe('GET //:id/nutrition', () => {
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: viande.id,
+        baseIngredientId: viande.id,
         quantity: 1000,
         
         lossPercent: 20 // 20% de perte à la cuisson
@@ -303,9 +303,9 @@ describe('GET //:id (with nutrition)', () => {
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: sucre.id,
+        baseIngredientId: sucre.id,
         quantity: 200,
-        unit: 'g'
+        unit: 'G'
       }
     });
 

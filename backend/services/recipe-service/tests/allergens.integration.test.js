@@ -52,7 +52,7 @@ describe('GET //:id/allergens', () => {
         
         name: 'Farine de blé T55',
         
-        allergens: 'gluten'
+        allergens: ['gluten']
       }
     });
 
@@ -61,7 +61,7 @@ describe('GET //:id/allergens', () => {
         
         name: 'Beurre doux',
         
-        allergens: 'lait'
+        allergens: ['lait']
       }
     });
 
@@ -70,16 +70,16 @@ describe('GET //:id/allergens', () => {
         
         name: 'Oeufs',
         
-        allergens: 'oeufs'
+        allergens: ['oeufs']
       }
     });
 
     // Ajouter les ingrédients à la recette
     await prisma.recipeIngredient.createMany({
       data: [
-        { recipeId: testRecipe.id, ingredientId: farine.id, quantity: 250, unit: 'g' },
-        { recipeId: testRecipe.id, ingredientId: beurre.id, quantity: 150, unit: 'g' },
-        { recipeId: testRecipe.id, ingredientId: oeufs.id, quantity: 3, unit: 'pièce' }
+        { recipeId: testRecipe.id, baseIngredientId: farine.id, quantity: 250, unit: 'G' },
+        { recipeId: testRecipe.id, baseIngredientId: beurre.id, quantity: 150, unit: 'G' },
+        { recipeId: testRecipe.id, baseIngredientId: oeufs.id, quantity: 3, unit: 'PIECE' }
       ]
     });
 
@@ -103,16 +103,16 @@ describe('GET //:id/allergens', () => {
         
         name: 'Pain de mie',
         
-        allergens: 'gluten,lait,soja'
+        allergens: ['gluten', 'lait', 'soja']
       }
     });
 
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: pain.id,
+        baseIngredientId: pain.id,
         quantity: 100,
-        unit: 'g'
+        unit: 'G'
       }
     });
 
@@ -134,16 +134,16 @@ describe('GET //:id/allergens', () => {
         
         name: 'Sucre',
         
-        allergens: null
+        allergens: []
       }
     });
 
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: sucre.id,
+        baseIngredientId: sucre.id,
         quantity: 200,
-        unit: 'g'
+        unit: 'G'
       }
     });
 
@@ -162,7 +162,7 @@ describe('GET //:id/allergens', () => {
         
         name: 'Farine T55',
         
-        allergens: 'gluten'
+        allergens: ['gluten']
       }
     });
 
@@ -171,14 +171,14 @@ describe('GET //:id/allergens', () => {
         
         name: 'Chapelure',
         
-        allergens: 'gluten'
+        allergens: ['gluten']
       }
     });
 
     await prisma.recipeIngredient.createMany({
       data: [
-        { recipeId: testRecipe.id, ingredientId: farine.id, quantity: 250, unit: 'g' },
-        { recipeId: testRecipe.id, ingredientId: pain.id, quantity: 50, unit: 'g' }
+        { recipeId: testRecipe.id, baseIngredientId: farine.id, quantity: 250, unit: 'G' },
+        { recipeId: testRecipe.id, baseIngredientId: pain.id, quantity: 50, unit: 'G' }
       ]
     });
 
@@ -224,16 +224,16 @@ describe('GET //:id (with allergens)', () => {
         
         name: 'Noisettes',
         
-        allergens: 'fruits-a-coque'
+        allergens: ['fruits-a-coque']
       }
     });
 
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: noisettes.id,
+        baseIngredientId: noisettes.id,
         quantity: 100,
-        unit: 'g'
+        unit: 'G'
       }
     });
 

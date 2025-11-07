@@ -105,7 +105,7 @@ describe('GET /recipes/stats', () => {
       await prisma.recipeIngredient.create({
         data: {
           recipeId: recipe.id,
-          ingredientId: flour.id,
+          baseIngredientId: flour.id,
           quantity: i * 100,
           
           lossPercent: 0

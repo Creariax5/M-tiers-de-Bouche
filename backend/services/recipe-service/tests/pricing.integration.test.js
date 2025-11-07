@@ -70,7 +70,7 @@ describe('GET //:id/pricing', () => {
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: farine.id,
+        baseIngredientId: farine.id,
         quantity: 500,
         
         lossPercent: 0,
@@ -80,7 +80,7 @@ describe('GET //:id/pricing', () => {
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: beurre.id,
+        baseIngredientId: beurre.id,
         quantity: 250,
         
         lossPercent: 0,
@@ -122,7 +122,7 @@ describe('GET //:id/pricing', () => {
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: viande.id,
+        baseIngredientId: viande.id,
         quantity: 1000,
         
         lossPercent: 20, // 20% de perte
@@ -153,7 +153,7 @@ describe('GET //:id/pricing', () => {
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: sel.id,
+        baseIngredientId: sel.id,
         quantity: 10,
         
         lossPercent: 0,
@@ -219,7 +219,7 @@ describe('GET //:id/pricing', () => {
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: sucre.id,
+        baseIngredientId: sucre.id,
         quantity: 200,
         
         lossPercent: 0,

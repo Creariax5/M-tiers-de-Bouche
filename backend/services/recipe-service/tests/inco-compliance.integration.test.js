@@ -52,7 +52,7 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
         
         name: 'Farine de blé',
         
-        allergens: 'gluten'
+        allergens: ['gluten']
       }
     });
 
@@ -60,7 +60,7 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
       data: {
         
         name: 'Eau',
-        unit: 'ml'
+        unit: 'ML'
       }
     });
 
@@ -68,16 +68,16 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
       data: {
         
         name: 'Sel',
-        unit: 'g'
+        unit: 'G'
       }
     });
 
     // Ajouter dans ordre aléatoire (pas pondéral)
     await prisma.recipeIngredient.createMany({
       data: [
-        { recipeId: testRecipe.id, ingredientId: eau.id, quantity: 300, unit: 'ml' },
-        { recipeId: testRecipe.id, ingredientId: sel.id, quantity: 10, unit: 'g' },
-        { recipeId: testRecipe.id, ingredientId: farine.id, quantity: 500, unit: 'g' }
+        { recipeId: testRecipe.id, baseIngredientId: eau.id, quantity: 300, unit: 'ML' },
+        { recipeId: testRecipe.id, baseIngredientId: sel.id, quantity: 10, unit: 'G' },
+        { recipeId: testRecipe.id, baseIngredientId: farine.id, quantity: 500, unit: 'G' }
       ]
     });
 
@@ -93,7 +93,7 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
         
         name: 'Lait entier',
         
-        allergens: 'lait'
+        allergens: ['lait']
       }
     });
 
@@ -101,15 +101,15 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
       data: {
         
         name: 'Sucre',
-        unit: 'g'
+        unit: 'G'
         // Pas d'allergène
       }
     });
 
     await prisma.recipeIngredient.createMany({
       data: [
-        { recipeId: testRecipe.id, ingredientId: lait.id, quantity: 200, unit: 'ml' },
-        { recipeId: testRecipe.id, ingredientId: sucre.id, quantity: 50, unit: 'g' }
+        { recipeId: testRecipe.id, baseIngredientId: lait.id, quantity: 200, unit: 'ML' },
+        { recipeId: testRecipe.id, baseIngredientId: sucre.id, quantity: 50, unit: 'G' }
       ]
     });
 
@@ -127,7 +127,7 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
         
         name: 'Œufs',
         
-        allergens: 'oeufs'
+        allergens: ['oeufs']
       }
     });
 
@@ -136,14 +136,14 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
         
         name: 'Beurre',
         
-        allergens: 'lait'
+        allergens: ['lait']
       }
     });
 
     await prisma.recipeIngredient.createMany({
       data: [
-        { recipeId: testRecipe.id, ingredientId: oeufs.id, quantity: 3, unit: 'pièce' },
-        { recipeId: testRecipe.id, ingredientId: beurre.id, quantity: 100, unit: 'g' }
+        { recipeId: testRecipe.id, baseIngredientId: oeufs.id, quantity: 3, unit: 'PIECE' },
+        { recipeId: testRecipe.id, baseIngredientId: beurre.id, quantity: 100, unit: 'G' }
       ]
     });
 
@@ -160,7 +160,7 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
         
         name: 'Farine',
         
-        allergens: 'gluten'
+        allergens: ['gluten']
       }
     });
 
@@ -168,14 +168,14 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
       data: {
         
         name: 'Levure',
-        unit: 'g'
+        unit: 'G'
       }
     });
 
     await prisma.recipeIngredient.createMany({
       data: [
-        { recipeId: testRecipe.id, ingredientId: farine.id, quantity: 950, unit: 'g' }, // 95%
-        { recipeId: testRecipe.id, ingredientId: levure.id, quantity: 50, unit: 'g' }   // 5%
+        { recipeId: testRecipe.id, baseIngredientId: farine.id, quantity: 950, unit: 'G' }, // 95%
+        { recipeId: testRecipe.id, baseIngredientId: levure.id, quantity: 50, unit: 'G' }   // 5%
       ]
     });
 
@@ -194,7 +194,7 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
         
         name: 'Farine',
         
-        allergens: 'gluten'
+        allergens: ['gluten']
       }
     });
 
@@ -202,14 +202,14 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
       data: {
         
         name: 'Sel',
-        unit: 'g'
+        unit: 'G'
       }
     });
 
     await prisma.recipeIngredient.createMany({
       data: [
-        { recipeId: testRecipe.id, ingredientId: farine.id, quantity: 980, unit: 'g' }, // 98%
-        { recipeId: testRecipe.id, ingredientId: sel.id, quantity: 20, unit: 'g' }      // 2%
+        { recipeId: testRecipe.id, baseIngredientId: farine.id, quantity: 980, unit: 'G' }, // 98%
+        { recipeId: testRecipe.id, baseIngredientId: sel.id, quantity: 20, unit: 'G' }      // 2%
       ]
     });
 
@@ -228,16 +228,16 @@ describe('INCO Compliance - Liste allergènes (Article 21)', () => {
         
         name: 'Pâte à croissant',
         
-        allergens: 'gluten,lait,oeufs'
+        allergens: ['gluten', 'lait', 'oeufs']
       }
     });
 
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: croissant.id,
+        baseIngredientId: croissant.id,
         quantity: 500,
-        unit: 'g'
+        unit: 'G'
       }
     });
 
@@ -253,7 +253,7 @@ describe('INCO Compliance - Liste allergènes (Article 21)', () => {
         
         name: 'Farine',
         
-        allergens: 'gluten'
+        allergens: ['gluten']
       }
     });
 
@@ -262,7 +262,7 @@ describe('INCO Compliance - Liste allergènes (Article 21)', () => {
         
         name: 'Beurre',
         
-        allergens: 'lait'
+        allergens: ['lait']
       }
     });
 
@@ -271,15 +271,15 @@ describe('INCO Compliance - Liste allergènes (Article 21)', () => {
         
         name: 'Lait',
         
-        allergens: 'lait' // Même allergène que beurre
+        allergens: ['lait'] // Même allergène que beurre
       }
     });
 
     await prisma.recipeIngredient.createMany({
       data: [
-        { recipeId: testRecipe.id, ingredientId: farine.id, quantity: 300, unit: 'g' },
-        { recipeId: testRecipe.id, ingredientId: beurre.id, quantity: 50, unit: 'g' },
-        { recipeId: testRecipe.id, ingredientId: lait.id, quantity: 100, unit: 'ml' }
+        { recipeId: testRecipe.id, baseIngredientId: farine.id, quantity: 300, unit: 'G' },
+        { recipeId: testRecipe.id, baseIngredientId: beurre.id, quantity: 50, unit: 'G' },
+        { recipeId: testRecipe.id, baseIngredientId: lait.id, quantity: 100, unit: 'ML' }
       ]
     });
 
@@ -315,9 +315,9 @@ describe('INCO Compliance - Nutrition (Articles 30-34)', () => {
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: chocolat.id,
+        baseIngredientId: chocolat.id,
         quantity: 100,
-        unit: 'g'
+        unit: 'G'
       }
     });
 
@@ -370,9 +370,9 @@ describe('INCO Compliance - Nutrition (Articles 30-34)', () => {
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        ingredientId: jambon.id,
+        baseIngredientId: jambon.id,
         quantity: 100,
-        unit: 'g'
+        unit: 'G'
       }
     });
 

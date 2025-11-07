@@ -14,32 +14,60 @@ export const addIngredientToRecipe = async (userId, recipeId, data) => {
     return { error: 'Recette non trouvée', status: 404 };
   }
 
-  // Cas 1 : Ingrédient normal
-  if (data.ingredientId || data.baseIngredientId || data.customIngredientId) {
-    // TODO: Mettre à jour pour supporter BaseIngredient + CustomIngredient
-    // Pour l'instant ce code est obsolète car prisma.ingredient n'existe plus
-    /* 
-    const ingredient = await prisma.ingredient.findUnique({
-      where: { id: data.ingredientId }
+  // Cas 1 : BaseIngredient (ingrédient système Ciqual)
+  if (data.baseIngredientId || data.ingredientId) {
+    const ingredientId = data.baseIngredientId || data.ingredientId;
+    
+    // Vérifier que le BaseIngredient existe
+    const baseIngredient = await prisma.baseIngredient.findUnique({
+      where: { id: ingredientId }
     });
 
-    if (!ingredient) {
-      return { error: 'Ingrédient non trouvé', status: 404 };
+    if (!baseIngredient) {
+      return { error: 'Ingrédient de base non trouvé', status: 404 };
     }
-    */
 
-    // Ajouter l'ingrédient à la recette
+    // Ajouter à la recette
     const recipeIngredient = await prisma.recipeIngredient.create({
       data: {
         recipeId,
-        baseIngredientId: data.baseIngredientId || data.ingredientId,
+        baseIngredientId: ingredientId,
+        quantity: data.quantity,
+        unit: data.unit,
+        lossPercent: data.lossPercent || 0
+      },
+      include: {
+        baseIngredient: true
+      }
+    });
+
+    return { data: recipeIngredient };
+  }
+
+  // Cas 2 : CustomIngredient (ingrédient personnalisé utilisateur)
+  if (data.customIngredientId) {
+    // Vérifier que le CustomIngredient existe ET appartient à l'utilisateur
+    const customIngredient = await prisma.customIngredient.findFirst({
+      where: {
+        id: data.customIngredientId,
+        userId
+      }
+    });
+
+    if (!customIngredient) {
+      return { error: 'Ingrédient personnalisé non trouvé', status: 404 };
+    }
+
+    // Ajouter à la recette
+    const recipeIngredient = await prisma.recipeIngredient.create({
+      data: {
+        recipeId,
         customIngredientId: data.customIngredientId,
         quantity: data.quantity,
         unit: data.unit,
         lossPercent: data.lossPercent || 0
       },
       include: {
-        baseIngredient: true,
         customIngredient: true
       }
     });
@@ -47,7 +75,7 @@ export const addIngredientToRecipe = async (userId, recipeId, data) => {
     return { data: recipeIngredient };
   }
 
-  // Cas 2 : Sous-recette 🆕
+  // Cas 3 : Sous-recette 🆕
   if (data.subRecipeId) {
     // Vérifier que la sous-recette existe et appartient au même user
     const subRecipe = await prisma.recipe.findFirst({
@@ -88,7 +116,7 @@ export const addIngredientToRecipe = async (userId, recipeId, data) => {
   }
 
   // Ne devrait jamais arriver (validation Zod)
-  return { error: 'ingredientId ou subRecipeId requis', status: 400 };
+  return { error: 'baseIngredientId, customIngredientId ou subRecipeId requis', status: 400 };
 };
 
 export const getRecipeIngredients = async (userId, recipeId) => {
