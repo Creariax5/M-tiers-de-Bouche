@@ -212,7 +212,7 @@ describe('GET //:id/nutrition', () => {
         recipeId: testRecipe.id,
         baseIngredientId: viande.id,
         quantity: 1000,
-        
+        unit: 'G',
         lossPercent: 20 // 20% de perte à la cuisson
       }
     });

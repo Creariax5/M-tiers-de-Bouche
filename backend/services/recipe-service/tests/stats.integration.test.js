@@ -64,29 +64,33 @@ describe('GET /recipes/stats', () => {
 
   it('should return top 5 profitable recipes', async () => {
     // Créer des ingrédients
-    const flour = await prisma.baseIngredient.create({
+    const flour = await prisma.customIngredient.create({
       data: {
         userId: testUser.id,
+        category: 'FARINES',
         name: 'Farine',
-        
-        pricePerUnit: 0.002,
+        price: 0.002,
+        priceUnit: 'G',
         calories: 364,
         proteins: 10,
         carbs: 76,
-        fats: 1
+        fats: 1,
+        salt: 0.01
       }
     });
 
-    const butter = await prisma.baseIngredient.create({
+    const butter = await prisma.customIngredient.create({
       data: {
         userId: testUser.id,
+        category: 'MATIERES_GRASSES',
         name: 'Beurre',
-        
-        pricePerUnit: 0.01,
+        price: 0.01,
+        priceUnit: 'G',
         calories: 717,
         proteins: 1,
         carbs: 1,
-        fats: 81
+        fats: 81,
+        salt: 0.8
       }
     });
 
@@ -105,9 +109,9 @@ describe('GET /recipes/stats', () => {
       await prisma.recipeIngredient.create({
         data: {
           recipeId: recipe.id,
-          baseIngredientId: flour.id,
+          customIngredientId: flour.id,
           quantity: i * 100,
-          
+          unit: 'G',
           lossPercent: 0
         }
       });

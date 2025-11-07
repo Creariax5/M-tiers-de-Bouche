@@ -48,27 +48,39 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
   it('should generate ingredient list in ponderal order', async () => {
     // Créer ingrédients avec poids différents
     const farine = await prisma.baseIngredient.create({
-          data: {
-          category: 'FARINES',
+      data: {
+        category: 'FARINES',
         name: 'Farine de blé',
-        
+        calories: 350,
+        proteins: 10,
+        carbs: 72,
+        fats: 1.5,
+        salt: 0.01,
         allergens: ['gluten']
       }
     });
 
     const eau = await prisma.baseIngredient.create({
       data: {
-        category: 'BOISSONS',
+        category: 'AUTRE',
         name: 'Eau',
-        unit: 'ML'
+        calories: 0,
+        proteins: 0,
+        carbs: 0,
+        fats: 0,
+        salt: 0
       }
     });
 
     const sel = await prisma.baseIngredient.create({
       data: {
-        category: 'CONDIMENTS',
+        category: 'EPICES',
         name: 'Sel',
-        unit: 'G'
+        calories: 0,
+        proteins: 0,
+        carbs: 0,
+        fats: 0,
+        salt: 100
       }
     });
 
@@ -89,10 +101,14 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
 
   it('should highlight allergens in UPPERCASE (text format)', async () => {
     const lait = await prisma.baseIngredient.create({
-          data: {
-          category: 'AUTRES',
+      data: {
+        category: 'PRODUITS_LAITIERS',
         name: 'Lait entier',
-        
+        calories: 60,
+        proteins: 3.2,
+        carbs: 4.8,
+        fats: 3.5,
+        salt: 0.1,
         allergens: ['lait']
       }
     });
@@ -101,7 +117,11 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
       data: {
         category: 'SUCRES',
         name: 'Sucre',
-        unit: 'G'
+        calories: 400,
+        proteins: 0,
+        carbs: 100,
+        fats: 0,
+        salt: 0
         // Pas d'allergène
       }
     });
@@ -123,10 +143,14 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
 
   it('should highlight allergens with <strong> (HTML format)', async () => {
     const oeufs = await prisma.baseIngredient.create({
-          data: {
-          category: 'OEUFS',
+      data: {
+        category: 'OEUFS',
         name: 'Œufs',
-        
+        calories: 145,
+        proteins: 13,
+        carbs: 1,
+        fats: 10,
+        salt: 0.3,
         allergens: ['oeufs']
       }
     });
@@ -135,7 +159,11 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
       data: {
         category: 'MATIERES_GRASSES',
         name: 'Beurre',
-        
+        calories: 750,
+        proteins: 0.6,
+        carbs: 0.1,
+        fats: 82,
+        salt: 0.8,
         allergens: ['lait']
       }
     });
@@ -159,16 +187,24 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
       data: {
         category: 'FARINES',
         name: 'Farine',
-        
+        calories: 350,
+        proteins: 10,
+        carbs: 72,
+        fats: 1.5,
+        salt: 0.01,
         allergens: ['gluten']
       }
     });
 
     const levure = await prisma.baseIngredient.create({
-          data: {
-          category: 'AUTRES',
+      data: {
+        category: 'LEVURES',
         name: 'Levure',
-        unit: 'G'
+        calories: 50,
+        proteins: 8,
+        carbs: 2,
+        fats: 0.5,
+        salt: 0.05
       }
     });
 
@@ -193,16 +229,24 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
       data: {
         category: 'FARINES',
         name: 'Farine',
-        
+        calories: 350,
+        proteins: 10,
+        carbs: 72,
+        fats: 1.5,
+        salt: 0.01,
         allergens: ['gluten']
       }
     });
 
     const sel = await prisma.baseIngredient.create({
       data: {
-        category: 'CONDIMENTS',
+        category: 'EPICES',
         name: 'Sel',
-        unit: 'G'
+        calories: 0,
+        proteins: 0,
+        carbs: 0,
+        fats: 0,
+        salt: 100
       }
     });
 
@@ -224,10 +268,14 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
 describe('INCO Compliance - Liste allergènes (Article 21)', () => {
   it('should format allergen list in French', async () => {
     const croissant = await prisma.baseIngredient.create({
-          data: {
-          category: 'AUTRES',
+      data: {
+        category: 'AUTRE',
         name: 'Pâte à croissant',
-        
+        calories: 400,
+        proteins: 8,
+        carbs: 50,
+        fats: 20,
+        salt: 1.2,
         allergens: ['gluten', 'lait', 'oeufs']
       }
     });
@@ -252,7 +300,11 @@ describe('INCO Compliance - Liste allergènes (Article 21)', () => {
       data: {
         category: 'FARINES',
         name: 'Farine',
-        
+        calories: 350,
+        proteins: 10,
+        carbs: 72,
+        fats: 1.5,
+        salt: 0.01,
         allergens: ['gluten']
       }
     });
@@ -261,16 +313,24 @@ describe('INCO Compliance - Liste allergènes (Article 21)', () => {
       data: {
         category: 'MATIERES_GRASSES',
         name: 'Beurre',
-        
+        calories: 750,
+        proteins: 0.6,
+        carbs: 0.1,
+        fats: 82,
+        salt: 0.8,
         allergens: ['lait']
       }
     });
 
     const lait = await prisma.baseIngredient.create({
-          data: {
-          category: 'AUTRES',
+      data: {
+        category: 'PRODUITS_LAITIERS',
         name: 'Lait',
-        
+        calories: 60,
+        proteins: 3.2,
+        carbs: 4.8,
+        fats: 3.5,
+        salt: 0.1,
         allergens: ['lait'] // Même allergène que beurre
       }
     });

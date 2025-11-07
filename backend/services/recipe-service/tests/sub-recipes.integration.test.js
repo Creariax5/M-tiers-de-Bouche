@@ -101,14 +101,15 @@ describe('Sub-Recipes (Compositions)', () => {
         .send({
           subRecipeId: pateFeuilletee.id, // 🆕 Sous-recette au lieu d'ingrédient
           quantity: 750,
-          
+          unit: 'G',
           lossPercent: 0
         });
 
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty('id');
       expect(response.body.subRecipeId).toBe(pateFeuilletee.id);
-      expect(response.body.ingredientId).toBeNull(); // Exclusif
+      expect(response.body.baseIngredientId).toBeNull(); // Exclusif
+      expect(response.body.customIngredientId).toBeNull(); // Exclusif
       expect(response.body.quantity).toBe(750);
     });
 
@@ -123,7 +124,7 @@ describe('Sub-Recipes (Compositions)', () => {
 
       const ingredient = await prisma.baseIngredient.create({
         data: {
-          category: 'AUTRES',
+          category: 'AUTRE',
           name: 'Test Ingredient',
           calories: 100,
           proteins: 5,
@@ -152,7 +153,7 @@ describe('Sub-Recipes (Compositions)', () => {
         });
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toContain('soit ingredientId soit subRecipeId');
+      expect(response.body.error).toContain('soit baseIngredientId, customIngredientId ou subRecipeId');
     });
 
     it('should reject if neither ingredientId nor subRecipeId provided', async () => {
@@ -173,7 +174,7 @@ describe('Sub-Recipes (Compositions)', () => {
         });
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toContain('soit ingredientId soit subRecipeId');
+      expect(response.body.error).toContain('soit baseIngredientId, customIngredientId ou subRecipeId');
     });
   });
 
@@ -184,7 +185,11 @@ describe('Sub-Recipes (Compositions)', () => {
         data: {
           category: 'MATIERES_GRASSES',
           name: 'Beurre',
-          
+          calories: 750,
+          proteins: 0.6,
+          carbs: 0.1,
+          fats: 82,
+          salt: 0.8,
           allergens: ['lait']
         }
       });
@@ -202,7 +207,11 @@ describe('Sub-Recipes (Compositions)', () => {
         data: {
           category: 'FARINES',
           name: 'Farine',
-          
+          calories: 350,
+          proteins: 10,
+          carbs: 72,
+          fats: 1.5,
+          salt: 0.01,
           allergens: ['gluten']
         }
       });
@@ -224,10 +233,14 @@ describe('Sub-Recipes (Compositions)', () => {
       });
 
       const oeufs = await prisma.baseIngredient.create({
-            data: {
-            category: 'OEUFS',
+        data: {
+          category: 'OEUFS',
           name: 'Œufs',
-          
+          calories: 145,
+          proteins: 13,
+          carbs: 1,
+          fats: 10,
+          salt: 0.3,
           allergens: ['oeufs']
         }
       });
@@ -360,36 +373,40 @@ describe('Sub-Recipes (Compositions)', () => {
         }
       });
 
-      const beurre = await prisma.baseIngredient.create({
+      const beurre = await prisma.customIngredient.create({
         data: {
+          userId: testUser.id,
           category: 'MATIERES_GRASSES',
           name: 'Beurre',
+          price: 0.01,
+          priceUnit: 'G',
           calories: 750,
           proteins: 0.6,
           carbs: 0.1,
           fats: 82,
-          salt: 0.8,
-          allergens: ['lait']
+          salt: 0.8
         }
       });
 
-      const farine = await prisma.baseIngredient.create({
+      const farine = await prisma.customIngredient.create({
         data: {
+          userId: testUser.id,
           category: 'FARINES',
           name: 'Farine',
+          price: 0.002,
+          priceUnit: 'G',
           calories: 350,
           proteins: 10.5,
           carbs: 72,
           fats: 1.2,
-          salt: 0.01,
-          allergens: ['gluten']
+          salt: 0.01
         }
       });
 
       await prisma.recipeIngredient.createMany({
         data: [
-          { recipeId: pate.id, baseIngredientId: beurre.id, quantity: 250, unit: 'G' },
-          { recipeId: pate.id, baseIngredientId: farine.id, quantity: 500, unit: 'G' }
+          { recipeId: pate.id, customIngredientId: beurre.id, quantity: 250, unit: 'G' },
+          { recipeId: pate.id, customIngredientId: farine.id, quantity: 500, unit: 'G' }
         ]
       });
 
@@ -402,10 +419,13 @@ describe('Sub-Recipes (Compositions)', () => {
         }
       });
 
-      const chocolat = await prisma.baseIngredient.create({
+      const chocolat = await prisma.customIngredient.create({
         data: {
-          category: 'PRODUITS_SUCRES',
+          userId: testUser.id,
+          category: 'CHOCOLAT_CACAO',
           name: 'Chocolat',
+          price: 0.02,
+          priceUnit: 'G',
           calories: 550,
           proteins: 5,
           carbs: 50,
@@ -427,7 +447,7 @@ describe('Sub-Recipes (Compositions)', () => {
         .post(`/${croissant.id}/ingredients`)
         .set('Authorization', `Bearer ${token}`)
         .send({
-          baseIngredientId: chocolat.id,
+          customIngredientId: chocolat.id,
           quantity: 50,
           unit: 'G'
         });
