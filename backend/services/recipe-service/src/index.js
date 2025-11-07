@@ -1,5 +1,6 @@
 import express from 'express';
 import recipeRoutes from './routes/recipe.routes.js';
+import baseIngredientRoutes from './routes/baseIngredients.js';
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -10,6 +11,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'recipe-service' });
 });
 
+app.use('/ingredients/base', baseIngredientRoutes);
 app.use('/', recipeRoutes);
 
 if (process.env.NODE_ENV !== 'test') {
