@@ -32,12 +32,14 @@ testFiles.forEach(file => {
   content = content.replace(/unit: 'pièce'/g, "unit: 'PIECE'");
   content = content.replace(/unit: 'piece'/g, "unit: 'PIECE'");
   
-  // 2. Ajouter category + nutrition avant name dans prisma.baseIngredient.create
-  const createPattern = /(prisma\.baseIngredient\.create\(\{\s*data:\s*\{)\s*\n(\s+)(name:)/g;
-  if (content.match(createPattern)) {
-    content = content.replace(createPattern, (match, p1, p2, p3) => {
-      return `${p1}\n${p2}category: 'AUTRE',\n${p2}${defaultNutrition}\n${p2}${p3}`;
-    });
+  // 2. Ajouter category + nutrition si manquants
+  // Chercher tous les baseIngredient.create qui n'ont PAS déjà category
+  if (!content.includes('category:') && content.includes('prisma.baseIngredient.create')) {
+    // Ajouter après "data: {"
+    content = content.replace(
+      /(prisma\.baseIngredient\.create\(\{\s*data:\s*\{)/g,
+      `$1\n      category: 'AUTRE',\n      ${defaultNutrition}`
+    );
     modified = true;
   }
   
