@@ -8,8 +8,8 @@
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
 - **Points planifiés** : 34 (inchangé, renforcement US existantes)
-- **Points réalisés** : 21/34 (62%)
-- **Vélocité** : 21 points sur 1 jour
+- **Points réalisés** : 24/34 (71%)
+- **Vélocité** : 24 points sur 1 jour
 
 ---
 
@@ -87,18 +87,28 @@ En tant qu'artisan, je veux rechercher rapidement un ingrédient afin de l'ajout
 ---
 
 ### US-023 : Détail ingrédient
-**Points** : 3 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 3 | **Priorité** : 🔴 MUST | **Assigné à** : IA | **Status** : ✅ DONE
 
 **Description** :  
 En tant qu'artisan, je veux voir les détails d'un ingrédient afin de connaître ses valeurs nutritionnelles.
 
 **Critères d'acceptation** :
-- [ ] GET /ingredients/:id
-- [ ] Affichage complet : nom, valeurs nutritionnelles, allergènes, prix moyen
+- [x] GET /ingredients/:id (base OU custom selon ID)
+- [x] Affichage complet : nom, valeurs nutritionnelles, allergènes
+- [x] Prix/fournisseur pour custom ingredients
+- [x] Isolation utilisateur (custom only for owner)
+- [x] Validation UUID format
 
 **Tâches** :
-- [ ] Route GET /ingredients/:id
-- [ ] Tests
+- [x] ~~Route GET /ingredients/:id~~
+- [x] ~~Service recherche base + custom~~
+- [x] ~~Validator UUID~~
+- [x] ~~Controller + isolation user~~
+- [x] ~~Tests d'intégration (6/6)~~
+
+**Progression** : 3/3 points (100%) ✅  
+**Démarré** : 7 novembre 2025  
+**Terminé** : 7 novembre 2025
 
 ---
 
@@ -273,28 +283,38 @@ _À remplir quotidiennement_
   - Phase VALIDATION : ✅ **12/12 tests passent** (100%) ✨
   - Diagnostic : ✅ 10 erreurs corrigées méthodiquement
   
+- ✅ **US-023 TERMINÉE (3/3 points, 100%)** ✨ : Détail ingrédient
+  - Phase RED : ✅ Tests créés (6 tests, tous échouaient)
+  - Phase GREEN : ✅ Implémentation complète
+    - Validator (UUID format)
+    - Service (recherche base + custom avec isolation user)
+    - Controller (404 si not found ou autre user)
+  - Phase VALIDATION : ✅ **6/6 tests passent** (100%) ✨
+  - Durée : **~30 minutes** (TDD strict)
+  
 **Architecture API complète** :
 - `GET /ingredients/base?search=terme` - Base Ciqual uniquement
 - `GET /ingredients/base/:id` - Détails ingrédient base
-- `GET /ingredients?search=terme` - **Fusion base + custom** (NOUVEAU)
-  - Full-text search PostgreSQL (to_tsvector + plainto_tsquery)
-  - Tri par pertinence (ts_rank DESC)
-  - Fusion intelligente (20 résultats max)
-  - Isolation utilisateur (custom ingredients)
-  - Performance <200ms
+- `GET /ingredients?search=terme` - Fusion base + custom
+- `GET /ingredients/:id` - **Détail ingrédient** (base OU custom) (NOUVEAU)
+  - Recherche d'abord dans base_ingredients
+  - Si non trouvé, cherche dans custom_ingredients
+  - Isolation utilisateur (custom = userId match)
+  - Validation UUID format
   
-**Tests totaux** : **145/145 (100%)** ✅
+**Tests totaux** : **151/151 (100%)** ✅
 - US-021 : 19 tests
-- US-022 : 12 tests  
-- Total Sprint 2 : 31 tests
-- Projet complet : 145 tests
+- US-022 : 12 tests
+- US-023 : 6 tests  
+- Total Sprint 2 : 37 tests
+- Projet complet : 151 tests
 
-**Fichiers créés US-022** :
-- `src/validators/searchIngredientsValidator.js` (27 lignes)
-- `src/services/ingredientSearchService.js` (134 lignes)
-- `src/controllers/ingredientSearchController.js` (20 lignes)
-- `src/routes/ingredients.js` (15 lignes)
-- `tests/search-ingredients.integration.test.js` (235 lignes)
+**Fichiers créés US-023** :
+- `src/validators/ingredientIdValidator.js` (21 lignes)
+- `src/services/ingredientDetailService.js` (70 lignes)
+- `src/controllers/ingredientDetailController.js` (28 lignes)
+- `src/routes/ingredients.js` (modifié +7 lignes)
+- `tests/ingredient-detail.integration.test.js` (172 lignes)
 
 **Problèmes résolus** (TDD strict) :
 1. ❌ → ✅ Prisma enum validation (priceUnit)
