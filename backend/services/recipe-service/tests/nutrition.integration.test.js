@@ -48,7 +48,8 @@ describe('GET //:id/nutrition', () => {
   it('should calculate nutrition values for 100g', async () => {
     // Créer ingrédients avec valeurs nutritionnelles
     const farine = await prisma.baseIngredient.create({
-      data: {
+          data: {
+          category: 'FARINES',
         name: 'Farine T65',
         category: 'FARINES',
         calories: 350, // pour 100g
@@ -64,6 +65,7 @@ describe('GET //:id/nutrition', () => {
 
     const eau = await prisma.baseIngredient.create({
       data: {
+        category: 'BOISSONS',
         name: 'Eau',
         category: 'AUTRE',
         calories: 0,
@@ -78,7 +80,7 @@ describe('GET //:id/nutrition', () => {
 
     const sel = await prisma.baseIngredient.create({
       data: {
-        
+        category: 'CONDIMENTS',
         name: 'Sel',
         
         category: 'AUTRE',
@@ -142,7 +144,7 @@ describe('GET //:id/nutrition', () => {
     // Ingrédient simple
     const beurre = await prisma.baseIngredient.create({
       data: {
-        
+        category: 'MATIERES_GRASSES',
         name: 'Beurre',
         
         category: 'AUTRE',
@@ -187,8 +189,8 @@ describe('GET //:id/nutrition', () => {
   it('should handle lossPercent in calculations', async () => {
     // Viande avec perte à la cuisson
     const viande = await prisma.baseIngredient.create({
-      data: {
-        
+          data: {
+          category: 'VIANDES',
         name: 'Viande hachée',
         
         category: 'AUTRE',
@@ -283,7 +285,7 @@ describe('GET //:id (with nutrition)', () => {
     // Créer ingrédient
     const sucre = await prisma.baseIngredient.create({
       data: {
-        
+        category: 'SUCRES',
         name: 'Sucre',
         
         category: 'AUTRE',

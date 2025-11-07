@@ -48,8 +48,8 @@ describe('GET //:id/allergens', () => {
   it('should detect allergens from ingredients', async () => {
     // Créer des ingrédients avec allergènes
     const farine = await prisma.baseIngredient.create({
-      data: {
-        
+          data: {
+          category: 'FARINES',
         name: 'Farine de blé T55',
         
         allergens: ['gluten']
@@ -57,8 +57,8 @@ describe('GET //:id/allergens', () => {
     });
 
     const beurre = await prisma.baseIngredient.create({
-      data: {
-        
+          data: {
+          category: 'MATIERES_GRASSES',
         name: 'Beurre doux',
         
         allergens: ['lait']
@@ -67,7 +67,7 @@ describe('GET //:id/allergens', () => {
 
     const oeufs = await prisma.baseIngredient.create({
       data: {
-        
+        category: 'OEUFS',
         name: 'Oeufs',
         
         allergens: ['oeufs']
@@ -99,8 +99,8 @@ describe('GET //:id/allergens', () => {
   it('should detect multiple allergens from single ingredient', async () => {
     // Ingrédient avec plusieurs allergènes
     const pain = await prisma.baseIngredient.create({
-      data: {
-        
+          data: {
+          category: 'FARINES',
         name: 'Pain de mie',
         
         allergens: ['gluten', 'lait', 'soja']
@@ -131,7 +131,7 @@ describe('GET //:id/allergens', () => {
     // Ingrédient sans allergène
     const sucre = await prisma.baseIngredient.create({
       data: {
-        
+        category: 'SUCRES',
         name: 'Sucre',
         
         allergens: []
@@ -158,8 +158,8 @@ describe('GET //:id/allergens', () => {
   it('should return unique allergens (no duplicates)', async () => {
     // Plusieurs ingrédients avec le même allergène
     const farine = await prisma.baseIngredient.create({
-      data: {
-        
+          data: {
+          category: 'FARINES',
         name: 'Farine T55',
         
         allergens: ['gluten']
@@ -167,8 +167,8 @@ describe('GET //:id/allergens', () => {
     });
 
     const pain = await prisma.baseIngredient.create({
-      data: {
-        
+          data: {
+          category: 'AUTRES',
         name: 'Chapelure',
         
         allergens: ['gluten']
@@ -220,8 +220,8 @@ describe('GET //:id (with allergens)', () => {
   it('should include allergens in recipe detail', async () => {
     // Créer ingrédient avec allergènes
     const noisettes = await prisma.baseIngredient.create({
-      data: {
-        
+          data: {
+          category: 'FRUITS_SECS',
         name: 'Noisettes',
         
         allergens: ['fruits-a-coque']

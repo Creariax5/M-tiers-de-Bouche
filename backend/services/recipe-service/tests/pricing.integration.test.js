@@ -38,7 +38,7 @@ describe('GET //:id/pricing', () => {
 
   afterEach(async () => {
     await prisma.recipeIngredient.deleteMany({});
-    await prisma.baseIngredient.deleteMany({});
+    await prisma.customIngredient.deleteMany({});
     await prisma.recipe.deleteMany({});
   });
 
@@ -47,22 +47,24 @@ describe('GET //:id/pricing', () => {
   });
 
   it('should calculate cost with ingredients', async () => {
-    // Créer ingrédients avec prix
-    const farine = await prisma.baseIngredient.create({
+    // Créer ingrédients personnalisés avec prix
+    const farine = await prisma.customIngredient.create({
       data: {
-        
+        userId: testUser.id,
+        category: 'FARINES',
         name: 'Farine T55',
-        
-        pricePerUnit: 0.002, // 2€/kg = 0.002€/g
+        price: 0.002, // 2€/kg = 0.002€/g
+        priceUnit: 'G'
       },
     });
 
-    const beurre = await prisma.baseIngredient.create({
+    const beurre = await prisma.customIngredient.create({
       data: {
-        
+        userId: testUser.id,
+        category: 'MATIERES_GRASSES',
         name: 'Beurre doux',
-        
-        pricePerUnit: 0.01, // 10€/kg = 0.01€/g
+        price: 0.01, // 10€/kg = 0.01€/g
+        priceUnit: 'G'
       },
     });
 
@@ -70,9 +72,9 @@ describe('GET //:id/pricing', () => {
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        baseIngredientId: farine.id,
+        customIngredientId: farine.id,
         quantity: 500,
-        
+        unit: 'G',
         lossPercent: 0,
       },
     });
@@ -80,9 +82,9 @@ describe('GET //:id/pricing', () => {
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        baseIngredientId: beurre.id,
+        customIngredientId: beurre.id,
         quantity: 250,
-        
+        unit: 'G',
         lossPercent: 0,
       },
     });
@@ -110,21 +112,22 @@ describe('GET //:id/pricing', () => {
 
   it('should calculate cost with loss percent', async () => {
     // Viande avec perte à la cuisson
-    const viande = await prisma.baseIngredient.create({
+    const viande = await prisma.customIngredient.create({
       data: {
-        
+        userId: testUser.id,
+        category: 'AUTRE',
         name: 'Viande hachée',
-        
-        pricePerUnit: 0.015, // 15€/kg
+        price: 0.015, // 15€/kg
+        priceUnit: 'G'
       },
     });
 
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        baseIngredientId: viande.id,
+        customIngredientId: viande.id,
         quantity: 1000,
-        
+        unit: 'G',
         lossPercent: 20, // 20% de perte
       },
     });
@@ -141,21 +144,22 @@ describe('GET //:id/pricing', () => {
   });
 
   it('should use custom coefficient if provided', async () => {
-    const sel = await prisma.baseIngredient.create({
+    const sel = await prisma.customIngredient.create({
       data: {
-        
+        userId: testUser.id,
+        category: 'EPICES',
         name: 'Sel',
-        
-        pricePerUnit: 0.001, // 1€/kg
+        price: 0.001, // 1€/kg
+        priceUnit: 'G'
       },
     });
 
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        baseIngredientId: sel.id,
+        customIngredientId: sel.id,
         quantity: 10,
-        
+        unit: 'G',
         lossPercent: 0,
       },
     });
@@ -207,21 +211,22 @@ describe('GET //:id/pricing', () => {
 
   it('should include pricing in GET //:id', async () => {
     // Ajouter un ingrédient
-    const sucre = await prisma.baseIngredient.create({
+    const sucre = await prisma.customIngredient.create({
       data: {
-        
+        userId: testUser.id,
+        category: 'SUCRES',
         name: 'Sucre',
-        
-        pricePerUnit: 0.0015, // 1.5€/kg
+        price: 0.0015, // 1.5€/kg
+        priceUnit: 'G'
       },
     });
 
     await prisma.recipeIngredient.create({
       data: {
         recipeId: testRecipe.id,
-        baseIngredientId: sucre.id,
+        customIngredientId: sucre.id,
         quantity: 200,
-        
+        unit: 'G',
         lossPercent: 0,
       },
     });

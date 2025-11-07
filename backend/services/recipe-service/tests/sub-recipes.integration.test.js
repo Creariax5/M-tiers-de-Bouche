@@ -48,10 +48,8 @@ describe('Sub-Recipes (Compositions)', () => {
       // Créer ingrédients de la sous-recette
       const beurre = await prisma.baseIngredient.create({
         data: {
-          
+          category: 'MATIERES_GRASSES',
           name: 'Beurre',
-          
-          pricePerUnit: 0.01, // 1€/100g
           calories: 750,
           proteins: 0.6,
           carbs: 0.1,
@@ -65,10 +63,8 @@ describe('Sub-Recipes (Compositions)', () => {
 
       const farine = await prisma.baseIngredient.create({
         data: {
-          
+          category: 'FARINES',
           name: 'Farine',
-          
-          pricePerUnit: 0.002, // 0.2€/100g
           calories: 350,
           proteins: 10.5,
           carbs: 72.0,
@@ -127,9 +123,13 @@ describe('Sub-Recipes (Compositions)', () => {
 
       const ingredient = await prisma.baseIngredient.create({
         data: {
-          
+          category: 'AUTRES',
           name: 'Test Ingredient',
-          unit: 'G'
+          calories: 100,
+          proteins: 5,
+          carbs: 10,
+          fats: 2,
+          salt: 0.1
         }
       });
 
@@ -182,7 +182,7 @@ describe('Sub-Recipes (Compositions)', () => {
       // Niveau 3 : Ingrédient de base (beurre avec lait)
       const beurre = await prisma.baseIngredient.create({
         data: {
-          
+          category: 'MATIERES_GRASSES',
           name: 'Beurre',
           
           allergens: ['lait']
@@ -200,7 +200,7 @@ describe('Sub-Recipes (Compositions)', () => {
 
       const farine = await prisma.baseIngredient.create({
         data: {
-          
+          category: 'FARINES',
           name: 'Farine',
           
           allergens: ['gluten']
@@ -224,8 +224,8 @@ describe('Sub-Recipes (Compositions)', () => {
       });
 
       const oeufs = await prisma.baseIngredient.create({
-        data: {
-          
+            data: {
+            category: 'OEUFS',
           name: 'Œufs',
           
           allergens: ['oeufs']
@@ -275,7 +275,7 @@ describe('Sub-Recipes (Compositions)', () => {
 
       const farine = await prisma.baseIngredient.create({
         data: {
-          
+          category: 'FARINES',
           name: 'Farine',
           
           category: 'AUTRE',
@@ -294,7 +294,7 @@ describe('Sub-Recipes (Compositions)', () => {
 
       const eau = await prisma.baseIngredient.create({
         data: {
-          
+          category: 'BOISSONS',
           name: 'Eau',
           
           category: 'AUTRE',
@@ -362,19 +362,27 @@ describe('Sub-Recipes (Compositions)', () => {
 
       const beurre = await prisma.baseIngredient.create({
         data: {
-          
+          category: 'MATIERES_GRASSES',
           name: 'Beurre',
-          
-          pricePerUnit: 0.01 // 1€/100g
+          calories: 750,
+          proteins: 0.6,
+          carbs: 0.1,
+          fats: 82,
+          salt: 0.8,
+          allergens: ['lait']
         }
       });
 
       const farine = await prisma.baseIngredient.create({
         data: {
-          
+          category: 'FARINES',
           name: 'Farine',
-          
-          pricePerUnit: 0.002 // 0.2€/100g
+          calories: 350,
+          proteins: 10.5,
+          carbs: 72,
+          fats: 1.2,
+          salt: 0.01,
+          allergens: ['gluten']
         }
       });
 
@@ -396,10 +404,13 @@ describe('Sub-Recipes (Compositions)', () => {
 
       const chocolat = await prisma.baseIngredient.create({
         data: {
-          
+          category: 'PRODUITS_SUCRES',
           name: 'Chocolat',
-          
-          pricePerUnit: 0.02 // 2€/100g
+          calories: 550,
+          proteins: 5,
+          carbs: 50,
+          fats: 35,
+          salt: 0.02
         }
       });
 

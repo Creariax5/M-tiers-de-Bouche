@@ -84,12 +84,12 @@ describe('POST //:id/ingredients', () => {
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('id');
     expect(response.body.recipeId).toBe(testRecipe.id);
-    expect(response.body.ingredientId).toBe(testIngredient.id);
+    expect(response.body.baseIngredientId).toBe(testIngredient.id);
     expect(response.body.quantity).toBe(500);
-    expect(response.body.unit).toBe('g');
+    expect(response.body.unit).toBe('G');
     expect(response.body.lossPercent).toBe(5);
-    expect(response.body).toHaveProperty('ingredient');
-    expect(response.body.ingredient.name).toBe('Farine T55');
+    expect(response.body).toHaveProperty('baseIngredient');
+    expect(response.body.baseIngredient.name).toBe('Farine T55');
   });
 
   it('should add an ingredient with default loss percent (0)', async () => {
@@ -245,8 +245,8 @@ describe('GET //:id/ingredients', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveLength(2);
-    expect(response.body[0]).toHaveProperty('ingredient');
-    expect(response.body[0].ingredient).toHaveProperty('name');
+    expect(response.body[0]).toHaveProperty('baseIngredient');
+    expect(response.body[0].baseIngredient).toHaveProperty('name');
   });
 
   it('should fail when recipe does not belong to user', async () => {
@@ -274,7 +274,7 @@ describe('DELETE //:id/ingredients/:ingredientId', () => {
         recipeId: testRecipe.id,
         baseIngredientId: testIngredient.id,
         quantity: 500,
-        
+        unit: 'G',
         lossPercent: 5
       }
     });
@@ -334,7 +334,7 @@ describe('PUT //:id/ingredients/:ingredientId', () => {
         recipeId: testRecipe.id,
         baseIngredientId: testIngredient.id,
         quantity: 500,
-        
+        unit: 'G',
         lossPercent: 5
       }
     });

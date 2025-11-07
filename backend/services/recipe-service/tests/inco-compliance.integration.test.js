@@ -48,8 +48,8 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
   it('should generate ingredient list in ponderal order', async () => {
     // Créer ingrédients avec poids différents
     const farine = await prisma.baseIngredient.create({
-      data: {
-        
+          data: {
+          category: 'FARINES',
         name: 'Farine de blé',
         
         allergens: ['gluten']
@@ -58,7 +58,7 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
 
     const eau = await prisma.baseIngredient.create({
       data: {
-        
+        category: 'BOISSONS',
         name: 'Eau',
         unit: 'ML'
       }
@@ -66,7 +66,7 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
 
     const sel = await prisma.baseIngredient.create({
       data: {
-        
+        category: 'CONDIMENTS',
         name: 'Sel',
         unit: 'G'
       }
@@ -89,8 +89,8 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
 
   it('should highlight allergens in UPPERCASE (text format)', async () => {
     const lait = await prisma.baseIngredient.create({
-      data: {
-        
+          data: {
+          category: 'AUTRES',
         name: 'Lait entier',
         
         allergens: ['lait']
@@ -99,7 +99,7 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
 
     const sucre = await prisma.baseIngredient.create({
       data: {
-        
+        category: 'SUCRES',
         name: 'Sucre',
         unit: 'G'
         // Pas d'allergène
@@ -123,8 +123,8 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
 
   it('should highlight allergens with <strong> (HTML format)', async () => {
     const oeufs = await prisma.baseIngredient.create({
-      data: {
-        
+          data: {
+          category: 'OEUFS',
         name: 'Œufs',
         
         allergens: ['oeufs']
@@ -133,7 +133,7 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
 
     const beurre = await prisma.baseIngredient.create({
       data: {
-        
+        category: 'MATIERES_GRASSES',
         name: 'Beurre',
         
         allergens: ['lait']
@@ -157,7 +157,7 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
   it('should show percentage for major ingredients (>5%)', async () => {
     const farine = await prisma.baseIngredient.create({
       data: {
-        
+        category: 'FARINES',
         name: 'Farine',
         
         allergens: ['gluten']
@@ -165,8 +165,8 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
     });
 
     const levure = await prisma.baseIngredient.create({
-      data: {
-        
+          data: {
+          category: 'AUTRES',
         name: 'Levure',
         unit: 'G'
       }
@@ -191,7 +191,7 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
   it('should NOT show percentage for minor ingredients (<5%)', async () => {
     const farine = await prisma.baseIngredient.create({
       data: {
-        
+        category: 'FARINES',
         name: 'Farine',
         
         allergens: ['gluten']
@@ -200,7 +200,7 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
 
     const sel = await prisma.baseIngredient.create({
       data: {
-        
+        category: 'CONDIMENTS',
         name: 'Sel',
         unit: 'G'
       }
@@ -224,8 +224,8 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
 describe('INCO Compliance - Liste allergènes (Article 21)', () => {
   it('should format allergen list in French', async () => {
     const croissant = await prisma.baseIngredient.create({
-      data: {
-        
+          data: {
+          category: 'AUTRES',
         name: 'Pâte à croissant',
         
         allergens: ['gluten', 'lait', 'oeufs']
@@ -250,7 +250,7 @@ describe('INCO Compliance - Liste allergènes (Article 21)', () => {
   it('should deduplicate allergens from multiple ingredients', async () => {
     const farine = await prisma.baseIngredient.create({
       data: {
-        
+        category: 'FARINES',
         name: 'Farine',
         
         allergens: ['gluten']
@@ -259,7 +259,7 @@ describe('INCO Compliance - Liste allergènes (Article 21)', () => {
 
     const beurre = await prisma.baseIngredient.create({
       data: {
-        
+        category: 'MATIERES_GRASSES',
         name: 'Beurre',
         
         allergens: ['lait']
@@ -267,8 +267,8 @@ describe('INCO Compliance - Liste allergènes (Article 21)', () => {
     });
 
     const lait = await prisma.baseIngredient.create({
-      data: {
-        
+          data: {
+          category: 'AUTRES',
         name: 'Lait',
         
         allergens: ['lait'] // Même allergène que beurre
@@ -294,8 +294,8 @@ describe('INCO Compliance - Liste allergènes (Article 21)', () => {
 describe('INCO Compliance - Nutrition (Articles 30-34)', () => {
   it('should include mandatory fields (kJ, kcal, sugars, saturatedFats)', async () => {
     const chocolat = await prisma.baseIngredient.create({
-      data: {
-        
+          data: {
+          category: 'PRODUITS_SUCRES',
         name: 'Chocolat noir',
         
         category: 'AUTRE',
@@ -349,8 +349,8 @@ describe('INCO Compliance - Nutrition (Articles 30-34)', () => {
 
   it('should round salt to 2 decimals (Annexe XV)', async () => {
     const jambon = await prisma.baseIngredient.create({
-      data: {
-        
+          data: {
+          category: 'AUTRES',
         name: 'Jambon',
         
         category: 'AUTRE',
