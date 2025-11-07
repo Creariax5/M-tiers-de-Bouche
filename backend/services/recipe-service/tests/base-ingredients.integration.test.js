@@ -223,9 +223,19 @@ describe('GET /ingredients/base - Search base ingredients', () => {
   });
 
   it('should search in french with accents', async () => {
+    // Test avec accents (URL encoded)
+    const searchTerm = 'café';
     const response = await request(app)
-      .get('/ingredients/base?search=café')
+      .get(`/ingredients/base?search=${encodeURIComponent(searchTerm)}`)
       .set('Authorization', `Bearer ${token}`);
+
+    // Debug: afficher l'erreur si le statut n'est pas 200
+    if (response.status !== 200) {
+      console.log('Response status:', response.status);
+      console.log('Response body:', JSON.stringify(response.body, null, 2));
+      console.log('Search query:', searchTerm);
+      console.log('Search query encoded:', encodeURIComponent(searchTerm));
+    }
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
