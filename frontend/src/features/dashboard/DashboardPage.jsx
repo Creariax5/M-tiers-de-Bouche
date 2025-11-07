@@ -38,10 +38,30 @@ export default function DashboardPage() {
       <nav className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            <div className="flex items-center">
+            <div className="flex items-center space-x-8">
               <h1 className="text-xl font-bold text-gray-900">
                 🧁 Métiers de Bouche
               </h1>
+              <div className="flex space-x-4">
+                <Button
+                  onClick={() => navigate('/dashboard')}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  📊 Dashboard
+                </Button>
+                <Button
+                  onClick={() => navigate('/recipes')}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  📖 Mes Recettes
+                </Button>
+                <Button
+                  onClick={() => navigate('/recipes/new')}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  ➕ Nouvelle Recette
+                </Button>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-700">
@@ -93,19 +113,6 @@ export default function DashboardPage() {
                     <p className="text-sm text-gray-600 mb-1">Recettes créées</p>
                     <p className="text-4xl font-bold text-blue-600">{stats.totalRecipes}</p>
                   </div>
-                  {stats.totalRecipes === 0 && (
-                    <div className="flex-1 text-center">
-                      <p className="text-gray-500 mb-4">
-                        Vous n'avez pas encore de recettes
-                      </p>
-                      <Button
-                        onClick={() => navigate('/recipes/new')}
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        Créer ma première recette
-                      </Button>
-                    </div>
-                  )}
                 </div>
               </div>
 
