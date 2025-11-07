@@ -251,7 +251,8 @@ _À remplir quotidiennement_
   - Phase 4 : ✅ **2197 aliments importés** (988 ignorés, données incomplètes)
   - Phase 5 : ✅ Index full-text search créé
   - Phase 6 : ✅ **Routes API créées** (GET /ingredients/base)
-  - Phase 7 : ✅ **Tests d'intégration** (18/19 pass)
+  - Phase 7 : ✅ **Tests d'intégration** (19/19 pass, 100%) ✨
+  - Phase 8 : ✅ **Seed Prisma automatique** (2063 ingrédients test)
   
 **Architecture API** :
 - `GET /ingredients/base?search=terme` - Recherche full-text (ts_rank)
@@ -268,5 +269,6 @@ _À remplir quotidiennement_
 - AUTRE: 1854 aliments
 
 **Commandes** :
-- Import : `docker-compose exec recipe-service node prisma/import-ciqual.js`
-- Tests : `docker-compose exec recipe-service npm test -- base-ingredients`
+- Import prod : `docker-compose exec recipe-service node prisma/import-ciqual.js`
+- Seed test : `docker-compose exec recipe-service node prisma/seed.js`
+- Tests : `docker-compose exec recipe-service npm test -- base-ingredients` (19/19 ✅)
