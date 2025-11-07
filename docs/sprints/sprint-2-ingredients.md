@@ -8,8 +8,8 @@
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
 - **Points planifiés** : 34 (inchangé, renforcement US existantes)
-- **Points réalisés** : 24/34 (71%)
-- **Vélocité** : 24 points sur 1 jour
+- **Points réalisés** : 29/34 (85%) ✅
+- **Vélocité** : 29 points sur 1 jour
 
 ---
 
@@ -113,24 +113,28 @@ En tant qu'artisan, je veux voir les détails d'un ingrédient afin de connaîtr
 ---
 
 ### US-024 : Création ingrédient personnalisé
-**Points** : 5 | **Priorité** : � MUST | **Assigné à** : -
+**Points** : 5 | **Priorité** : 🟡 SHOULD | **Assigné à** : IA | **Status** : ✅ DONE
 
 **Description** :  
 En tant qu'artisan, je veux créer mes ingrédients personnalisés afin d'avoir mon catalogue spécifique.
 
 **Critères d'acceptation** :
-- [ ] POST /ingredients/custom
-- [ ] Champs : nom, prix, unité, fournisseur, valeurs nutritionnelles, allergènes
-- [ ] Champs traçabilité : lot, DLC, DLUO
-- [ ] Catégorisation (farines, sucres, etc.)
-- [ ] Validation des données
-- [ ] Lié à mon userId
+- [x] POST /ingredients/custom
+- [x] Champs : nom, prix, unité, fournisseur, valeurs nutritionnelles, allergènes
+- [x] Champs traçabilité : lot, DLC, DLUO
+- [x] Catégorisation (farines, sucres, etc.)
+- [x] Validation des données
+- [x] Lié à mon userId
 
 **Tâches** :
-- [ ] Route POST /ingredients/custom
-- [ ] Schema CustomIngredient avec fournisseur + traçabilité
-- [ ] Validation Zod
-- [ ] Tests
+- [x] Route POST /ingredients/custom
+- [x] Schema CustomIngredient avec fournisseur + traçabilité
+- [x] Validation Zod complète (all fields)
+- [x] Tests (12/12 ✅)
+
+**Progression** : 5/5 points (100%) ✅  
+**Démarré** : 7 novembre 2025  
+**Terminé** : 7 novembre 2025
 
 ---
 
@@ -315,6 +319,41 @@ _À remplir quotidiennement_
 - `src/controllers/ingredientDetailController.js` (28 lignes)
 - `src/routes/ingredients.js` (modifié +7 lignes)
 - `tests/ingredient-detail.integration.test.js` (172 lignes)
+
+- ✅ **US-024 TERMINÉE (5/5 points, 100%)** ✨ : Création ingrédient personnalisé
+  - Phase RED : ✅ Tests créés (12 tests, tous échouaient)
+  - Phase GREEN : ✅ Implémentation complète
+    - Validator (Zod, 14 enums + 14 champs validation)
+    - Service (création avec tous les champs optionnels)
+    - Controller (POST handler avec userId binding)
+  - Phase VALIDATION : ✅ **12/12 tests passent** (100%) ✨
+  - Durée : **~60 minutes** (TDD strict)
+  
+**Fichiers créés US-024** :
+- `src/validators/createCustomIngredientValidator.js` (117 lignes)
+- `src/services/createCustomIngredientService.js` (48 lignes)
+- `src/controllers/createCustomIngredientController.js` (26 lignes)
+- `src/routes/ingredients.js` (modifié +7 lignes)
+- `tests/create-custom-ingredient.integration.test.js` (287 lignes)
+
+**Architecture API complète** :
+- `GET /ingredients/base?search=terme` - Base Ciqual uniquement
+- `GET /ingredients/base/:id` - Détails ingrédient base
+- `GET /ingredients?search=terme` - Fusion base + custom
+- `GET /ingredients/:id` - Détail ingrédient (base OU custom)
+- `POST /ingredients/custom` - **Création ingrédient personnalisé** (NOUVEAU) ✨
+  - Champs obligatoires : name, category, price, priceUnit
+  - Champs optionnels : supplier, lotNumber, expiryDate, nutritionnels, allergens
+  - Validation Zod stricte (all fields)
+  - User isolation (userId binding automatique)
+  
+**Tests totaux** : **163/163 (100%)** ✅
+- US-021 : 19 tests
+- US-022 : 12 tests
+- US-023 : 6 tests
+- US-024 : 12 tests  
+- Total Sprint 2 : 49 tests
+- Projet complet : 163 tests
 
 **Problèmes résolus** (TDD strict) :
 1. ❌ → ✅ Prisma enum validation (priceUnit)
