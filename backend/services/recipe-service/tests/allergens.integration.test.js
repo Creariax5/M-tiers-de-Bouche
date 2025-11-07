@@ -48,19 +48,27 @@ describe('GET //:id/allergens', () => {
   it('should detect allergens from ingredients', async () => {
     // Créer des ingrédients avec allergènes
     const farine = await prisma.baseIngredient.create({
-          data: {
-          category: 'FARINES',
+      data: {
+        category: 'FARINES',
         name: 'Farine de blé T55',
-        
+        calories: 350,
+        proteins: 10,
+        carbs: 72,
+        fats: 1.5,
+        salt: 0.01,
         allergens: ['gluten']
       }
     });
 
     const beurre = await prisma.baseIngredient.create({
-          data: {
-          category: 'MATIERES_GRASSES',
+      data: {
+        category: 'MATIERES_GRASSES',
         name: 'Beurre doux',
-        
+        calories: 750,
+        proteins: 0.6,
+        carbs: 0.1,
+        fats: 82,
+        salt: 0.8,
         allergens: ['lait']
       }
     });
@@ -69,7 +77,11 @@ describe('GET //:id/allergens', () => {
       data: {
         category: 'OEUFS',
         name: 'Oeufs',
-        
+        calories: 145,
+        proteins: 13,
+        carbs: 1,
+        fats: 10,
+        salt: 0.3,
         allergens: ['oeufs']
       }
     });
@@ -99,10 +111,14 @@ describe('GET //:id/allergens', () => {
   it('should detect multiple allergens from single ingredient', async () => {
     // Ingrédient avec plusieurs allergènes
     const pain = await prisma.baseIngredient.create({
-          data: {
-          category: 'FARINES',
+      data: {
+        category: 'FARINES',
         name: 'Pain de mie',
-        
+        calories: 270,
+        proteins: 9,
+        carbs: 49,
+        fats: 3.5,
+        salt: 1.2,
         allergens: ['gluten', 'lait', 'soja']
       }
     });
@@ -133,7 +149,11 @@ describe('GET //:id/allergens', () => {
       data: {
         category: 'SUCRES',
         name: 'Sucre',
-        
+        calories: 400,
+        proteins: 0,
+        carbs: 100,
+        fats: 0,
+        salt: 0,
         allergens: []
       }
     });
@@ -158,19 +178,27 @@ describe('GET //:id/allergens', () => {
   it('should return unique allergens (no duplicates)', async () => {
     // Plusieurs ingrédients avec le même allergène
     const farine = await prisma.baseIngredient.create({
-          data: {
-          category: 'FARINES',
+      data: {
+        category: 'FARINES',
         name: 'Farine T55',
-        
+        calories: 350,
+        proteins: 10,
+        carbs: 72,
+        fats: 1.5,
+        salt: 0.01,
         allergens: ['gluten']
       }
     });
 
     const pain = await prisma.baseIngredient.create({
-          data: {
-          category: 'AUTRES',
+      data: {
+        category: 'AUTRE',
         name: 'Chapelure',
-        
+        calories: 350,
+        proteins: 12,
+        carbs: 70,
+        fats: 2,
+        salt: 1.5,
         allergens: ['gluten']
       }
     });
@@ -220,10 +248,14 @@ describe('GET //:id (with allergens)', () => {
   it('should include allergens in recipe detail', async () => {
     // Créer ingrédient avec allergènes
     const noisettes = await prisma.baseIngredient.create({
-          data: {
-          category: 'FRUITS_SECS',
+      data: {
+        category: 'FRUITS_SECS',
         name: 'Noisettes',
-        
+        calories: 628,
+        proteins: 15,
+        carbs: 17,
+        fats: 61,
+        salt: 0,
         allergens: ['fruits-a-coque']
       }
     });
