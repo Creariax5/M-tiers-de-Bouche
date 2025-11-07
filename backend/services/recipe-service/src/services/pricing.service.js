@@ -22,9 +22,15 @@ export async function calculatePricing(recipeId, coefficient = 3, visited = new 
     include: {
       ingredients: {
         include: {
-          ingredient: {
+          baseIngredient: {
             select: {
-              pricePerUnit: true,
+              id: true, // BaseIngredient n'a pas de prix (c'est dans CustomIngredient)
+            },
+          },
+          customIngredient: {
+            select: {
+              price: true,
+              priceUnit: true,
             },
           },
           subRecipe: true, // 🆕 Sous-recettes
@@ -43,16 +49,20 @@ export async function calculatePricing(recipeId, coefficient = 3, visited = new 
   for (const recipeIngredient of recipe.ingredients) {
     const { quantity, lossPercent } = recipeIngredient;
 
-    // Cas 1 : Ingrédient normal
-    if (recipeIngredient.ingredient) {
-      const { pricePerUnit } = recipeIngredient.ingredient;
+    // Cas 1 : CustomIngredient (avec prix)
+    if (recipeIngredient.customIngredient) {
+      const { price, priceUnit } = recipeIngredient.customIngredient;
 
       // Coût = quantité * prix * (1 + perte%)
-      const costWithLoss = quantity * pricePerUnit * (1 + lossPercent / 100);
+      const costWithLoss = quantity * price * (1 + lossPercent / 100);
       totalCost += costWithLoss;
     }
 
-    // Cas 2 : Sous-recette 🆕 (récursif)
+    // Cas 2 : BaseIngredient (Ciqual - PAS DE PRIX)
+    // On ne peut pas calculer le prix pour les ingrédients Ciqual
+    // L'utilisateur doit créer un CustomIngredient avec le prix
+
+    // Cas 3 : Sous-recette 🆕 (récursif)
     if (recipeIngredient.subRecipe) {
       // Calculer coût de la sous-recette
       const subPricing = await calculatePricing(

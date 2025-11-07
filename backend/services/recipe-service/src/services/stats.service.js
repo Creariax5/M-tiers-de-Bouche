@@ -11,7 +11,9 @@ export const getUserStats = async (userId) => {
     include: {
       ingredients: {
         include: {
-          ingredient: true
+          baseIngredient: true,
+          customIngredient: true,
+          subRecipe: true
         }
       }
     }

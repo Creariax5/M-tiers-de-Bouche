@@ -19,14 +19,22 @@ export const calculateNutrition = async (recipeId, visited = new Set()) => {
     include: {
       ingredients: {
         include: {
-          ingredient: {
+          baseIngredient: {
             select: {
               calories: true,
-              proteins: true,
+              protein: true,
               carbs: true,
-              sugars: true,        // 🆕 INCO
-              fats: true,
-              saturatedFats: true, // 🆕 INCO
+              sugar: true,        // 🆕 INCO
+              fat: true,
+              salt: true
+            }
+          },
+          customIngredient: {
+            select: {
+              calories: true,
+              protein: true,
+              carbs: true,
+              fat: true,
               salt: true
             }
           },
@@ -56,10 +64,9 @@ export const calculateNutrition = async (recipeId, visited = new Set()) => {
     const quantity = ri.quantity;
     const lossPercent = ri.lossPercent || 0;
 
-    // Cas 1 : Ingrédient normal
-    if (ri.ingredient) {
-      const ing = ri.ingredient;
-
+    // Cas 1 : BaseIngredient (Ciqual) OU CustomIngredient
+    const ing = ri.baseIngredient || ri.customIngredient;
+    if (ing) {
       // Poids initial (avant cuisson)
       totalWeightInitial += quantity;
 
@@ -72,11 +79,11 @@ export const calculateNutrition = async (recipeId, visited = new Set()) => {
       const factor = quantity / 100; // conversion pour 100g
 
       totalCalories += (ing.calories || 0) * factor;
-      totalProteins += (ing.proteins || 0) * factor;
+      totalProteins += (ing.protein || 0) * factor;
       totalCarbs += (ing.carbs || 0) * factor;
-      totalSugars += (ing.sugars || 0) * factor;               // 🆕 INCO
-      totalFats += (ing.fats || 0) * factor;
-      totalSaturatedFats += (ing.saturatedFats || 0) * factor; // 🆕 INCO
+      totalSugars += (ing.sugar || 0) * factor;               // 🆕 INCO (optionnel pour custom)
+      totalFats += (ing.fat || 0) * factor;
+      totalSaturatedFats += 0; // 🆕 INCO (pas de saturatedFat dans BaseIngredient)
       totalSalt += (ing.salt || 0) * factor;
     }
 
