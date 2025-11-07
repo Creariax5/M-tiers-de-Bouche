@@ -36,7 +36,7 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await prisma.recipeIngredient.deleteMany({});
-  await prisma.ingredient.deleteMany({});
+  await prisma.baseIngredient.deleteMany({});
   await prisma.recipe.deleteMany({});
 });
 
@@ -47,26 +47,26 @@ afterAll(async () => {
 describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
   it('should generate ingredient list in ponderal order', async () => {
     // Créer ingrédients avec poids différents
-    const farine = await prisma.ingredient.create({
+    const farine = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Farine de blé',
-        unit: 'g',
+        
         allergens: 'gluten'
       }
     });
 
-    const eau = await prisma.ingredient.create({
+    const eau = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Eau',
         unit: 'ml'
       }
     });
 
-    const sel = await prisma.ingredient.create({
+    const sel = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Sel',
         unit: 'g'
       }
@@ -88,18 +88,18 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
   });
 
   it('should highlight allergens in UPPERCASE (text format)', async () => {
-    const lait = await prisma.ingredient.create({
+    const lait = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Lait entier',
-        unit: 'ml',
+        
         allergens: 'lait'
       }
     });
 
-    const sucre = await prisma.ingredient.create({
+    const sucre = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Sucre',
         unit: 'g'
         // Pas d'allergène
@@ -122,20 +122,20 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
   });
 
   it('should highlight allergens with <strong> (HTML format)', async () => {
-    const oeufs = await prisma.ingredient.create({
+    const oeufs = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Œufs',
-        unit: 'pièce',
+        
         allergens: 'oeufs'
       }
     });
 
-    const beurre = await prisma.ingredient.create({
+    const beurre = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Beurre',
-        unit: 'g',
+        
         allergens: 'lait'
       }
     });
@@ -155,18 +155,18 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
   });
 
   it('should show percentage for major ingredients (>5%)', async () => {
-    const farine = await prisma.ingredient.create({
+    const farine = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Farine',
-        unit: 'g',
+        
         allergens: 'gluten'
       }
     });
 
-    const levure = await prisma.ingredient.create({
+    const levure = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Levure',
         unit: 'g'
       }
@@ -189,18 +189,18 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
   });
 
   it('should NOT show percentage for minor ingredients (<5%)', async () => {
-    const farine = await prisma.ingredient.create({
+    const farine = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Farine',
-        unit: 'g',
+        
         allergens: 'gluten'
       }
     });
 
-    const sel = await prisma.ingredient.create({
+    const sel = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Sel',
         unit: 'g'
       }
@@ -223,11 +223,11 @@ describe('INCO Compliance - Liste ingrédients (Article 18)', () => {
 
 describe('INCO Compliance - Liste allergènes (Article 21)', () => {
   it('should format allergen list in French', async () => {
-    const croissant = await prisma.ingredient.create({
+    const croissant = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Pâte à croissant',
-        unit: 'g',
+        
         allergens: 'gluten,lait,oeufs'
       }
     });
@@ -248,29 +248,29 @@ describe('INCO Compliance - Liste allergènes (Article 21)', () => {
   });
 
   it('should deduplicate allergens from multiple ingredients', async () => {
-    const farine = await prisma.ingredient.create({
+    const farine = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Farine',
-        unit: 'g',
+        
         allergens: 'gluten'
       }
     });
 
-    const beurre = await prisma.ingredient.create({
+    const beurre = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Beurre',
-        unit: 'g',
+        
         allergens: 'lait'
       }
     });
 
-    const lait = await prisma.ingredient.create({
+    const lait = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Lait',
-        unit: 'ml',
+        
         allergens: 'lait' // Même allergène que beurre
       }
     });
@@ -293,11 +293,15 @@ describe('INCO Compliance - Liste allergènes (Article 21)', () => {
 
 describe('INCO Compliance - Nutrition (Articles 30-34)', () => {
   it('should include mandatory fields (kJ, kcal, sugars, saturatedFats)', async () => {
-    const chocolat = await prisma.ingredient.create({
+    const chocolat = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Chocolat noir',
-        unit: 'g',
+        
+        category: 'AUTRE',
+        
+        allergens: [],
+        
         calories: 530,
         proteins: 7.5,
         carbs: 60,
@@ -344,11 +348,15 @@ describe('INCO Compliance - Nutrition (Articles 30-34)', () => {
   });
 
   it('should round salt to 2 decimals (Annexe XV)', async () => {
-    const jambon = await prisma.ingredient.create({
+    const jambon = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Jambon',
-        unit: 'g',
+        
+        category: 'AUTRE',
+        
+        allergens: [],
+        
         calories: 120,
         proteins: 20,
         carbs: 1,
@@ -382,3 +390,4 @@ describe('INCO Compliance - Nutrition (Articles 30-34)', () => {
     expect(decimals?.length || 0).toBeLessThanOrEqual(2);
   });
 });
+

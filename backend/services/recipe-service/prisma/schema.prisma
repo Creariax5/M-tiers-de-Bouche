@@ -39,13 +39,14 @@ model BaseIngredient {
   category    IngredientCategory
   
   // Valeurs nutritionnelles pour 100g (CONFORMITÉ INCO)
-  calories    Float   // kcal
-  protein     Float   // g - Protéines
-  carbs       Float   // g - Glucides totaux
-  fat         Float   // g - Matières grasses
-  salt        Float   // g - Sel (arrondi 2 décimales OBLIGATOIRE)
-  fiber       Float?  // g - Fibres (optionnel)
-  sugar       Float?  // g - Sucres (optionnel)
+  calories      Float   // kcal
+  proteins      Float   // g - Protéines (renamed from protein for test compatibility)
+  carbs         Float   // g - Glucides totaux
+  sugars        Float?  // g - dont sucres (OBLIGATOIRE INCO - renamed from sugar)
+  fats          Float   // g - Matières grasses (renamed from fat for test compatibility)
+  saturatedFats Float?  // g - dont acides gras saturés (OBLIGATOIRE INCO)
+  salt          Float   // g - Sel (arrondi 2 décimales OBLIGATOIRE)
+  fiber         Float?  // g - Fibres (optionnel)
   
   // Allergènes (14 ADO - Allergènes à Déclaration Obligatoire)
   allergens   String[] // Array: ["gluten", "lait", "oeufs"]
@@ -93,11 +94,13 @@ model CustomIngredient {
   expiryDate  DateTime?
   
   // Valeurs nutritionnelles pour 100g (CONFORMITÉ INCO - optionnel car perso)
-  calories    Float?
-  protein     Float?
-  carbs       Float?
-  fat         Float?
-  salt        Float?
+  calories      Float?
+  proteins      Float?
+  carbs         Float?
+  sugars        Float?        // 🆕 INCO "dont sucres"
+  fats          Float?
+  saturatedFats Float?        // 🆕 INCO "dont acides gras saturés"
+  salt          Float?
   
   // Allergènes
   allergens   String[] @default([])

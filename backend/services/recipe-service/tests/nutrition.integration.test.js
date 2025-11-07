@@ -36,7 +36,7 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await prisma.recipeIngredient.deleteMany({});
-  await prisma.ingredient.deleteMany({});
+  await prisma.baseIngredient.deleteMany({});
   await prisma.recipe.deleteMany({});
 });
 
@@ -47,26 +47,25 @@ afterAll(async () => {
 describe('GET //:id/nutrition', () => {
   it('should calculate nutrition values for 100g', async () => {
     // Créer ingrédients avec valeurs nutritionnelles
-    const farine = await prisma.ingredient.create({
+    const farine = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
         name: 'Farine T65',
-        unit: 'g',
+        category: 'FARINES',
         calories: 350, // pour 100g
         proteins: 10.5,
         carbs: 72.0,
         sugars: 2.0,      // 🆕 INCO
         fats: 1.2,
         saturatedFats: 0.3, // 🆕 INCO
-        salt: 0.01
+        salt: 0.01,
+        allergens: ['gluten']
       }
     });
 
-    const eau = await prisma.ingredient.create({
+    const eau = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
         name: 'Eau',
-        unit: 'ml',
+        category: 'AUTRE',
         calories: 0,
         proteins: 0,
         carbs: 0,
@@ -77,11 +76,15 @@ describe('GET //:id/nutrition', () => {
       }
     });
 
-    const sel = await prisma.ingredient.create({
+    const sel = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Sel',
-        unit: 'g',
+        
+        category: 'AUTRE',
+        
+        allergens: [],
+        
         calories: 0,
         proteins: 0,
         carbs: 0,
@@ -137,11 +140,15 @@ describe('GET //:id/nutrition', () => {
 
   it('should calculate nutrition per serving', async () => {
     // Ingrédient simple
-    const beurre = await prisma.ingredient.create({
+    const beurre = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Beurre',
-        unit: 'g',
+        
+        category: 'AUTRE',
+        
+        allergens: [],
+        
         calories: 750,
         proteins: 0.6,
         carbs: 0.1,
@@ -179,11 +186,15 @@ describe('GET //:id/nutrition', () => {
 
   it('should handle lossPercent in calculations', async () => {
     // Viande avec perte à la cuisson
-    const viande = await prisma.ingredient.create({
+    const viande = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Viande hachée',
-        unit: 'g',
+        
+        category: 'AUTRE',
+        
+        allergens: [],
+        
         calories: 250,
         proteins: 20,
         carbs: 0,
@@ -199,7 +210,7 @@ describe('GET //:id/nutrition', () => {
         recipeId: testRecipe.id,
         ingredientId: viande.id,
         quantity: 1000,
-        unit: 'g',
+        
         lossPercent: 20 // 20% de perte à la cuisson
       }
     });
@@ -270,11 +281,15 @@ describe('GET //:id/nutrition', () => {
 describe('GET //:id (with nutrition)', () => {
   it('should include nutrition in recipe detail', async () => {
     // Créer ingrédient
-    const sucre = await prisma.ingredient.create({
+    const sucre = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Sucre',
-        unit: 'g',
+        
+        category: 'AUTRE',
+        
+        allergens: [],
+        
         calories: 400,
         proteins: 0,
         carbs: 100,
@@ -304,3 +319,4 @@ describe('GET //:id (with nutrition)', () => {
     expect(response.body.nutrition).toHaveProperty('perServing');
   });
 });
+

@@ -201,3 +201,4 @@ describe('Image Upload Integration Tests', () => {
     await prisma.recipe.delete({ where: { id: otherRecipe.id } });
   });
 });
+

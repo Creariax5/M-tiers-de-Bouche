@@ -24,7 +24,7 @@ beforeAll(async () => {
 
 afterEach(async () => {
   await prisma.recipeIngredient.deleteMany({});
-  await prisma.ingredient.deleteMany({});
+  await prisma.baseIngredient.deleteMany({});
   await prisma.recipe.deleteMany({});
 });
 
@@ -64,11 +64,11 @@ describe('GET /recipes/stats', () => {
 
   it('should return top 5 profitable recipes', async () => {
     // Créer des ingrédients
-    const flour = await prisma.ingredient.create({
+    const flour = await prisma.baseIngredient.create({
       data: {
         userId: testUser.id,
         name: 'Farine',
-        unit: 'g',
+        
         pricePerUnit: 0.002,
         calories: 364,
         proteins: 10,
@@ -77,11 +77,11 @@ describe('GET /recipes/stats', () => {
       }
     });
 
-    const butter = await prisma.ingredient.create({
+    const butter = await prisma.baseIngredient.create({
       data: {
         userId: testUser.id,
         name: 'Beurre',
-        unit: 'g',
+        
         pricePerUnit: 0.01,
         calories: 717,
         proteins: 1,
@@ -107,7 +107,7 @@ describe('GET /recipes/stats', () => {
           recipeId: recipe.id,
           ingredientId: flour.id,
           quantity: i * 100,
-          unit: 'g',
+          
           lossPercent: 0
         }
       });
@@ -169,3 +169,4 @@ describe('GET /recipes/stats', () => {
     expect(res.status).toBe(401);
   });
 });
+

@@ -36,7 +36,7 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await prisma.recipeIngredient.deleteMany({});
-  await prisma.ingredient.deleteMany({});
+  await prisma.baseIngredient.deleteMany({});
   await prisma.recipe.deleteMany({});
 });
 
@@ -47,29 +47,29 @@ afterAll(async () => {
 describe('GET //:id/allergens', () => {
   it('should detect allergens from ingredients', async () => {
     // Créer des ingrédients avec allergènes
-    const farine = await prisma.ingredient.create({
+    const farine = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Farine de blé T55',
-        unit: 'g',
+        
         allergens: 'gluten'
       }
     });
 
-    const beurre = await prisma.ingredient.create({
+    const beurre = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Beurre doux',
-        unit: 'g',
+        
         allergens: 'lait'
       }
     });
 
-    const oeufs = await prisma.ingredient.create({
+    const oeufs = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Oeufs',
-        unit: 'pièce',
+        
         allergens: 'oeufs'
       }
     });
@@ -98,11 +98,11 @@ describe('GET //:id/allergens', () => {
 
   it('should detect multiple allergens from single ingredient', async () => {
     // Ingrédient avec plusieurs allergènes
-    const pain = await prisma.ingredient.create({
+    const pain = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Pain de mie',
-        unit: 'g',
+        
         allergens: 'gluten,lait,soja'
       }
     });
@@ -129,11 +129,11 @@ describe('GET //:id/allergens', () => {
 
   it('should return empty array when no allergens', async () => {
     // Ingrédient sans allergène
-    const sucre = await prisma.ingredient.create({
+    const sucre = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Sucre',
-        unit: 'g',
+        
         allergens: null
       }
     });
@@ -157,20 +157,20 @@ describe('GET //:id/allergens', () => {
 
   it('should return unique allergens (no duplicates)', async () => {
     // Plusieurs ingrédients avec le même allergène
-    const farine = await prisma.ingredient.create({
+    const farine = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Farine T55',
-        unit: 'g',
+        
         allergens: 'gluten'
       }
     });
 
-    const pain = await prisma.ingredient.create({
+    const pain = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Chapelure',
-        unit: 'g',
+        
         allergens: 'gluten'
       }
     });
@@ -219,11 +219,11 @@ describe('GET //:id/allergens', () => {
 describe('GET //:id (with allergens)', () => {
   it('should include allergens in recipe detail', async () => {
     // Créer ingrédient avec allergènes
-    const noisettes = await prisma.ingredient.create({
+    const noisettes = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Noisettes',
-        unit: 'g',
+        
         allergens: 'fruits-a-coque'
       }
     });
@@ -246,3 +246,4 @@ describe('GET //:id (with allergens)', () => {
     expect(response.body.allergens).toContain('fruits-a-coque');
   });
 });
+

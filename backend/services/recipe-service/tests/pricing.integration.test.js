@@ -38,7 +38,7 @@ describe('GET //:id/pricing', () => {
 
   afterEach(async () => {
     await prisma.recipeIngredient.deleteMany({});
-    await prisma.ingredient.deleteMany({});
+    await prisma.baseIngredient.deleteMany({});
     await prisma.recipe.deleteMany({});
   });
 
@@ -48,20 +48,20 @@ describe('GET //:id/pricing', () => {
 
   it('should calculate cost with ingredients', async () => {
     // Créer ingrédients avec prix
-    const farine = await prisma.ingredient.create({
+    const farine = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Farine T55',
-        unit: 'g',
+        
         pricePerUnit: 0.002, // 2€/kg = 0.002€/g
       },
     });
 
-    const beurre = await prisma.ingredient.create({
+    const beurre = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Beurre doux',
-        unit: 'g',
+        
         pricePerUnit: 0.01, // 10€/kg = 0.01€/g
       },
     });
@@ -72,7 +72,7 @@ describe('GET //:id/pricing', () => {
         recipeId: testRecipe.id,
         ingredientId: farine.id,
         quantity: 500,
-        unit: 'g',
+        
         lossPercent: 0,
       },
     });
@@ -82,7 +82,7 @@ describe('GET //:id/pricing', () => {
         recipeId: testRecipe.id,
         ingredientId: beurre.id,
         quantity: 250,
-        unit: 'g',
+        
         lossPercent: 0,
       },
     });
@@ -110,11 +110,11 @@ describe('GET //:id/pricing', () => {
 
   it('should calculate cost with loss percent', async () => {
     // Viande avec perte à la cuisson
-    const viande = await prisma.ingredient.create({
+    const viande = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Viande hachée',
-        unit: 'g',
+        
         pricePerUnit: 0.015, // 15€/kg
       },
     });
@@ -124,7 +124,7 @@ describe('GET //:id/pricing', () => {
         recipeId: testRecipe.id,
         ingredientId: viande.id,
         quantity: 1000,
-        unit: 'g',
+        
         lossPercent: 20, // 20% de perte
       },
     });
@@ -141,11 +141,11 @@ describe('GET //:id/pricing', () => {
   });
 
   it('should use custom coefficient if provided', async () => {
-    const sel = await prisma.ingredient.create({
+    const sel = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Sel',
-        unit: 'g',
+        
         pricePerUnit: 0.001, // 1€/kg
       },
     });
@@ -155,7 +155,7 @@ describe('GET //:id/pricing', () => {
         recipeId: testRecipe.id,
         ingredientId: sel.id,
         quantity: 10,
-        unit: 'g',
+        
         lossPercent: 0,
       },
     });
@@ -207,11 +207,11 @@ describe('GET //:id/pricing', () => {
 
   it('should include pricing in GET //:id', async () => {
     // Ajouter un ingrédient
-    const sucre = await prisma.ingredient.create({
+    const sucre = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Sucre',
-        unit: 'g',
+        
         pricePerUnit: 0.0015, // 1.5€/kg
       },
     });
@@ -221,7 +221,7 @@ describe('GET //:id/pricing', () => {
         recipeId: testRecipe.id,
         ingredientId: sucre.id,
         quantity: 200,
-        unit: 'g',
+        
         lossPercent: 0,
       },
     });
@@ -242,3 +242,4 @@ describe('GET //:id/pricing', () => {
     expect(response.body.pricing.totalCost).toBeCloseTo(0.3, 2);
   });
 });
+

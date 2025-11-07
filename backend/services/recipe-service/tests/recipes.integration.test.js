@@ -35,7 +35,7 @@ afterEach(async () => {
   // Nettoyage de la DB après chaque test
   // Ordre important: supprimer les relations avant les entités
   await prisma.recipeIngredient.deleteMany({});
-  await prisma.ingredient.deleteMany({});
+  await prisma.baseIngredient.deleteMany({});
   await prisma.recipe.deleteMany({});
 });
 
@@ -408,3 +408,4 @@ describe('DELETE //:id', () => {
     expect(response.status).toBe(401);
   });
 });
+

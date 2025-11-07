@@ -22,19 +22,22 @@ export const calculateNutrition = async (recipeId, visited = new Set()) => {
           baseIngredient: {
             select: {
               calories: true,
-              protein: true,
+              proteins: true,
               carbs: true,
-              sugar: true,        // 🆕 INCO
-              fat: true,
+              sugars: true,        // 🆕 INCO
+              fats: true,
+              saturatedFats: true, // 🆕 INCO
               salt: true
             }
           },
           customIngredient: {
             select: {
               calories: true,
-              protein: true,
+              proteins: true,
               carbs: true,
-              fat: true,
+              sugars: true,        // 🆕 INCO
+              fats: true,
+              saturatedFats: true, // 🆕 INCO
               salt: true
             }
           },
@@ -79,11 +82,11 @@ export const calculateNutrition = async (recipeId, visited = new Set()) => {
       const factor = quantity / 100; // conversion pour 100g
 
       totalCalories += (ing.calories || 0) * factor;
-      totalProteins += (ing.protein || 0) * factor;
+      totalProteins += (ing.proteins || 0) * factor;
       totalCarbs += (ing.carbs || 0) * factor;
-      totalSugars += (ing.sugar || 0) * factor;               // 🆕 INCO (optionnel pour custom)
-      totalFats += (ing.fat || 0) * factor;
-      totalSaturatedFats += 0; // 🆕 INCO (pas de saturatedFat dans BaseIngredient)
+      totalSugars += (ing.sugars || 0) * factor;               // 🆕 INCO
+      totalFats += (ing.fats || 0) * factor;
+      totalSaturatedFats += (ing.saturatedFats || 0) * factor; // 🆕 INCO
       totalSalt += (ing.salt || 0) * factor;
     }
 

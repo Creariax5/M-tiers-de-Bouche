@@ -24,7 +24,7 @@ beforeAll(async () => {
 
 afterEach(async () => {
   await prisma.recipeIngredient.deleteMany({});
-  await prisma.ingredient.deleteMany({});
+  await prisma.baseIngredient.deleteMany({});
   await prisma.recipe.deleteMany({});
 });
 
@@ -46,11 +46,11 @@ describe('Sub-Recipes (Compositions)', () => {
       });
 
       // Créer ingrédients de la sous-recette
-      const beurre = await prisma.ingredient.create({
+      const beurre = await prisma.baseIngredient.create({
         data: {
-          userId: 'system',
+          
           name: 'Beurre',
-          unit: 'g',
+          
           pricePerUnit: 0.01, // 1€/100g
           calories: 750,
           proteins: 0.6,
@@ -63,11 +63,11 @@ describe('Sub-Recipes (Compositions)', () => {
         }
       });
 
-      const farine = await prisma.ingredient.create({
+      const farine = await prisma.baseIngredient.create({
         data: {
-          userId: 'system',
+          
           name: 'Farine',
-          unit: 'g',
+          
           pricePerUnit: 0.002, // 0.2€/100g
           calories: 350,
           proteins: 10.5,
@@ -105,7 +105,7 @@ describe('Sub-Recipes (Compositions)', () => {
         .send({
           subRecipeId: pateFeuilletee.id, // 🆕 Sous-recette au lieu d'ingrédient
           quantity: 750,
-          unit: 'g',
+          
           lossPercent: 0
         });
 
@@ -125,9 +125,9 @@ describe('Sub-Recipes (Compositions)', () => {
         }
       });
 
-      const ingredient = await prisma.ingredient.create({
+      const ingredient = await prisma.baseIngredient.create({
         data: {
-          userId: 'system',
+          
           name: 'Test Ingredient',
           unit: 'g'
         }
@@ -180,11 +180,11 @@ describe('Sub-Recipes (Compositions)', () => {
   describe('Calculs en cascade (récursifs)', () => {
     it('should calculate allergens from sub-recipes recursively', async () => {
       // Niveau 3 : Ingrédient de base (beurre avec lait)
-      const beurre = await prisma.ingredient.create({
+      const beurre = await prisma.baseIngredient.create({
         data: {
-          userId: 'system',
+          
           name: 'Beurre',
-          unit: 'g',
+          
           allergens: 'lait'
         }
       });
@@ -198,11 +198,11 @@ describe('Sub-Recipes (Compositions)', () => {
         }
       });
 
-      const farine = await prisma.ingredient.create({
+      const farine = await prisma.baseIngredient.create({
         data: {
-          userId: 'system',
+          
           name: 'Farine',
-          unit: 'g',
+          
           allergens: 'gluten'
         }
       });
@@ -223,11 +223,11 @@ describe('Sub-Recipes (Compositions)', () => {
         }
       });
 
-      const oeufs = await prisma.ingredient.create({
+      const oeufs = await prisma.baseIngredient.create({
         data: {
-          userId: 'system',
+          
           name: 'Œufs',
-          unit: 'pièce',
+          
           allergens: 'oeufs'
         }
       });
@@ -273,11 +273,15 @@ describe('Sub-Recipes (Compositions)', () => {
         }
       });
 
-      const farine = await prisma.ingredient.create({
+      const farine = await prisma.baseIngredient.create({
         data: {
-          userId: 'system',
+          
           name: 'Farine',
-          unit: 'g',
+          
+          category: 'AUTRE',
+          
+          allergens: [],
+          
           calories: 350,
           proteins: 10,
           carbs: 70,
@@ -288,11 +292,15 @@ describe('Sub-Recipes (Compositions)', () => {
         }
       });
 
-      const eau = await prisma.ingredient.create({
+      const eau = await prisma.baseIngredient.create({
         data: {
-          userId: 'system',
+          
           name: 'Eau',
-          unit: 'ml',
+          
+          category: 'AUTRE',
+          
+          allergens: [],
+          
           calories: 0,
           proteins: 0,
           carbs: 0,
@@ -352,20 +360,20 @@ describe('Sub-Recipes (Compositions)', () => {
         }
       });
 
-      const beurre = await prisma.ingredient.create({
+      const beurre = await prisma.baseIngredient.create({
         data: {
-          userId: 'system',
+          
           name: 'Beurre',
-          unit: 'g',
+          
           pricePerUnit: 0.01 // 1€/100g
         }
       });
 
-      const farine = await prisma.ingredient.create({
+      const farine = await prisma.baseIngredient.create({
         data: {
-          userId: 'system',
+          
           name: 'Farine',
-          unit: 'g',
+          
           pricePerUnit: 0.002 // 0.2€/100g
         }
       });
@@ -386,11 +394,11 @@ describe('Sub-Recipes (Compositions)', () => {
         }
       });
 
-      const chocolat = await prisma.ingredient.create({
+      const chocolat = await prisma.baseIngredient.create({
         data: {
-          userId: 'system',
+          
           name: 'Chocolat',
-          unit: 'g',
+          
           pricePerUnit: 0.02 // 2€/100g
         }
       });
@@ -633,3 +641,4 @@ describe('Sub-Recipes (Compositions)', () => {
     });
   });
 });
+

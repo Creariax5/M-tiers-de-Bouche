@@ -42,11 +42,11 @@ beforeEach(async () => {
   });
 
   // Créer un ingrédient de test
-  testIngredient = await prisma.ingredient.create({
+  testIngredient = await prisma.baseIngredient.create({
     data: {
-      userId: 'system',
+      
       name: 'Farine T55',
-      unit: 'g',
+      
       pricePerUnit: 0.002,
       calories: 364,
       proteins: 10,
@@ -60,7 +60,7 @@ beforeEach(async () => {
 afterEach(async () => {
   // Ordre important: supprimer les relations avant les entités
   await prisma.recipeIngredient.deleteMany({});
-  await prisma.ingredient.deleteMany({});
+  await prisma.baseIngredient.deleteMany({});
   await prisma.recipe.deleteMany({});
 });
 
@@ -73,7 +73,7 @@ describe('POST //:id/ingredients', () => {
     const ingredientData = {
       ingredientId: testIngredient.id,
       quantity: 500,
-      unit: 'g',
+      
       lossPercent: 5
     };
 
@@ -176,7 +176,7 @@ describe('POST //:id/ingredients', () => {
     const ingredientData = {
       ingredientId: testIngredient.id,
       quantity: 500,
-      unit: 'g',
+      
       lossPercent: 150
     };
 
@@ -206,11 +206,11 @@ describe('POST //:id/ingredients', () => {
 describe('GET //:id/ingredients', () => {
   beforeEach(async () => {
     // Ajouter quelques ingrédients à la recette
-    const ingredient2 = await prisma.ingredient.create({
+    const ingredient2 = await prisma.baseIngredient.create({
       data: {
-        userId: 'system',
+        
         name: 'Sucre',
-        unit: 'g',
+        
         pricePerUnit: 0.001,
         calories: 400,
         carbs: 100
@@ -223,14 +223,14 @@ describe('GET //:id/ingredients', () => {
           recipeId: testRecipe.id,
           ingredientId: testIngredient.id,
           quantity: 500,
-          unit: 'g',
+          
           lossPercent: 5
         },
         {
           recipeId: testRecipe.id,
           ingredientId: ingredient2.id,
           quantity: 200,
-          unit: 'g',
+          
           lossPercent: 0
         }
       ]
@@ -273,7 +273,7 @@ describe('DELETE //:id/ingredients/:ingredientId', () => {
         recipeId: testRecipe.id,
         ingredientId: testIngredient.id,
         quantity: 500,
-        unit: 'g',
+        
         lossPercent: 5
       }
     });
@@ -333,7 +333,7 @@ describe('PUT //:id/ingredients/:ingredientId', () => {
         recipeId: testRecipe.id,
         ingredientId: testIngredient.id,
         quantity: 500,
-        unit: 'g',
+        
         lossPercent: 5
       }
     });
@@ -393,3 +393,4 @@ describe('PUT //:id/ingredients/:ingredientId', () => {
     expect(response.status).toBe(401);
   });
 });
+
