@@ -28,7 +28,7 @@
 ## 📝 USER STORIES DU SPRINT
 
 ### US-021 : Import base Ciqual
-**Points** : 13 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 13 | **Priorité** : 🔴 MUST | **Assigné à** : IA | **Status** : 🔄 IN PROGRESS
 
 **Description** :  
 En tant que système, je veux importer automatiquement la base Ciqual afin de proposer 3000+ ingrédients avec leurs valeurs nutritionnelles.
@@ -40,12 +40,17 @@ En tant que système, je veux importer automatiquement la base Ciqual afin de pr
 - [ ] Index de recherche créé
 
 **Tâches** :
-- [ ] Télécharger CSV Ciqual officiel
+- [x] ~~Migration BaseIngredient/CustomIngredient terminée~~
+- [ ] Télécharger CSV Ciqual officiel (https://ciqual.anses.fr/)
 - [ ] Parser et nettoyer données
-- [ ] Script Prisma seed
+- [ ] Mapping catégories Ciqual → IngredientCategory enum
+- [ ] Script Prisma seed avec valeurs nutritionnelles
 - [ ] Import en base PostgreSQL
 - [ ] Créer index full-text search
-- [ ] Tests
+- [ ] Tests d'intégration
+
+**Progression** : 0/13 points (0%)  
+**Démarré** : 7 novembre 2025
 
 ---
 
@@ -225,5 +230,19 @@ _À remplir quotidiennement_
 
 ---
 
-**Status** : 🔴 NOT STARTED  
-**Dernière mise à jour** : 22 octobre 2025
+**Status** : � IN PROGRESS  
+**Dernière mise à jour** : 7 novembre 2025
+
+---
+
+## 📅 SUIVI DU SPRINT
+
+### Semaine 1 (7-13 novembre 2025)
+**Focus** : US-021 Import Ciqual + US-022 Recherche
+
+**7 novembre** :
+- ✅ Migration Sprint 1.5 terminée (114/114 tests)
+- ✅ Scripts migration supprimés
+- 🔄 **Démarrage US-021** : Import base Ciqual
+  - Phase 1 : Téléchargement CSV Ciqual officiel
+  - Phase 2 : Analyse structure + mapping catégories
