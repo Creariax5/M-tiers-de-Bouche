@@ -52,7 +52,8 @@ export const getRecipeById = async (userId, recipeId) => {
     include: {
       ingredients: {
         include: {
-          ingredient: true,
+          baseIngredient: true,
+          customIngredient: true,
           subRecipe: true // 🆕 Inclure sous-recettes
         }
       }

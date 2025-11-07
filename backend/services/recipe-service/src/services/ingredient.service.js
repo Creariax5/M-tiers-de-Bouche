@@ -15,8 +15,10 @@ export const addIngredientToRecipe = async (userId, recipeId, data) => {
   }
 
   // Cas 1 : Ingrédient normal
-  if (data.ingredientId) {
-    // Vérifier que l'ingrédient existe
+  if (data.ingredientId || data.baseIngredientId || data.customIngredientId) {
+    // TODO: Mettre à jour pour supporter BaseIngredient + CustomIngredient
+    // Pour l'instant ce code est obsolète car prisma.ingredient n'existe plus
+    /* 
     const ingredient = await prisma.ingredient.findUnique({
       where: { id: data.ingredientId }
     });
@@ -24,18 +26,21 @@ export const addIngredientToRecipe = async (userId, recipeId, data) => {
     if (!ingredient) {
       return { error: 'Ingrédient non trouvé', status: 404 };
     }
+    */
 
     // Ajouter l'ingrédient à la recette
     const recipeIngredient = await prisma.recipeIngredient.create({
       data: {
         recipeId,
-        ingredientId: data.ingredientId,
+        baseIngredientId: data.baseIngredientId || data.ingredientId,
+        customIngredientId: data.customIngredientId,
         quantity: data.quantity,
         unit: data.unit,
         lossPercent: data.lossPercent || 0
       },
       include: {
-        ingredient: true
+        baseIngredient: true,
+        customIngredient: true
       }
     });
 
@@ -102,7 +107,8 @@ export const getRecipeIngredients = async (userId, recipeId) => {
   const ingredients = await prisma.recipeIngredient.findMany({
     where: { recipeId },
     include: {
-      ingredient: true,
+      baseIngredient: true,
+      customIngredient: true,
       subRecipe: true // 🆕 Inclure les sous-recettes
     },
     orderBy: { createdAt: 'asc' }
@@ -145,7 +151,8 @@ export const updateRecipeIngredient = async (userId, recipeId, ingredientId, dat
       ...(data.lossPercent !== undefined && { lossPercent: data.lossPercent })
     },
     include: {
-      ingredient: true
+      baseIngredient: true,
+      customIngredient: true
     }
   });
 

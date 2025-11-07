@@ -37,7 +37,12 @@ export const detectAllergens = async (recipeId, visited = new Set()) => {
   const recipeIngredients = await prisma.recipeIngredient.findMany({
     where: { recipeId },
     include: {
-      ingredient: {
+      baseIngredient: {
+        select: {
+          allergens: true
+        }
+      },
+      customIngredient: {
         select: {
           allergens: true
         }
@@ -51,20 +56,29 @@ export const detectAllergens = async (recipeId, visited = new Set()) => {
 
   // Parcourir chaque ingrédient
   for (const ri of recipeIngredients) {
+    // Récupérer l'ingrédient (base ou custom)
+    const ingredient = ri.baseIngredient || ri.customIngredient;
+    
     // Cas 1 : Ingrédient normal
-    if (ri.ingredient) {
-      const allergensString = ri.ingredient.allergens;
+    if (ingredient) {
+      const allergensData = ingredient.allergens;
       
       // Si l'ingrédient a des allergènes
-      if (allergensString && allergensString.trim() !== '') {
-        // Parser le CSV (format: "gluten,lait,oeufs")
-        const allergens = allergensString
-          .split(',')
-          .map(a => a.trim())
-          .filter(a => a.length > 0);
-        
-        // Ajouter au Set
-        allergens.forEach(allergen => allergensSet.add(allergen));
+      if (allergensData) {
+        // Si c'est un tableau (nouveau format)
+        if (Array.isArray(allergensData)) {
+          allergensData
+            .filter(a => a && a.trim().length > 0)
+            .forEach(allergen => allergensSet.add(allergen));
+        }
+        // Si c'est une string CSV (ancien format, fallback)
+        else if (typeof allergensData === 'string' && allergensData.trim() !== '') {
+          const allergens = allergensData
+            .split(',')
+            .map(a => a.trim())
+            .filter(a => a.length > 0);
+          allergens.forEach(allergen => allergensSet.add(allergen));
+        }
       }
     }
 
@@ -103,7 +117,13 @@ export const generateIngredientList = async (recipeId, format = 'text') => {
     include: {
       ingredients: {
         include: {
-          ingredient: {
+          baseIngredient: {
+            select: {
+              name: true,
+              allergens: true
+            }
+          },
+          customIngredient: {
             select: {
               name: true,
               allergens: true
@@ -126,7 +146,9 @@ export const generateIngredientList = async (recipeId, format = 'text') => {
 
   // Formatter chaque ingrédient
   const formattedIngredients = recipe.ingredients.map((ri) => {
-    const ingredient = ri.ingredient;
+    const ingredient = ri.baseIngredient || ri.customIngredient;
+    if (!ingredient) return null;
+    
     let ingredientName = ingredient.name;
     
     // Calculer pourcentage (optionnel, afficher si > 5%)
@@ -134,9 +156,13 @@ export const generateIngredientList = async (recipeId, format = 'text') => {
     const percentageStr = percentage >= 5 ? ` (${Math.round(percentage)}%)` : '';
     
     // Identifier allergènes dans cet ingrédient
-    const allergens = ingredient.allergens 
-      ? ingredient.allergens.split(',').map(a => a.trim()).filter(a => a.length > 0)
-      : [];
+    let allergens = [];
+    if (Array.isArray(ingredient.allergens)) {
+      allergens = ingredient.allergens.filter(a => a && a.trim().length > 0);
+    } else if (ingredient.allergens && typeof ingredient.allergens === 'string') {
+      // Fallback CSV
+      allergens = ingredient.allergens.split(',').map(a => a.trim()).filter(a => a.length > 0);
+    }
     
     // Vérifier si l'ingrédient contient des allergènes
     const hasAllergens = allergens.length > 0;
@@ -153,7 +179,7 @@ export const generateIngredientList = async (recipeId, format = 'text') => {
     }
     
     return `${ingredientName}${percentageStr}`;
-  });
+  }).filter(Boolean); // Supprimer les null
 
   // Joindre avec virgules
   return formattedIngredients.join(', ');
