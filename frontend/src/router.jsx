@@ -6,6 +6,7 @@ import DashboardPage from './features/dashboard/DashboardPage';
 import RecipesListPage from './pages/RecipesListPage';
 import RecipeFormPage from './pages/RecipeFormPage';
 import RecipeDetailPage from './pages/RecipeDetailPage';
+import CustomIngredientsPage from './pages/CustomIngredientsPage';
 import { useAuthStore } from './stores/authStore';
 
 function ProtectedRoute({ children }) {
@@ -67,6 +68,14 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <RecipeDetailPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/ingredients/custom',
+    element: (
+      <ProtectedRoute>
+        <CustomIngredientsPage />
       </ProtectedRoute>
     ),
   },

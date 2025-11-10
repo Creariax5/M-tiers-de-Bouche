@@ -275,8 +275,8 @@ describe('CustomIngredientsPage', () => {
       await user.selectOptions(screen.getByLabelText(/catégorie/i), 'FARINES');
       await user.type(screen.getByLabelText(/prix/i), '2.00');
 
-      // Soumettre
-      const submitButton = screen.getByRole('button', { name: /créer/i });
+      // Soumettre - cibler le bouton du formulaire (type submit)
+      const submitButton = screen.getAllByRole('button', { name: /créer/i }).find(btn => btn.type === 'submit');
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -452,8 +452,8 @@ describe('CustomIngredientsPage', () => {
       const createButton = await screen.findByRole('button', { name: /nouvel ingrédient/i });
       await user.click(createButton);
 
-      // Soumettre sans remplir
-      const submitButton = screen.getByRole('button', { name: /créer/i });
+      // Soumettre sans remplir - cibler le bouton submit du formulaire
+      const submitButton = screen.getAllByRole('button', { name: /créer/i }).find(btn => btn.type === 'submit');
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -480,7 +480,7 @@ describe('CustomIngredientsPage', () => {
       await user.type(screen.getByLabelText(/nom/i), 'Farine');
       await user.type(screen.getByLabelText(/prix/i), '-5');
 
-      const submitButton = screen.getByRole('button', { name: /créer/i });
+      const submitButton = screen.getAllByRole('button', { name: /créer/i }).find(btn => btn.type === 'submit');
       await user.click(submitButton);
 
       await waitFor(() => {
