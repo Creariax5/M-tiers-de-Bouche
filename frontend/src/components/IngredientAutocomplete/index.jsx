@@ -40,7 +40,7 @@ export default function IngredientAutocomplete({
         setError(null);
         setShowDropdown(true); // Ouvrir avant le chargement
         
-        const response = await api.get(`/ingredients?search=${debouncedSearchTerm}`);
+        const response = await api.get(`/recipes/ingredients?search=${debouncedSearchTerm}`);
         setSuggestions(response.data || []);
       } catch (err) {
         console.error('Error searching ingredients:', err);

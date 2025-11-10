@@ -66,7 +66,7 @@ describe('IngredientAutocomplete', () => {
       // Attendre le debounce (300ms + marge)
       await waitFor(
         () => {
-          expect(api.get).toHaveBeenCalledWith('/ingredients?search=Far');
+          expect(api.get).toHaveBeenCalledWith('/recipes/ingredients?search=Far');
         },
         { timeout: 500 }
       );
@@ -88,7 +88,7 @@ describe('IngredientAutocomplete', () => {
       await waitFor(
         () => {
           expect(api.get).toHaveBeenCalledTimes(1);
-          expect(api.get).toHaveBeenCalledWith('/ingredients?search=Farine');
+          expect(api.get).toHaveBeenCalledWith('/recipes/ingredients?search=Farine');
         },
         { timeout: 500 }
       );
