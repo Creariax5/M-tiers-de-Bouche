@@ -34,48 +34,67 @@ export default function DashboardPage() {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-md border-b border-gray-200">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Navigation moderne et professionnelle */}
+      <nav className="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            {/* Logo + Navigation principale */}
+          <div className="flex justify-between items-center h-16">
+            {/* Logo + Titre */}
             <div className="flex items-center space-x-8">
-              <h1 className="text-2xl font-bold text-gray-900">
-                🧁 Métiers de Bouche
-              </h1>
-              <div className="hidden md:flex space-x-1">
-                <button
+              <div className="flex items-center space-x-3">
+                <span className="text-3xl">🧁</span>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Métiers de Bouche
+                </h1>
+              </div>
+              
+              {/* Navigation principale - Desktop */}
+              <div className="hidden md:flex items-center space-x-2">
+                <Button
                   onClick={() => navigate('/dashboard')}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                  variant="primary"
+                  size="md"
+                  className="gap-2"
                 >
-                  📊 Dashboard
-                </button>
-                <button
+                  <span>📊</span>
+                  Dashboard
+                </Button>
+                <Button
                   onClick={() => navigate('/recipes')}
-                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+                  variant="success"
+                  size="md"
+                  className="gap-2"
                 >
-                  📖 Mes Recettes
-                </button>
-                <button
+                  <span>📖</span>
+                  Mes Recettes
+                </Button>
+                <Button
                   onClick={() => navigate('/recipes/new')}
-                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
+                  variant="purple"
+                  size="md"
+                  className="gap-2"
                 >
-                  ➕ Nouvelle Recette
-                </button>
+                  <span>➕</span>
+                  Nouvelle Recette
+                </Button>
               </div>
             </div>
             
-            {/* User + Déconnexion */}
+            {/* User Info + Déconnexion */}
             <div className="flex items-center space-x-4">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-gray-900">
+              <div className="hidden sm:block text-right">
+                <p className="text-sm font-semibold text-gray-900">
                   {user?.firstName} {user?.lastName}
                 </p>
                 <p className="text-xs text-gray-500">{user?.company || 'Votre entreprise'}</p>
               </div>
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
+                {user?.firstName?.[0]}{user?.lastName?.[0]}
+              </div>
               <Button
                 onClick={handleLogout}
-                className="bg-gray-600 hover:bg-gray-700 text-white"
+                variant="secondary"
+                size="md"
               >
                 Déconnexion
               </Button>
@@ -83,108 +102,128 @@ export default function DashboardPage() {
           </div>
           
           {/* Navigation mobile */}
-          <div className="md:hidden pb-3 space-y-1">
-            <button
+          <div className="md:hidden pb-3 pt-2 space-y-2">
+            <Button
               onClick={() => navigate('/dashboard')}
-              className="w-full text-left px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
+              variant="primary"
+              className="w-full justify-start gap-2"
             >
-              📊 Dashboard
-            </button>
-            <button
+              <span>📊</span>
+              Dashboard
+            </Button>
+            <Button
               onClick={() => navigate('/recipes')}
-              className="w-full text-left px-3 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg"
+              variant="success"
+              className="w-full justify-start gap-2"
             >
-              📖 Mes Recettes
-            </button>
-            <button
+              <span>📖</span>
+              Mes Recettes
+            </Button>
+            <Button
               onClick={() => navigate('/recipes/new')}
-              className="w-full text-left px-3 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg"
+              variant="purple"
+              className="w-full justify-start gap-2"
             >
-              ➕ Nouvelle Recette
-            </button>
+              <span>➕</span>
+              Nouvelle Recette
+            </Button>
           </div>
         </div>
       </nav>
       
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          {/* En-tête */}
-          <div className="bg-white shadow rounded-lg p-6 mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Bienvenue {user?.firstName} !
+      <main className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-0 space-y-6">
+          {/* En-tête avec gradient */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 shadow-xl rounded-2xl p-8 text-white">
+            <h2 className="text-3xl font-bold mb-2">
+              Bienvenue {user?.firstName} ! 👋
             </h2>
-            <p className="text-gray-600">
+            <p className="text-blue-100 text-lg">
               {user?.company || 'Votre entreprise'}
             </p>
           </div>
 
-          {/* Statistiques */}
+          {/* Erreur */}
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
-              {error}
+            <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg shadow">
+              <p className="font-medium">{error}</p>
             </div>
           )}
 
           {loading ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500">Chargement des statistiques...</p>
+            <div className="text-center py-16">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <p className="text-gray-500 mt-4">Chargement des statistiques...</p>
             </div>
           ) : (
             <>
-              {/* Total recettes */}
-              <div className="bg-white shadow rounded-lg p-6 mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Vue d'ensemble
-                </h3>
-                <div className="flex items-center">
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-600 mb-1">Recettes créées</p>
-                    <p className="text-4xl font-bold text-blue-600">{stats.totalRecipes}</p>
+              {/* Statistiques - Card moderne */}
+              <div className="bg-white shadow-lg rounded-2xl p-8 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-2xl font-bold text-gray-900">Vue d'ensemble</h3>
+                  <div className="h-12 w-12 rounded-xl bg-blue-100 flex items-center justify-center">
+                    <span className="text-2xl">📊</span>
                   </div>
+                </div>
+                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6">
+                  <p className="text-sm font-medium text-gray-600 mb-2">Recettes créées</p>
+                  <p className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    {stats.totalRecipes}
+                  </p>
                 </div>
               </div>
 
               {/* Top recettes rentables */}
               {stats.topProfitable && stats.topProfitable.length > 0 && (
-                <div className="bg-white shadow rounded-lg p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Top 5 - Recettes les plus rentables
-                  </h3>
+                <div className="bg-white shadow-lg rounded-2xl p-8 border border-gray-100">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-2xl font-bold text-gray-900">
+                      Top 5 - Recettes les plus rentables
+                    </h3>
+                    <div className="h-12 w-12 rounded-xl bg-green-100 flex items-center justify-center">
+                      <span className="text-2xl">🏆</span>
+                    </div>
+                  </div>
                   <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <table className="min-w-full">
+                      <thead>
+                        <tr className="border-b-2 border-gray-200">
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                             Recette
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                             Coût
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                             Prix suggéré
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                             Marge
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {stats.topProfitable.map((recipe) => (
-                          <tr key={recipe.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              {recipe.name}
+                      <tbody className="divide-y divide-gray-100">
+                        {stats.topProfitable.map((recipe, index) => (
+                          <tr key={recipe.id} className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-colors duration-150">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center space-x-3">
+                                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                                  {index + 1}
+                                </div>
+                                <span className="text-sm font-semibold text-gray-900">{recipe.name}</span>
+                              </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
                               {recipe.totalCost.toFixed(2)} €
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
                               {recipe.suggestedPrice ? `${recipe.suggestedPrice.toFixed(2)} €` : '-'}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
-                              <span className={`font-semibold ${
-                                recipe.margin >= 60 ? 'text-green-600' : 
-                                recipe.margin >= 40 ? 'text-yellow-600' : 
-                                'text-red-600'
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${
+                                recipe.margin >= 60 ? 'bg-green-100 text-green-700' : 
+                                recipe.margin >= 40 ? 'bg-yellow-100 text-yellow-700' : 
+                                'bg-red-100 text-red-700'
                               }`}>
                                 {recipe.margin.toFixed(1)} %
                               </span>

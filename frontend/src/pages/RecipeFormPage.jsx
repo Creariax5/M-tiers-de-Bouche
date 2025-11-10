@@ -214,25 +214,34 @@ export default function RecipeFormPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header avec navigation */}
-      <header className="bg-white border-b border-gray-200 shadow-sm">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Header professionnel avec navigation */}
+      <header className="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Button 
                 onClick={() => navigate('/recipes')}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-700"
+                variant="secondary"
+                size="md"
+                className="gap-2"
               >
-                ← Retour aux recettes
+                <span>←</span>
+                Retour aux recettes
               </Button>
-              <h1 className="text-2xl font-bold text-gray-900">Nouvelle recette</h1>
+              <div className="h-8 w-px bg-gray-300"></div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Nouvelle recette
+              </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">{user?.email}</span>
+              <div className="hidden sm:block text-right">
+                <p className="text-sm font-semibold text-gray-900">{user?.email}</p>
+              </div>
               <Button 
                 onClick={logout}
-                className="bg-gray-600 hover:bg-gray-700"
+                variant="secondary"
+                size="md"
               >
                 Déconnexion
               </Button>

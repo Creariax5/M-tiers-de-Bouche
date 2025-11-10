@@ -85,45 +85,62 @@ export default function RecipesListPage() {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-md border-b border-gray-200">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <nav className="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
+          <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
-              <h1 className="text-2xl font-bold text-gray-900">
-                🧁 Métiers de Bouche
-              </h1>
-              <div className="hidden md:flex space-x-1">
-                <button
+              <div className="flex items-center space-x-3">
+                <span className="text-3xl">🧁</span>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Métiers de Bouche
+                </h1>
+              </div>
+              
+              <div className="hidden md:flex items-center space-x-2">
+                <Button
                   onClick={() => navigate('/dashboard')}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                  variant="primary"
+                  size="md"
+                  className="gap-2"
                 >
-                  📊 Dashboard
-                </button>
-                <button
+                  <span>📊</span>
+                  Dashboard
+                </Button>
+                <Button
                   onClick={() => navigate('/recipes')}
-                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+                  variant="success"
+                  size="md"
+                  className="gap-2"
                 >
-                  📖 Mes Recettes
-                </button>
-                <button
+                  <span>📖</span>
+                  Mes Recettes
+                </Button>
+                <Button
                   onClick={() => navigate('/recipes/new')}
-                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
+                  variant="purple"
+                  size="md"
+                  className="gap-2"
                 >
-                  ➕ Nouvelle Recette
-                </button>
+                  <span>➕</span>
+                  Nouvelle Recette
+                </Button>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-gray-900">
+              <div className="hidden sm:block text-right">
+                <p className="text-sm font-semibold text-gray-900">
                   {user?.firstName} {user?.lastName}
                 </p>
                 <p className="text-xs text-gray-500">{user?.company || 'Votre entreprise'}</p>
               </div>
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
+                {user?.firstName?.[0]}{user?.lastName?.[0]}
+              </div>
               <Button
                 onClick={handleLogout}
-                className="bg-gray-600 hover:bg-gray-700"
+                variant="secondary"
+                size="md"
               >
                 Déconnexion
               </Button>
