@@ -35,45 +35,73 @@ export default function DashboardPage() {
   
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
+      <nav className="bg-white shadow-md border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
+            {/* Logo + Navigation principale */}
             <div className="flex items-center space-x-8">
-              <h1 className="text-xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-gray-900">
                 🧁 Métiers de Bouche
               </h1>
-              <div className="flex space-x-4">
-                <Button
+              <div className="hidden md:flex space-x-1">
+                <button
                   onClick={() => navigate('/dashboard')}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
                 >
                   📊 Dashboard
-                </Button>
-                <Button
+                </button>
+                <button
                   onClick={() => navigate('/recipes')}
-                  className="bg-green-600 hover:bg-green-700"
+                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
                 >
                   📖 Mes Recettes
-                </Button>
-                <Button
+                </button>
+                <button
                   onClick={() => navigate('/recipes/new')}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
                 >
                   ➕ Nouvelle Recette
-                </Button>
+                </button>
               </div>
             </div>
+            
+            {/* User + Déconnexion */}
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">
-                {user?.firstName} {user?.lastName}
-              </span>
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-medium text-gray-900">
+                  {user?.firstName} {user?.lastName}
+                </p>
+                <p className="text-xs text-gray-500">{user?.company || 'Votre entreprise'}</p>
+              </div>
               <Button
                 onClick={handleLogout}
-                className="bg-gray-600 hover:bg-gray-700"
+                className="bg-gray-600 hover:bg-gray-700 text-white"
               >
                 Déconnexion
               </Button>
             </div>
+          </div>
+          
+          {/* Navigation mobile */}
+          <div className="md:hidden pb-3 space-y-1">
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="w-full text-left px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
+            >
+              📊 Dashboard
+            </button>
+            <button
+              onClick={() => navigate('/recipes')}
+              className="w-full text-left px-3 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg"
+            >
+              📖 Mes Recettes
+            </button>
+            <button
+              onClick={() => navigate('/recipes/new')}
+              className="w-full text-left px-3 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg"
+            >
+              ➕ Nouvelle Recette
+            </button>
           </div>
         </div>
       </nav>
