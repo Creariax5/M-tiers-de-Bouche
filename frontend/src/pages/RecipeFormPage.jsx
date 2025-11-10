@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import api from '../lib/api';
 import { Button } from '../components/ui/Button';
@@ -16,6 +16,7 @@ const CATEGORIES = [
 
 export default function RecipeFormPage() {
   const navigate = useNavigate();
+  const { id } = useParams(); // ID de la recette pour l'édition (undefined si création)
   const { user, logout } = useAuthStore();
 
   // State pour le stepper
@@ -38,6 +39,7 @@ export default function RecipeFormPage() {
   const [ingredients, setIngredients] = useState([]);
   const [selectedIngredient, setSelectedIngredient] = useState(null);
   const [ingredientQuantity, setIngredientQuantity] = useState('');
+  const [ingredientUnit, setIngredientUnit] = useState('G'); // Unité par défaut
   const [ingredientLoss, setIngredientLoss] = useState(0);
 
   // State pour la révision
@@ -62,6 +64,40 @@ export default function RecipeFormPage() {
       }
     }
   }, []);
+
+  // Charger la recette existante si en mode édition
+  useEffect(() => {
+    if (id) {
+      setLoading(true);
+      api.get(`/recipes/${id}`)
+        .then((response) => {
+          const recipe = response.data;
+          setRecipeId(id);
+          setFormData({
+            name: recipe.name || '',
+            description: recipe.description || '',
+            category: recipe.category || '',
+            portions: recipe.servings || 1,
+            portionSize: recipe.portionSize || '',
+            preparationTime: recipe.preparationTime || 0,
+            cookingTime: recipe.cookingTime || 0,
+            restingTime: recipe.restingTime || 0,
+          });
+          // Si la recette a des ingrédients, aller au step 2
+          if (recipe.ingredients && recipe.ingredients.length > 0) {
+            setIngredients(recipe.ingredients);
+            setCurrentStep(2);
+          }
+        })
+        .catch((err) => {
+          console.error('Error loading recipe:', err);
+          setError('Erreur lors du chargement de la recette');
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [id]);
 
   // Sauvegarder brouillon (debounce 500ms)
   useEffect(() => {
@@ -90,11 +126,17 @@ export default function RecipeFormPage() {
   const handleStep1Next = async () => {
     if (!validateStep1()) return;
 
+    // Si on est en mode édition et qu'on a déjà un recipeId, passer au step 2 directement
+    if (recipeId) {
+      setCurrentStep(2);
+      return;
+    }
+
     setLoading(true);
     setError('');
 
     try {
-      // Créer la recette
+      // Créer la recette (mode création uniquement)
       const response = await api.post('/recipes', {
         name: formData.name,
         description: formData.description || undefined,
@@ -130,6 +172,7 @@ export default function RecipeFormPage() {
       await api.post(`/recipes/${recipeId}/ingredients`, {
         ingredientId: selectedIngredient.id,
         quantity: parseFloat(ingredientQuantity),
+        unit: ingredientUnit, // Unité choisie par l'utilisateur
         lossPercent: parseFloat(ingredientLoss) || 0,
       });
 
@@ -139,6 +182,7 @@ export default function RecipeFormPage() {
         {
           ...selectedIngredient,
           quantity: parseFloat(ingredientQuantity),
+          unit: ingredientUnit,
           lossPercent: parseFloat(ingredientLoss) || 0,
         },
       ]);
@@ -146,6 +190,7 @@ export default function RecipeFormPage() {
       // Reset form
       setSelectedIngredient(null);
       setIngredientQuantity('');
+      setIngredientUnit('G'); // Reset à l'unité par défaut
       setIngredientLoss(0);
     } catch (err) {
       console.error('Error adding ingredient:', err);
@@ -385,10 +430,10 @@ export default function RecipeFormPage() {
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                     <p className="font-medium mb-2">{selectedIngredient.name}</p>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                       <div>
                         <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">
-                          Quantité ({selectedIngredient.unit})
+                          Quantité
                         </label>
                         <input
                           type="number"
@@ -399,6 +444,24 @@ export default function RecipeFormPage() {
                           min="0"
                           step="0.01"
                         />
+                      </div>
+
+                      <div>
+                        <label htmlFor="unit" className="block text-sm font-medium text-gray-700 mb-1">
+                          Unité
+                        </label>
+                        <select
+                          id="unit"
+                          value={ingredientUnit}
+                          onChange={(e) => setIngredientUnit(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        >
+                          <option value="G">Grammes (G)</option>
+                          <option value="KG">Kilogrammes (KG)</option>
+                          <option value="L">Litres (L)</option>
+                          <option value="ML">Millilitres (ML)</option>
+                          <option value="PIECE">Pièce(s)</option>
+                        </select>
                       </div>
 
                       <div>

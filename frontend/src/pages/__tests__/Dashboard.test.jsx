@@ -115,8 +115,9 @@ describe('DashboardPage', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/vous n'avez pas encore de recettes/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /créer ma première recette/i })).toBeInTheDocument();
+      // Le dashboard affiche maintenant toujours le nombre de recettes
+      expect(screen.getByText(/recettes créées/i)).toBeInTheDocument();
+      expect(screen.getByText('0')).toBeInTheDocument();
     });
   });
 
@@ -129,7 +130,7 @@ describe('DashboardPage', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByText(/chargement des statistiques/i)).toBeInTheDocument();
+    expect(screen.getByText(/chargement\.\.\./i)).toBeInTheDocument();
   });
 
   test('affiche erreur si échec API', async () => {

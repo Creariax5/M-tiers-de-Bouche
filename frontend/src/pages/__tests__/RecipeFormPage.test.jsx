@@ -206,7 +206,7 @@ describe('RecipeFormPage', () => {
 
       // Attendre autocomplete
       await waitFor(() => {
-        expect(api.get).toHaveBeenCalledWith('/ingredients?search=Farine');
+        expect(api.get).toHaveBeenCalledWith('/recipes/ingredients?search=Farine');
       });
 
       // Sélectionner ingrédient (simuler click sur suggestion)
@@ -228,6 +228,7 @@ describe('RecipeFormPage', () => {
         expect(api.post).toHaveBeenCalledWith('/recipes/recipe-123/ingredients', {
           ingredientId: 'ing-1',
           quantity: 500,
+          unit: 'G', // Unité par défaut
           lossPercent: 0,
         });
       });

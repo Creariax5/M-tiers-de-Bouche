@@ -54,7 +54,9 @@ describe('RecipesListPage', () => {
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /mes recettes/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /nouvelle recette/i })).toBeInTheDocument();
+      // Il y a 2 boutons "Nouvelle recette" : un dans la nav, un dans la page
+      const buttons = screen.getAllByRole('button', { name: /nouvelle recette/i });
+      expect(buttons.length).toBeGreaterThan(0);
     });
   });
 
@@ -194,8 +196,9 @@ describe('RecipesListPage', () => {
       </BrowserRouter>
     );
 
-    const newButton = await screen.findByRole('button', { name: /nouvelle recette/i });
-    await user.click(newButton);
+    // Récupérer tous les boutons "Nouvelle recette" et cliquer sur le dernier (celui de la page, pas la nav)
+    const newButtons = await screen.findAllByRole('button', { name: /nouvelle recette/i });
+    await user.click(newButtons[newButtons.length - 1]);
 
     expect(mockNavigate).toHaveBeenCalledWith('/recipes/new');
   });
@@ -220,8 +223,16 @@ describe('RecipesListPage', () => {
       </BrowserRouter>
     );
 
-    const editButton = await screen.findByRole('button', { name: /modifier/i });
-    await user.click(editButton);
+    // Attendre que le tableau soit chargé
+    await screen.findByText('Croissant');
+    
+    // Il y a plusieurs boutons "Modifier" (nav + tableau), on prend celui dans le tableau
+    const modifyButtons = screen.getAllByRole('button', { name: /modifier/i });
+    const tableModifyButton = modifyButtons.find(btn => 
+      btn.className.includes('text-indigo-600')
+    );
+    
+    await user.click(tableModifyButton);
 
     expect(mockNavigate).toHaveBeenCalledWith('/recipes/1/edit');
   });

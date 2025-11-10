@@ -125,6 +125,7 @@ export default function IngredientAutocomplete({
 
   // Format de la catégorie pour affichage
   const formatCategory = (category) => {
+    if (!category) return '';
     return category
       .toLowerCase()
       .replace(/_/g, ' ')

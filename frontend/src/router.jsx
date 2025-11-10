@@ -5,6 +5,7 @@ import ForgotPasswordPage from './features/auth/ForgotPasswordPage';
 import DashboardPage from './features/dashboard/DashboardPage';
 import RecipesListPage from './pages/RecipesListPage';
 import RecipeFormPage from './pages/RecipeFormPage';
+import RecipeDetailPage from './pages/RecipeDetailPage';
 import { useAuthStore } from './stores/authStore';
 
 function ProtectedRoute({ children }) {
@@ -50,6 +51,22 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <RecipeFormPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/recipes/:id/edit',
+    element: (
+      <ProtectedRoute>
+        <RecipeFormPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/recipes/:id',
+    element: (
+      <ProtectedRoute>
+        <RecipeDetailPage />
       </ProtectedRoute>
     ),
   },
