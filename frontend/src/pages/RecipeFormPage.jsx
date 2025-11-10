@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import api from '../lib/api';
 import { Button } from '../components/ui/Button';
+import IngredientAutocomplete from '../components/IngredientAutocomplete';
 
 const CATEGORIES = [
   'Viennoiserie',
@@ -35,8 +36,6 @@ export default function RecipeFormPage() {
 
   // State pour les ingrédients
   const [ingredients, setIngredients] = useState([]);
-  const [ingredientSearch, setIngredientSearch] = useState('');
-  const [ingredientSuggestions, setIngredientSuggestions] = useState([]);
   const [selectedIngredient, setSelectedIngredient] = useState(null);
   const [ingredientQuantity, setIngredientQuantity] = useState('');
   const [ingredientLoss, setIngredientLoss] = useState(0);
@@ -117,24 +116,10 @@ export default function RecipeFormPage() {
     }
   };
 
-  // Recherche ingrédients (debounce)
-  useEffect(() => {
-    if (ingredientSearch.length < 2) {
-      setIngredientSuggestions([]);
-      return;
-    }
-
-    const timer = setTimeout(async () => {
-      try {
-        const response = await api.get(`/ingredients?search=${ingredientSearch}`);
-        setIngredientSuggestions(response.data || []);
-      } catch (err) {
-        console.error('Error searching ingredients:', err);
-      }
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [ingredientSearch]);
+  // Sélection d'ingrédient depuis l'autocomplete
+  const handleIngredientSelect = (ingredient) => {
+    setSelectedIngredient(ingredient);
+  };
 
   // Ajouter ingrédient
   const handleAddIngredient = async () => {
@@ -162,8 +147,6 @@ export default function RecipeFormPage() {
       setSelectedIngredient(null);
       setIngredientQuantity('');
       setIngredientLoss(0);
-      setIngredientSearch('');
-      setIngredientSuggestions([]);
     } catch (err) {
       console.error('Error adding ingredient:', err);
       setError('Erreur lors de l\'ajout de l\'ingrédient');
@@ -389,36 +372,13 @@ export default function RecipeFormPage() {
             <div>
               <h2 className="text-xl font-semibold mb-6">Ajouter des ingrédients</h2>
 
-              {/* Recherche ingrédients */}
+              {/* Recherche ingrédients avec composant IngredientAutocomplete */}
               <div className="mb-6">
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={ingredientSearch}
-                    onChange={(e) => setIngredientSearch(e.target.value)}
-                    placeholder="Rechercher un ingrédient..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-
-                  {/* Suggestions */}
-                  {ingredientSuggestions.length > 0 && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                      {ingredientSuggestions.map((ing) => (
-                        <button
-                          key={ing.id}
-                          onClick={() => {
-                            setSelectedIngredient(ing);
-                            setIngredientSearch(ing.name);
-                            setIngredientSuggestions([]);
-                          }}
-                          className="w-full px-4 py-2 text-left hover:bg-gray-100"
-                        >
-                          {ing.name} ({ing.unit})
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <IngredientAutocomplete
+                  onSelect={handleIngredientSelect}
+                  placeholder="Rechercher un ingrédient..."
+                  clearOnSelect={false}
+                />
 
                 {/* Formulaire ajout */}
                 {selectedIngredient && (
