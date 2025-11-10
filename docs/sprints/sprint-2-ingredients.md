@@ -7,9 +7,9 @@
 
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
-- **Points planifiés** : 34 (inchangé, renforcement US existantes)
-- **Points réalisés** : 34/34 (100%) ✅ **SPRINT COMPLETE**
-- **Vélocité** : **34 points** sur 1 jour
+- **Points planifiés** : 39 (US-027 ajoutée)
+- **Points réalisés** : 39/39 (100%) ✅ **SPRINT COMPLETE**
+- **Vélocité** : **39 points** sur 3 jours
 
 ---
 
@@ -218,23 +218,32 @@ En tant qu'artisan, je veux un autocomplete fluide afin de trouver mes ingrédie
 ---
 
 ### US-027 : Frontend - Gestion ingrédients personnalisés
-**Points** : 5 | **Priorité** : � MUST | **Assigné à** : -
+**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : IA | **Status** : ✅ DONE
 
 **Description** :  
 En tant qu'artisan, je veux gérer mes ingrédients personnalisés afin de maintenir mon catalogue.
 
 **Critères d'acceptation** :
-- [ ] Page /ingredients/custom
-- [ ] Liste de mes ingrédients avec fournisseur
-- [ ] Formulaire création/modification (nom, prix, fournisseur, lot, DLC, catégorie)
-- [ ] Validation côté client
-- [ ] Badges d'alerte pour DLC proches
+- [x] Page /ingredients/custom
+- [x] Liste de mes ingrédients avec fournisseur
+- [x] Formulaire création/modification (nom, prix, fournisseur, lot, DLC, catégorie)
+- [x] Validation côté client
+- [x] Badges d'alerte pour DLC proches
 
 **Tâches** :
-- [ ] Créer page CustomIngredients
-- [ ] Formulaire complet avec tous les champs
-- [ ] Système d'alertes visuelles DLC
-- [ ] Tests
+- [x] Backend: Route GET /ingredients/custom (list user's custom ingredients)
+- [x] Backend: Tests d'intégration (7/7 passing)
+- [x] Frontend: CustomIngredientsPage.jsx (450 lignes)
+- [x] Frontend: Table responsive (nom, catégorie, prix, fournisseur, DLC)
+- [x] Frontend: Modal CRUD (create/edit/delete avec validation)
+- [x] Frontend: DLC badges (warning < 7 days, danger if expired)
+- [x] Frontend: Tests (16/16 passing)
+- [x] Route /ingredients/custom dans router.jsx
+
+**Progression** : 5/5 points (100%) ✅  
+**Démarré** : 10 novembre 2025  
+**Terminé** : 10 novembre 2025  
+**Commits** : 7bc56c3 (backend), d1f7b85 (tests), e2e464b (page)
 
 ---
 
@@ -405,14 +414,15 @@ _À remplir quotidiennement_
   - 204 No Content on success
   - 404 si non trouvé
   
-**Tests totaux** : **183/183 (100%)** ✅
+**Tests totaux** : **190/190 (100%)** ✅
 - US-021 : 19 tests
 - US-022 : 12 tests
-- US-023 : 6 tests
+- US-023 : 6 tests  
 - US-024 : 12 tests
-- US-025 : 20 tests  
-- Total Sprint 2 : 69 tests
-- Projet complet : 183 tests
+- US-025 : 20 tests
+- US-027 : 7 tests (backend)  
+- Total Sprint 2 : 76 tests
+- Projet complet : 190 tests backend + 116 tests frontend = **306 tests** 🎉
 
 ✨ **Backend CRUD complet pour ingrédients personnalisés !** ✨
 
