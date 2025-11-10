@@ -8,8 +8,8 @@
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
 - **Points planifiés** : 34 (inchangé, renforcement US existantes)
-- **Points réalisés** : 32/34 (94%) ✅
-- **Vélocité** : **32 points** sur 1 jour
+- **Points réalisés** : 34/34 (100%) ✅ **SPRINT COMPLETE**
+- **Vélocité** : **34 points** sur 1 jour
 
 ---
 
@@ -163,23 +163,57 @@ En tant qu'artisan, je veux modifier mes ingrédients personnalisés afin de cor
 ---
 
 ### US-026 : Frontend - Autocomplete ingrédients
-**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : IA | **Status** : ✅ DONE
 
 **Description** :  
 En tant qu'artisan, je veux un autocomplete fluide afin de trouver mes ingrédients rapidement.
 
 **Critères d'acceptation** :
-- [ ] Composant Autocomplete avec debounce 300ms
-- [ ] Recherche après 2 caractères
-- [ ] Affichage nom + catégorie
-- [ ] Sélection au clic ou Enter
-- [ ] Loading state
+- [x] Composant Autocomplete avec debounce 300ms
+- [x] Recherche après 2 caractères
+- [x] Affichage nom + catégorie + type badge (base/custom)
+- [x] Sélection au clic ou Enter
+- [x] Loading state + empty state + error state
+- [x] Navigation clavier (↑↓ Enter Escape)
+- [x] Intégration dans RecipeFormPage Step 2
+- [x] Unit selector (G, KG, L, ML, PIECE)
+- [x] RecipeDetailPage (view + edit)
 
 **Tâches** :
-- [ ] Créer composant IngredientAutocomplete
-- [ ] Debounce API call
-- [ ] Loading + empty state
-- [ ] Tests
+- [x] ~~Créer composant IngredientAutocomplete (245 lignes)~~
+- [x] ~~Hook useDebounce custom (300ms delay)~~
+- [x] ~~Debounce API call GET /recipes/ingredients?search=~~
+- [x] ~~Loading + empty state + error handling~~
+- [x] ~~Keyboard navigation (↑↓ Enter Escape)~~
+- [x] ~~Type badges (base en bleu, custom en vert)~~
+- [x] ~~ARIA accessibility (role, aria-activedescendant)~~
+- [x] ~~Tests IngredientAutocomplete (14 tests)~~
+- [x] ~~Tests useDebounce hook (8 tests)~~
+- [x] ~~Integration dans RecipeFormPage~~
+- [x] ~~Navigation menu (Dashboard, Mes Recettes, Nouvelle Recette)~~
+- [x] ~~Design minimaliste épuré focalisé UX~~
+- [x] ~~Vite proxy configuration (/api → api-gateway:3000)~~
+- [x] ~~Unit selector dropdown (fixes 400 error)~~
+- [x] ~~Routes /recipes/:id (view) et /recipes/:id/edit~~
+- [x] ~~RecipeDetailPage création (250 lignes)~~
+- [x] ~~RecipeDetailPage tests (13 tests)~~
+- [x] ~~Fix 5 tests existants (endpoint, unit, buttons, text)~~
+
+**Implémentation** :
+- Composant : `frontend/src/components/IngredientAutocomplete/index.jsx` (245 lignes)
+- Hook : `frontend/src/components/IngredientAutocomplete/useDebounce.js` (18 lignes)
+- Tests : `IngredientAutocomplete.test.jsx` (14 tests ✅), `useDebounce.test.js` (8 tests ✅)
+- RecipeDetailPage : `frontend/src/pages/RecipeDetailPage.jsx` (250 lignes)
+- Tests : `RecipeDetailPage.test.jsx` (13 tests ✅)
+- Total : **100/100 tests frontend** passant ✅
+
+**API Endpoint** :
+- `GET /api/recipes/ingredients?search=terme` (unified search base + custom)
+
+**Progression** : 8/8 points (100%) ✅  
+**Démarré** : 9 novembre 2025  
+**Terminé** : 10 novembre 2025  
+**Commits** : 24c0733, afb8a73, 658d377, c9a1e5f, e4f1449
 
 ---
 
