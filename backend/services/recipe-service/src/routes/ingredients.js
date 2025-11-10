@@ -8,6 +8,7 @@ import { searchIngredientsController } from '../controllers/ingredientSearchCont
 import { getIngredientDetailController } from '../controllers/ingredientDetailController.js';
 import { createCustomIngredientController } from '../controllers/createCustomIngredientController.js';
 import { updateCustomIngredientController, deleteCustomIngredientController } from '../controllers/updateDeleteCustomIngredientController.js';
+import { listCustomIngredientsController } from '../controllers/listCustomIngredientsController.js';
 
 const router = express.Router();
 
@@ -16,6 +17,12 @@ const router = express.Router();
  * Recherche unifiée dans les ingrédients de base et personnalisés
  */
 router.get('/', authenticateToken, validateSearchQuery, searchIngredientsController);
+
+/**
+ * GET /ingredients/custom
+ * Liste tous les ingrédients personnalisés de l'utilisateur
+ */
+router.get('/custom', authenticateToken, listCustomIngredientsController);
 
 /**
  * GET /ingredients/:id
