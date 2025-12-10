@@ -59,15 +59,29 @@ const createCustomIngredientSchema = z.object({
   // Champs optionnels - Fournisseur et traçabilité
   supplier: z.string()
     .max(200, 'Supplier name must not exceed 200 characters')
-    .optional(),
+    .optional()
+    .nullable(),
   
   lotNumber: z.string()
     .max(100, 'Lot number must not exceed 100 characters')
-    .optional(),
+    .optional()
+    .nullable(),
   
   expiryDate: z.string()
-    .datetime('Invalid expiry date format')
-    .optional(),
+    .refine(
+      (val) => !val || /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/.test(val),
+      'Invalid expiry date format (expected YYYY-MM-DD or ISO 8601)'
+    )
+    .transform((val) => {
+      if (!val) return null;
+      // Convert YYYY-MM-DD to ISO 8601 if needed
+      if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+        return `${val}T00:00:00.000Z`;
+      }
+      return val;
+    })
+    .optional()
+    .nullable(),
   
   // Champs optionnels - Valeurs nutritionnelles (pour 100g)
   calories: z.number()
@@ -106,17 +120,26 @@ const createCustomIngredientSchema = z.object({
  * Middleware de validation pour création ingrédient personnalisé
  */
 export function validateCreateCustomIngredient(req, res, next) {
+  console.log('📝 [VALIDATOR] Validating custom ingredient');
+  console.log('📝 [VALIDATOR] Body received:', JSON.stringify(req.body, null, 2));
+  
   try {
     const validatedData = createCustomIngredientSchema.parse(req.body);
+    console.log('📝 [VALIDATOR] ✅ Validation passed');
     req.validatedData = validatedData;
     next();
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.log('📝 [VALIDATOR] ❌ Validation error:');
+      error.errors.forEach(e => {
+        console.log(`   - ${e.path.join('.')}: ${e.message}`);
+      });
       return res.status(400).json({
         error: 'Validation error',
         details: error.errors
       });
     }
+    console.log('📝 [VALIDATOR] ❌ Unknown error:', error.message);
     return res.status(500).json({
       error: 'Internal server error'
     });

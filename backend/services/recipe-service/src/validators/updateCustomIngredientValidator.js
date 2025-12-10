@@ -68,8 +68,20 @@ const updateCustomIngredientSchema = z.object({
     .optional(),
   
   expiryDate: z.string()
-    .datetime('Invalid expiry date format')
-    .optional(),
+    .refine(
+      (val) => !val || /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/.test(val),
+      'Invalid expiry date format (expected YYYY-MM-DD or ISO 8601)'
+    )
+    .transform((val) => {
+      if (!val) return null;
+      // Convert YYYY-MM-DD to ISO 8601 if needed
+      if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+        return `${val}T00:00:00.000Z`;
+      }
+      return val;
+    })
+    .optional()
+    .nullable(),
   
   // Champs optionnels - Valeurs nutritionnelles (pour 100g)
   calories: z.number()

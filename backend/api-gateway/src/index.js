@@ -48,12 +48,16 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// Trust proxy (required when behind nginx/docker)
+app.set('trust proxy', 1);
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // 100 requests per windowMs
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false }, // Disable X-Forwarded-For validation
 });
 app.use(limiter);
 
@@ -85,6 +89,12 @@ app.use('/api/recipes', createProxyMiddleware({
   target: process.env.RECIPE_SERVICE_URL || 'http://recipe-service:3002',
   changeOrigin: true,
   pathRewrite: { '^/api/recipes': '' }
+}));
+
+app.use('/api/ingredients', createProxyMiddleware({
+  target: process.env.RECIPE_SERVICE_URL || 'http://recipe-service:3002',
+  changeOrigin: true,
+  pathRewrite: { '^/api/ingredients': '/ingredients' }
 }));
 
 app.use('/api/labels', createProxyMiddleware({
@@ -122,8 +132,9 @@ app.use((err, req, res, next) => {
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ API Gateway running on port ${PORT}`);
   console.log(`📡 Proxying routes:`);
-  console.log(`   - /api/auth       → ${process.env.AUTH_SERVICE_URL || 'http://auth-service:3001'}`);
-  console.log(`   - /api/recipes    → ${process.env.RECIPE_SERVICE_URL || 'http://recipe-service:3002'}`);
-  console.log(`   - /api/labels     → ${process.env.LABEL_SERVICE_URL || 'http://label-service:3003'}`);
-  console.log(`   - /api/production → ${process.env.PRODUCTION_SERVICE_URL || 'http://production-service:3004'}`);
+  console.log(`   - /api/auth        → ${process.env.AUTH_SERVICE_URL || 'http://auth-service:3001'}`);
+  console.log(`   - /api/recipes     → ${process.env.RECIPE_SERVICE_URL || 'http://recipe-service:3002'}`);
+  console.log(`   - /api/ingredients → ${process.env.RECIPE_SERVICE_URL || 'http://recipe-service:3002'}/ingredients`);
+  console.log(`   - /api/labels      → ${process.env.LABEL_SERVICE_URL || 'http://label-service:3003'}`);
+  console.log(`   - /api/production  → ${process.env.PRODUCTION_SERVICE_URL || 'http://production-service:3004'}`);
 });

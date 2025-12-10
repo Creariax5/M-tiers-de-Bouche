@@ -8,6 +8,12 @@ const PORT = process.env.PORT || 3002;
 
 app.use(express.json());
 
+// Log toutes les requêtes entrantes
+app.use((req, res, next) => {
+  console.log(`📥 [RECIPE-SERVICE] ${req.method} ${req.path}`);
+  next();
+});
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'recipe-service' });
 });

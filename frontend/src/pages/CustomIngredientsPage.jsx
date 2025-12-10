@@ -361,12 +361,14 @@ export default function CustomIngredientsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-                      Prix
+                      Prix (€)
                     </label>
                     <input
                       type="number"
                       id="price"
                       step="0.01"
+                      min="0"
+                      placeholder="ex: 5.50"
                       value={formData.price}
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
@@ -378,7 +380,7 @@ export default function CustomIngredientsPage() {
 
                   <div>
                     <label htmlFor="priceUnit" className="block text-sm font-medium text-gray-700">
-                      Unité
+                      Par unité de
                     </label>
                     <select
                       id="priceUnit"
@@ -386,14 +388,13 @@ export default function CustomIngredientsPage() {
                       onChange={(e) => setFormData({ ...formData, priceUnit: e.target.value })}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
                     >
-                      {UNITS.map((unit) => (
-                        <option key={unit} value={unit}>
-                          {unit}
-                        </option>
-                      ))}
+                      <option value="KG">1 KG</option>
+                      <option value="L">1 L</option>
+                      <option value="PIECE">1 Pièce</option>
                     </select>
                   </div>
                 </div>
+                <p className="text-xs text-gray-500 -mt-3">Ex: 5.50 € par KG</p>
 
                 <div>
                   <label htmlFor="supplier" className="block text-sm font-medium text-gray-700">

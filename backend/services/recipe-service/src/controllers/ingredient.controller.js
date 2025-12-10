@@ -2,6 +2,10 @@ import * as ingredientService from '../services/ingredient.service.js';
 
 export const addIngredient = async (req, res) => {
   try {
+    console.log('🍳 [ADD-INGREDIENT] Entrée dans addIngredient');
+    console.log('🍳 [ADD-INGREDIENT] req.body:', JSON.stringify(req.body));
+    console.log('🍳 [ADD-INGREDIENT] req.params:', JSON.stringify(req.params));
+    
     const userId = req.user.userId;
     const recipeId = req.params.id;
 

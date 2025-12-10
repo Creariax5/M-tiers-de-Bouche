@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuthStore } from '../stores/authStore';
 import api from '../lib/api';
-import { Button } from '../components/ui/Button';
+import { PageContainer } from '../components/layout';
+import { Button, Card, Alert, Loading } from '../components/ui';
 import IngredientAutocomplete from '../components/IngredientAutocomplete';
 
 const CATEGORIES = [
@@ -17,7 +17,6 @@ const CATEGORIES = [
 export default function RecipeFormPage() {
   const navigate = useNavigate();
   const { id } = useParams(); // ID de la recette pour l'édition (undefined si création)
-  const { user, logout } = useAuthStore();
 
   // State pour le stepper
   const [currentStep, setCurrentStep] = useState(1);
@@ -181,12 +180,21 @@ export default function RecipeFormPage() {
 
     setLoading(true);
     try {
-      await api.post(`/recipes/${recipeId}/ingredients`, {
-        ingredientId: selectedIngredient.id,
+      // Déterminer le bon champ selon le type d'ingrédient
+      const ingredientPayload = {
         quantity: parseFloat(ingredientQuantity),
-        unit: ingredientUnit, // Unité choisie par l'utilisateur
+        unit: ingredientUnit,
         lossPercent: parseFloat(ingredientLoss) || 0,
-      });
+      };
+
+      // Utiliser le bon champ selon le type d'ingrédient (base ou custom)
+      if (selectedIngredient.type === 'custom') {
+        ingredientPayload.customIngredientId = selectedIngredient.id;
+      } else {
+        ingredientPayload.baseIngredientId = selectedIngredient.id;
+      }
+
+      await api.post(`/recipes/${recipeId}/ingredients`, ingredientPayload);
 
       // Ajouter à la liste locale
       setIngredients([
@@ -277,39 +285,14 @@ export default function RecipeFormPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header épuré */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <Button 
-                onClick={() => navigate('/recipes')}
-                variant="secondary"
-                size="md"
-              >
-                ← Retour
-              </Button>
-              <div className="h-6 w-px bg-gray-300"></div>
-              <h1 className="text-xl font-semibold text-gray-900">
-                Nouvelle recette
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="hidden sm:block text-sm text-gray-600">{user?.email}</span>
-              <Button 
-                onClick={logout}
-                variant="secondary"
-                size="md"
-              >
-                Déconnexion
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <PageContainer
+      minimal
+      showBackButton
+      backTo="/recipes"
+      title={id ? 'Modifier la recette' : 'Nouvelle recette'}
+      maxWidth="4xl"
+    >
+      <div className="space-y-8">
         {/* Stepper */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -647,6 +630,6 @@ export default function RecipeFormPage() {
           )}
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }
