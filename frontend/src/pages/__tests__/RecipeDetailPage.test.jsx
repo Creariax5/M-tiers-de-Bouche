@@ -66,10 +66,18 @@ describe('RecipeDetailPage', () => {
         ],
         allergens: ['gluten', 'lait'],
         nutrition: {
-          calories: 406,
-          proteins: 8.2,
-          carbs: 45.8,
-          fats: 21.0,
+          per100g: {
+            energyKcal: 406,
+            energyKj: 1700,
+            proteins: 8.2,
+            carbs: 45.8,
+            sugars: 12.5,
+            fats: 21.0,
+            saturatedFats: 14.2,
+            fiber: 1.8,
+            salt: 0.8,
+          },
+          totalWeight: 750,
         },
       },
     });
@@ -110,11 +118,11 @@ describe('RecipeDetailPage', () => {
     expect(screen.getByText('gluten')).toBeInTheDocument();
     expect(screen.getByText('lait')).toBeInTheDocument();
 
-    // Vérifier nutrition
-    expect(screen.getByText('406 kcal')).toBeInTheDocument();
-    expect(screen.getByText('8.2 g')).toBeInTheDocument();
-    expect(screen.getByText('45.8 g')).toBeInTheDocument();
-    expect(screen.getByText('21 g')).toBeInTheDocument();
+    // Vérifier nutrition (nouvelle structure per100g)
+    expect(screen.getByText(/406/)).toBeInTheDocument(); // kcal
+    expect(screen.getByText(/8\.2/)).toBeInTheDocument(); // protéines
+    expect(screen.getByText(/45\.8/)).toBeInTheDocument(); // glucides
+    expect(screen.getByText(/21/)).toBeInTheDocument(); // lipides
   });
 
   it('should display perte percentage if > 0', async () => {

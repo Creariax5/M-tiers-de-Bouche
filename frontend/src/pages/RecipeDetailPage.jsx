@@ -169,27 +169,43 @@ export default function RecipeDetailPage() {
         )}
 
         {/* Informations nutritionnelles */}
-        {recipe.nutrition && (
+        {recipe.nutrition && recipe.nutrition.per100g && (
           <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4">Informations nutritionnelles (pour 100g)</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-500">Énergie</p>
-                <p className="text-xl font-semibold">{recipe.nutrition.calories} kcal</p>
+                <p className="text-xl font-semibold">{recipe.nutrition.per100g.energyKcal} kcal</p>
+                <p className="text-xs text-gray-400">{recipe.nutrition.per100g.energyKj} kJ</p>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-500">Protéines</p>
-                <p className="text-xl font-semibold">{recipe.nutrition.proteins} g</p>
+                <p className="text-xl font-semibold">{recipe.nutrition.per100g.proteins} g</p>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-500">Glucides</p>
-                <p className="text-xl font-semibold">{recipe.nutrition.carbs} g</p>
+                <p className="text-xl font-semibold">{recipe.nutrition.per100g.carbs} g</p>
+                {recipe.nutrition.per100g.sugars > 0 && (
+                  <p className="text-xs text-gray-400">dont sucres: {recipe.nutrition.per100g.sugars} g</p>
+                )}
               </div>
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-500">Lipides</p>
-                <p className="text-xl font-semibold">{recipe.nutrition.fats} g</p>
+                <p className="text-xl font-semibold">{recipe.nutrition.per100g.fats} g</p>
+                {recipe.nutrition.per100g.saturatedFats > 0 && (
+                  <p className="text-xs text-gray-400">dont saturés: {recipe.nutrition.per100g.saturatedFats} g</p>
+                )}
               </div>
             </div>
+            {recipe.nutrition.per100g.salt > 0 && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg inline-block">
+                <p className="text-sm text-gray-500">Sel</p>
+                <p className="text-xl font-semibold">{recipe.nutrition.per100g.salt} g</p>
+              </div>
+            )}
+            {recipe.nutrition.totalWeight > 0 && (
+              <p className="mt-4 text-sm text-gray-500">Poids total: {recipe.nutrition.totalWeight} g</p>
+            )}
           </div>
         )}
 

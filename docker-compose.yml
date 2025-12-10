@@ -268,29 +268,6 @@ services:
       retries: 3
 
   # ========================================
-  # FRONTEND DEV - React + Vite (DEV ONLY)
-  # ========================================
-  frontend-dev:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
-    container_name: saas-frontend-dev
-    restart: unless-stopped
-    environment:
-      VITE_API_URL: http://localhost:3000
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules  # Éviter écrasement des node_modules
-    depends_on:
-      - api-gateway
-    networks:
-      - saas-network
-    profiles:
-      - dev  # Uniquement en développement
-
-  # ========================================
   # STRIPE CLI - Webhooks locaux (DEV ONLY)
   # ========================================
   stripe-cli:

@@ -35,50 +35,67 @@ const NUTRIENT_CODES = {
 };
 
 // Mapping catégories Ciqual → IngredientCategory enum (12 catégories)
+// Codes Ciqual 2020 réels:
+// 01 = entrées et plats composés
+// 02 = fruits, légumes, légumineuses et oléagineux
+// 03 = produits céréaliers
+// 04 = viandes, œufs, poissons et assimilés
+// 05 = produits laitiers et assimilés
+// 06 = eaux et autres boissons
+// 07 = produits sucrés
+// 08 = glaces et sorbets
+// 09 = matières grasses
+// 10 = aides culinaires et ingrédients divers
+// 11 = aliments infantiles
 const CATEGORY_MAPPING = {
-  // FARINES (code 09 = céréales + 16 = pâtisseries/viennoiseries)
-  '09': 'FARINES',
-  '16': 'FARINES',
+  // 01 - Entrées et plats composés → AUTRE
+  '01': 'AUTRE',
   
-  // SUCRES (code 18 = sucres et dérivés)
-  '18': 'SUCRES',
+  // 02 - Fruits, légumes, légumineuses et oléagineux → FRUITS
+  '02': 'FRUITS',
   
-  // MATIERES_GRASSES (code 17 = huiles et graisses)
-  '17': 'MATIERES_GRASSES',
+  // 03 - Produits céréaliers (farines, pâtes, pain) → FARINES
+  '03': 'FARINES',
   
-  // PRODUITS_LAITIERS (code 12 = lait et produits laitiers)
-  '12': 'PRODUITS_LAITIERS',
+  // 04 - Viandes, œufs, poissons → OEUFS (contient les œufs)
+  '04': 'OEUFS',
   
-  // OEUFS (code 22 = œufs et dérivés)
-  '22': 'OEUFS',
+  // 05 - Produits laitiers (lait, crème, fromage) → PRODUITS_LAITIERS
+  '05': 'PRODUITS_LAITIERS',
   
-  // CHOCOLAT_CACAO (code 05 = chocolat)
-  '05': 'CHOCOLAT_CACAO',
+  // 06 - Eaux et boissons → AUTRE
+  '06': 'AUTRE',
   
-  // FRUITS (code 13 = fruits + 14 = légumes)
-  '13': 'FRUITS',
-  '14': 'FRUITS',
+  // 07 - Produits sucrés (sucre, miel, confiture, chocolat) → SUCRES
+  '07': 'SUCRES',
   
-  // FRUITS_SECS (code 15 = fruits secs, noix)
-  '15': 'FRUITS_SECS',
+  // 08 - Glaces et sorbets → AUTRE
+  '08': 'AUTRE',
   
-  // EPICES (code 11 = épices, aromates, condiments)
-  '11': 'EPICES',
+  // 09 - Matières grasses (beurre, huile, margarine) → MATIERES_GRASSES
+  '09': 'MATIERES_GRASSES',
   
-  // LEVURES (pas de code direct - sera géré manuellement)
+  // 10 - Aides culinaires (épices, sel, levure) → EPICES
+  '10': 'EPICES',
   
-  // ADDITIFS (pas de code direct - sera géré manuellement)
+  // 11 - Aliments infantiles → AUTRE
+  '11': 'AUTRE',
   
-  // AUTRE (tout le reste)
   DEFAULT: 'AUTRE'
 };
 
 // Mapping allergènes par catégorie (14 allergènes INCO)
+// Note: Ce sont des allergènes par défaut, à affiner selon les sous-catégories
 const ALLERGEN_BY_CATEGORY = {
-  FARINES: ['GLUTEN'],
-  PRODUITS_LAITIERS: ['LAIT'],
-  OEUFS: ['OEUFS'],
-  FRUITS_SECS: ['FRUITS_A_COQUE'],
+  FARINES: ['GLUTEN'],           // Céréales contiennent du gluten
+  PRODUITS_LAITIERS: ['LAIT'],   // Produits laitiers
+  OEUFS: [],                     // Viandes/œufs/poissons - à affiner par nom
+  FRUITS: [],                    // Fruits - pas d'allergène par défaut
+  FRUITS_SECS: ['FRUITS_A_COQUE'],// Noix, amandes, etc.
+  MATIERES_GRASSES: [],          // Beurre → LAIT ajouté dynamiquement
+  SUCRES: [],                    // Sucres
+  EPICES: [],                    // Épices
+  CHOCOLAT_CACAO: [],            // Chocolat - peut contenir lait
   AUTRE: []
 };
 
@@ -100,6 +117,17 @@ async function parseXML(filePath) {
 }
 
 /**
+ * Extrait la valeur d'un champ XML (peut être string ou objet avec _)
+ */
+function extractValue(field) {
+  if (field === null || field === undefined) return '';
+  if (typeof field === 'string') return field.trim();
+  if (typeof field === 'object' && field._) return String(field._).trim();
+  if (typeof field === 'object') return '';
+  return String(field).trim();
+}
+
+/**
  * Charge la liste des aliments depuis alim_2020_07_07.xml
  * @returns {Map} Map<alim_code, {name, nameEn, groupCode}>
  */
@@ -112,14 +140,14 @@ async function loadAliments(dataDir) {
   const alimentList = Array.isArray(data.table.alim) ? data.table.alim : [data.table.alim];
   
   for (const alim of alimentList) {
-    // xml2js retourne des objets, accéder à la valeur directement
-    const code = String(alim.alim_code || '').trim();
+    // xml2js retourne des objets ou strings selon la structure
+    const code = extractValue(alim.alim_code);
     if (!code) continue;
     
     aliments.set(code, {
-      name: String(alim.alim_nom_fr || '').trim(),
-      nameEn: String(alim.alim_nom_eng || '').trim(),
-      groupCode: String(alim.alim_grp_code || '99').trim()
+      name: extractValue(alim.alim_nom_fr),
+      nameEn: extractValue(alim.alim_nom_eng),
+      groupCode: extractValue(alim.alim_grp_code) || '99'
     });
   }
   
@@ -151,9 +179,11 @@ async function loadCompositions(dataDir) {
   
   let processedCount = 0;
   for (const compo of compoList) {
-    const alimentCode = String(compo.alim_code || '').trim();
-    const constituentCode = parseInt(String(compo.const_code || '0').trim());
-    const value = parseFloat(String(compo.teneur || '0').trim());
+    const alimentCode = extractValue(compo.alim_code);
+    const constituentCode = parseInt(extractValue(compo.const_code) || '0');
+    // Fix: French decimals use comma, convert to dot for parseFloat
+    const rawValue = extractValue(compo.teneur).replace(',', '.') || '0';
+    const value = parseFloat(rawValue);
     
     if (!alimentCode || !constituentCode || isNaN(value)) continue;
     
@@ -185,6 +215,14 @@ async function loadCompositions(dataDir) {
     }
   }
   
+  // Post-traitement: calculer les calories si manquantes (formule Atwater)
+  // Calories = (protéines × 4) + (glucides × 4) + (lipides × 9)
+  for (const [code, compo] of compositions) {
+    if (compo.calories === 0 && (compo.proteins > 0 || compo.carbs > 0 || compo.fats > 0)) {
+      compo.calories = Math.round((compo.proteins * 4) + (compo.carbs * 4) + (compo.fats * 9));
+    }
+  }
+  
   console.log(`✅ ${compositions.size} aliments avec données nutritionnelles`);
   return compositions;
 }
@@ -197,10 +235,110 @@ function getCategoryFromGroupCode(groupCode) {
 }
 
 /**
+ * Affine la catégorie basée sur le nom de l'aliment
+ * Certains aliments dans une catégorie Ciqual doivent être reclassés
+ */
+function refineCategoryByName(name, baseCategory) {
+  const nameLower = name.toLowerCase();
+  
+  // Chocolat et cacao → CHOCOLAT_CACAO (même si classé dans SUCRES par Ciqual)
+  if (nameLower.includes('chocolat') || nameLower.includes('cacao') || 
+      nameLower.includes('pâte à tartiner') || nameLower.includes('nutella')) {
+    return 'CHOCOLAT_CACAO';
+  }
+  
+  // Fruits secs (noix, amandes, etc.) → FRUITS_SECS
+  if (nameLower.includes('noix') || nameLower.includes('noisette') ||
+      nameLower.includes('amande') || nameLower.includes('pistache') ||
+      nameLower.includes('cacahuète') || nameLower.includes('arachide') ||
+      nameLower.includes('noix de cajou') || nameLower.includes('pécan')) {
+    return 'FRUITS_SECS';
+  }
+  
+  // Levures → LEVURES
+  if (nameLower.includes('levure') || nameLower.includes('bicarbonate')) {
+    return 'LEVURES';
+  }
+  
+  // Additifs (colorants, épaississants, etc.) → ADDITIFS
+  if (nameLower.includes('colorant') || nameLower.includes('gélatine') ||
+      nameLower.includes('agar') || nameLower.includes('pectine')) {
+    return 'ADDITIFS';
+  }
+  
+  return baseCategory;
+}
+
+/**
  * Retourne les allergènes par défaut selon la catégorie
  */
 function getAllergensForCategory(category) {
   return ALLERGEN_BY_CATEGORY[category] || [];
+}
+
+/**
+ * Détecte les allergènes supplémentaires basés sur le nom de l'aliment
+ */
+function detectAllergensFromName(name, category) {
+  const allergens = new Set(getAllergensForCategory(category));
+  const nameLower = name.toLowerCase();
+  
+  // Détection par mots-clés dans le nom
+  if (nameLower.includes('œuf') || nameLower.includes('oeuf') || nameLower.includes('egg')) {
+    allergens.add('OEUFS');
+  }
+  if (nameLower.includes('lait') || nameLower.includes('crème') || nameLower.includes('creme') || 
+      nameLower.includes('fromage') || nameLower.includes('beurre') || nameLower.includes('yaourt') ||
+      nameLower.includes('milk') || nameLower.includes('butter') || nameLower.includes('cheese')) {
+    allergens.add('LAIT');
+  }
+  if (nameLower.includes('blé') || nameLower.includes('ble') || nameLower.includes('farine') ||
+      nameLower.includes('pain') || nameLower.includes('pâte') || nameLower.includes('pate') ||
+      nameLower.includes('wheat') || nameLower.includes('semoule') || nameLower.includes('orge') ||
+      nameLower.includes('seigle') || nameLower.includes('avoine') || nameLower.includes('épeautre')) {
+    allergens.add('GLUTEN');
+  }
+  if (nameLower.includes('arachide') || nameLower.includes('cacahuète') || nameLower.includes('cacahuete') ||
+      nameLower.includes('peanut')) {
+    allergens.add('ARACHIDES');
+  }
+  if (nameLower.includes('amande') || nameLower.includes('noix') || nameLower.includes('noisette') ||
+      nameLower.includes('pistache') || nameLower.includes('cajou') || nameLower.includes('pécan') ||
+      nameLower.includes('macadamia') || nameLower.includes('nut')) {
+    allergens.add('FRUITS_A_COQUE');
+  }
+  if (nameLower.includes('soja') || nameLower.includes('soy') || nameLower.includes('tofu')) {
+    allergens.add('SOJA');
+  }
+  if (nameLower.includes('poisson') || nameLower.includes('saumon') || nameLower.includes('thon') ||
+      nameLower.includes('cabillaud') || nameLower.includes('fish')) {
+    allergens.add('POISSONS');
+  }
+  if (nameLower.includes('crustacé') || nameLower.includes('crevette') || nameLower.includes('crabe') ||
+      nameLower.includes('homard') || nameLower.includes('langouste')) {
+    allergens.add('CRUSTACES');
+  }
+  if (nameLower.includes('mollusque') || nameLower.includes('moule') || nameLower.includes('huître') ||
+      nameLower.includes('calamar') || nameLower.includes('poulpe')) {
+    allergens.add('MOLLUSQUES');
+  }
+  if (nameLower.includes('sésame') || nameLower.includes('sesame')) {
+    allergens.add('SESAME');
+  }
+  if (nameLower.includes('moutarde') || nameLower.includes('mustard')) {
+    allergens.add('MOUTARDE');
+  }
+  if (nameLower.includes('céleri') || nameLower.includes('celeri') || nameLower.includes('celery')) {
+    allergens.add('CELERI');
+  }
+  if (nameLower.includes('lupin')) {
+    allergens.add('LUPIN');
+  }
+  if (nameLower.includes('sulfite') || nameLower.includes('vin ') || nameLower.includes('vinaigre')) {
+    allergens.add('SULFITES');
+  }
+  
+  return Array.from(allergens);
 }
 
 /**
@@ -230,14 +368,15 @@ async function importCiqual() {
     for (const [code, aliment] of aliments) {
       const compo = compositions.get(code);
       
-      // Ignorer si pas de données nutritionnelles complètes
-      if (!compo || compo.calories === 0) {
+      // Ignorer si pas de données nutritionnelles (mais permettre calories = 0 pour eau, etc.)
+      if (!compo) {
         skippedCount++;
         continue;
       }
       
-      const category = getCategoryFromGroupCode(aliment.groupCode);
-      const allergens = getAllergensForCategory(category);
+      const baseCategory = getCategoryFromGroupCode(aliment.groupCode);
+      const category = refineCategoryByName(aliment.name, baseCategory);
+      const allergens = detectAllergensFromName(aliment.name, category);
       
       batch.push({
         category,
