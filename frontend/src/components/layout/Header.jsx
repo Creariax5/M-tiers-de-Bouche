@@ -98,13 +98,6 @@ export function Header({ title, showBackButton = false, backTo = '/recipes', min
                 Mes Recettes
               </Button>
               <Button
-                onClick={() => navigate('/recipes/new')}
-                variant={isActive('/recipes/new') ? 'purple' : 'ghost'}
-                size="md"
-              >
-                Nouvelle Recette
-              </Button>
-              <Button
                 onClick={() => navigate('/ingredients/custom')}
                 variant={location.pathname === '/ingredients/custom' ? 'purple' : 'ghost'}
                 size="md"
@@ -147,13 +140,6 @@ export function Header({ title, showBackButton = false, backTo = '/recipes', min
             className="w-full justify-start"
           >
             Mes Recettes
-          </Button>
-          <Button
-            onClick={() => navigate('/recipes/new')}
-            variant={isActive('/recipes/new') ? 'purple' : 'ghost'}
-            className="w-full justify-start"
-          >
-            Nouvelle Recette
           </Button>
           <Button
             onClick={() => navigate('/ingredients/custom')}

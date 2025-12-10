@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../stores/authStore';
 import { Button } from '../components/ui/Button';
+import { PageContainer } from '../components/layout';
 import api from '../lib/api';
 
 const CATEGORIES = [
@@ -21,9 +20,24 @@ const CATEGORIES = [
 
 const UNITS = ['KG', 'L', 'PIECE'];
 
+const ALLERGENS = [
+  { value: 'GLUTEN', label: 'Gluten' },
+  { value: 'CRUSTACES', label: 'Crustacés' },
+  { value: 'OEUFS', label: 'Œufs' },
+  { value: 'POISSONS', label: 'Poissons' },
+  { value: 'ARACHIDES', label: 'Arachides' },
+  { value: 'SOJA', label: 'Soja' },
+  { value: 'LAIT', label: 'Lait' },
+  { value: 'FRUITS_A_COQUE', label: 'Fruits à coque' },
+  { value: 'CELERI', label: 'Céleri' },
+  { value: 'MOUTARDE', label: 'Moutarde' },
+  { value: 'SESAME', label: 'Sésame' },
+  { value: 'SULFITES', label: 'Sulfites' },
+  { value: 'LUPIN', label: 'Lupin' },
+  { value: 'MOLLUSQUES', label: 'Mollusques' },
+];
+
 export default function CustomIngredientsPage() {
-  const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
   const [ingredients, setIngredients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -37,6 +51,14 @@ export default function CustomIngredientsPage() {
     supplier: '',
     lotNumber: '',
     expiryDate: '',
+    // Valeurs nutritionnelles (pour 100g)
+    calories: '',
+    proteins: '',
+    carbs: '',
+    fats: '',
+    salt: '',
+    // Allergènes
+    allergens: [],
   });
   const [formErrors, setFormErrors] = useState({});
 
@@ -68,6 +90,12 @@ export default function CustomIngredientsPage() {
       supplier: '',
       lotNumber: '',
       expiryDate: '',
+      calories: '',
+      proteins: '',
+      carbs: '',
+      fats: '',
+      salt: '',
+      allergens: [],
     });
     setFormErrors({});
     setShowModal(true);
@@ -83,6 +111,12 @@ export default function CustomIngredientsPage() {
       supplier: ingredient.supplier || '',
       lotNumber: ingredient.lotNumber || '',
       expiryDate: ingredient.expiryDate ? ingredient.expiryDate.split('T')[0] : '',
+      calories: ingredient.calories || '',
+      proteins: ingredient.proteins || '',
+      carbs: ingredient.carbs || '',
+      fats: ingredient.fats || '',
+      salt: ingredient.salt || '',
+      allergens: ingredient.allergens || [],
     });
     setFormErrors({});
     setShowModal(true);
@@ -119,6 +153,14 @@ export default function CustomIngredientsPage() {
         supplier: formData.supplier.trim() || null,
         lotNumber: formData.lotNumber.trim() || null,
         expiryDate: formData.expiryDate || null,
+        // Valeurs nutritionnelles
+        calories: formData.calories ? parseFloat(formData.calories) : null,
+        proteins: formData.proteins ? parseFloat(formData.proteins) : null,
+        carbs: formData.carbs ? parseFloat(formData.carbs) : null,
+        fats: formData.fats ? parseFloat(formData.fats) : null,
+        salt: formData.salt ? parseFloat(formData.salt) : null,
+        // Allergènes
+        allergens: formData.allergens.length > 0 ? formData.allergens : null,
       };
 
       if (editingId) {
@@ -149,11 +191,6 @@ export default function CustomIngredientsPage() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   const getDLCBadge = (expiryDate) => {
     if (!expiryDate) return null;
 
@@ -170,39 +207,9 @@ export default function CustomIngredientsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-bold text-gray-900">
-                🧁 Métiers de Bouche
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="text-sm text-gray-700 hover:text-gray-900"
-              >
-                Tableau de bord
-              </button>
-              <span className="text-sm text-gray-700">
-                {user?.firstName} {user?.lastName}
-              </span>
-              <Button
-                onClick={handleLogout}
-                className="bg-gray-600 hover:bg-gray-700"
-              >
-                Déconnexion
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="flex justify-between items-center mb-6">
+    <PageContainer title="Ingrédients personnalisés">
+      <div className="px-4 py-6 sm:px-0">
+        <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">
               Ingrédients personnalisés ({ingredients.length})
             </h2>
@@ -304,7 +311,6 @@ export default function CustomIngredientsPage() {
             </div>
           )}
         </div>
-      </main>
 
       {/* Modal */}
       {showModal && (
@@ -436,6 +442,116 @@ export default function CustomIngredientsPage() {
                     />
                   </div>
                 </div>
+
+                {/* Section Valeurs Nutritionnelles */}
+                <div className="border-t pt-4 mt-4">
+                  <h4 className="text-sm font-medium text-gray-900 mb-3">
+                    Valeurs nutritionnelles (pour 100g)
+                  </h4>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label htmlFor="calories" className="block text-xs font-medium text-gray-700">
+                        Calories (kcal)
+                      </label>
+                      <input
+                        type="number"
+                        id="calories"
+                        step="0.1"
+                        min="0"
+                        placeholder="ex: 350"
+                        value={formData.calories}
+                        onChange={(e) => setFormData({ ...formData, calories: e.target.value })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-2 py-1 border"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="proteins" className="block text-xs font-medium text-gray-700">
+                        Protéines (g)
+                      </label>
+                      <input
+                        type="number"
+                        id="proteins"
+                        step="0.1"
+                        min="0"
+                        placeholder="ex: 10.5"
+                        value={formData.proteins}
+                        onChange={(e) => setFormData({ ...formData, proteins: e.target.value })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-2 py-1 border"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="carbs" className="block text-xs font-medium text-gray-700">
+                        Glucides (g)
+                      </label>
+                      <input
+                        type="number"
+                        id="carbs"
+                        step="0.1"
+                        min="0"
+                        placeholder="ex: 45.2"
+                        value={formData.carbs}
+                        onChange={(e) => setFormData({ ...formData, carbs: e.target.value })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-2 py-1 border"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="fats" className="block text-xs font-medium text-gray-700">
+                        Lipides (g)
+                      </label>
+                      <input
+                        type="number"
+                        id="fats"
+                        step="0.1"
+                        min="0"
+                        placeholder="ex: 12.3"
+                        value={formData.fats}
+                        onChange={(e) => setFormData({ ...formData, fats: e.target.value })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-2 py-1 border"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="salt" className="block text-xs font-medium text-gray-700">
+                        Sel (g)
+                      </label>
+                      <input
+                        type="number"
+                        id="salt"
+                        step="0.01"
+                        min="0"
+                        placeholder="ex: 0.45"
+                        value={formData.salt}
+                        onChange={(e) => setFormData({ ...formData, salt: e.target.value })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-2 py-1 border"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section Allergènes */}
+                <div className="border-t pt-4 mt-4">
+                  <h4 className="text-sm font-medium text-gray-900 mb-3">
+                    Allergènes (INCO)
+                  </h4>
+                  <div className="grid grid-cols-3 gap-2">
+                    {ALLERGENS.map((allergen) => (
+                      <label key={allergen.value} className="flex items-center text-sm">
+                        <input
+                          type="checkbox"
+                          checked={formData.allergens.includes(allergen.value)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setFormData({ ...formData, allergens: [...formData.allergens, allergen.value] });
+                            } else {
+                              setFormData({ ...formData, allergens: formData.allergens.filter(a => a !== allergen.value) });
+                            }
+                          }}
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-2"
+                        />
+                        {allergen.label}
+                      </label>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <div className="mt-6 flex justify-end space-x-3">
@@ -457,6 +573,6 @@ export default function CustomIngredientsPage() {
           </div>
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }
