@@ -49,12 +49,14 @@ const createCustomIngredientSchema = z.object({
     .min(2, 'Name must be at least 2 characters')
     .max(200, 'Name must not exceed 200 characters'),
   
-  category: IngredientCategoryEnum,
+  category: IngredientCategoryEnum.optional().nullable(),
   
   price: z.number()
-    .min(0, 'Price must be positive or zero'),
+    .min(0, 'Price must be positive or zero')
+    .optional()
+    .nullable(),
   
-  priceUnit: UnitEnum,
+  priceUnit: UnitEnum.optional().nullable(),
   
   // Champs optionnels - Fournisseur et traçabilité
   supplier: z.string()
@@ -86,34 +88,41 @@ const createCustomIngredientSchema = z.object({
   // Champs optionnels - Valeurs nutritionnelles (pour 100g)
   calories: z.number()
     .min(0, 'Calories must be positive or zero')
-    .optional(),
+    .optional()
+    .nullable(),
   
   proteins: z.number()
     .min(0, 'Proteins must be positive or zero')
-    .optional(),
+    .optional()
+    .nullable(),
   
   carbs: z.number()
     .min(0, 'Carbs must be positive or zero')
-    .optional(),
+    .optional()
+    .nullable(),
   
   sugars: z.number()
     .min(0, 'Sugars must be positive or zero')
-    .optional(),
+    .optional()
+    .nullable(),
   
   fats: z.number()
     .min(0, 'Fats must be positive or zero')
-    .optional(),
+    .optional()
+    .nullable(),
   
   saturatedFats: z.number()
     .min(0, 'Saturated fats must be positive or zero')
-    .optional(),
+    .optional()
+    .nullable(),
   
   salt: z.number()
     .min(0, 'Salt must be positive or zero')
-    .optional(),
+    .optional()
+    .nullable(),
   
   // Allergènes (array optionnel)
-  allergens: z.array(AllergenEnum).optional()
+  allergens: z.array(AllergenEnum).optional().nullable()
 });
 
 /**

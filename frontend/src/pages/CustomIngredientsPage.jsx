@@ -49,8 +49,6 @@ export default function CustomIngredientsPage() {
     price: '',
     priceUnit: 'KG',
     supplier: '',
-    lotNumber: '',
-    expiryDate: '',
     // Valeurs nutritionnelles (pour 100g)
     calories: '',
     proteins: '',
@@ -88,8 +86,6 @@ export default function CustomIngredientsPage() {
       price: '',
       priceUnit: 'KG',
       supplier: '',
-      lotNumber: '',
-      expiryDate: '',
       calories: '',
       proteins: '',
       carbs: '',
@@ -109,8 +105,6 @@ export default function CustomIngredientsPage() {
       price: ingredient.price || '',
       priceUnit: ingredient.priceUnit,
       supplier: ingredient.supplier || '',
-      lotNumber: ingredient.lotNumber || '',
-      expiryDate: ingredient.expiryDate ? ingredient.expiryDate.split('T')[0] : '',
       calories: ingredient.calories || '',
       proteins: ingredient.proteins || '',
       carbs: ingredient.carbs || '',
@@ -151,8 +145,6 @@ export default function CustomIngredientsPage() {
         price: formData.price ? parseFloat(formData.price) : 0,
         priceUnit: formData.priceUnit,
         supplier: formData.supplier.trim() || null,
-        lotNumber: formData.lotNumber.trim() || null,
-        expiryDate: formData.expiryDate || null,
         // Valeurs nutritionnelles
         calories: formData.calories ? parseFloat(formData.calories) : null,
         proteins: formData.proteins ? parseFloat(formData.proteins) : null,
@@ -189,21 +181,6 @@ export default function CustomIngredientsPage() {
       console.error('Error deleting ingredient:', err);
       setError('Erreur lors de la suppression');
     }
-  };
-
-  const getDLCBadge = (expiryDate) => {
-    if (!expiryDate) return null;
-
-    const now = new Date();
-    const expiry = new Date(expiryDate);
-    const diffDays = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 0) {
-      return <span className="px-2 py-1 text-xs font-semibold rounded bg-red-100 text-red-800">DLC dépassée</span>;
-    } else if (diffDays <= 7) {
-      return <span className="px-2 py-1 text-xs font-semibold rounded bg-yellow-100 text-yellow-800">DLC proche</span>;
-    }
-    return null;
   };
 
   return (
@@ -260,9 +237,6 @@ export default function CustomIngredientsPage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Fournisseur
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      DLC
-                    </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
@@ -286,9 +260,6 @@ export default function CustomIngredientsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {ingredient.supplier || '-'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {getDLCBadge(ingredient.expiryDate)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                         <button
@@ -413,34 +384,6 @@ export default function CustomIngredientsPage() {
                     onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
                   />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="lotNumber" className="block text-sm font-medium text-gray-700">
-                      Numéro de lot
-                    </label>
-                    <input
-                      type="text"
-                      id="lotNumber"
-                      value={formData.lotNumber}
-                      onChange={(e) => setFormData({ ...formData, lotNumber: e.target.value })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="expiryDate" className="block text-sm font-medium text-gray-700">
-                      Date de péremption (DLC)
-                    </label>
-                    <input
-                      type="date"
-                      id="expiryDate"
-                      value={formData.expiryDate}
-                      onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
-                    />
-                  </div>
                 </div>
 
                 {/* Section Valeurs Nutritionnelles */}
