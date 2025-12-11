@@ -17,12 +17,13 @@ describe('Label Service Integration Tests', () => {
       const labelData = {
         productName: 'Tarte au Citron',
         ingredients: [
-          { name: 'Farine', quantity: 200, unit: 'g' },
-          { name: 'Sucre', quantity: 100, unit: 'g' },
-          { name: 'Oeufs', quantity: 3, unit: 'pièce' }
+          { name: 'Farine', quantity: 200, unit: 'g', allergens: ['gluten'] },
+          { name: 'Sucre', quantity: 100, unit: 'g', allergens: [] },
+          { name: 'Oeufs', quantity: 3, unit: 'pièce', isAllergen: true }
         ],
         nutrition: {
-          energy: 250,
+          energy: 1045,
+          energyKcal: 250,
           fat: 10,
           saturatedFat: 5,
           carbs: 30,
@@ -30,7 +31,12 @@ describe('Label Service Integration Tests', () => {
           proteins: 5,
           salt: 0.5
         },
-        allergens: ['gluten', 'oeufs']
+        mentions: {
+          netWeight: '350g',
+          dlc: '15/12/2025',
+          storage: 'Au frais',
+          manufacturer: 'Ma Boulangerie'
+        }
       };
 
       const res = await request(app)
