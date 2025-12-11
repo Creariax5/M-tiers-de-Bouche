@@ -57,5 +57,46 @@ describe('Label Service Integration Tests', () => {
       
       expect(res.status).toBe(401);
     });
+
+    it('should support different templates', async () => {
+      const token = generateToken();
+      const templates = ['classic', 'modern', 'minimalist'];
+      
+      for (const template of templates) {
+        const res = await request(app)
+          .post('/labels/generate')
+          .set('Authorization', `Bearer ${token}`)
+          .send({ 
+            productName: `Test ${template}`,
+            template: template 
+          });
+          
+        expect(res.status).toBe(200);
+        expect(res.header['content-type']).toBe('application/pdf');
+      }
+    });
+  });
+
+  describe('GET /labels', () => {
+    it('should return label history for user', async () => {
+      const token = generateToken();
+      
+      // D'abord générer un label
+      await request(app)
+        .post('/labels/generate')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ productName: 'Test History' });
+        
+      // Ensuite récupérer l'historique
+      const res = await request(app)
+        .get('/labels')
+        .set('Authorization', `Bearer ${token}`);
+        
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBeGreaterThan(0);
+      expect(res.body[0].productName).toBe('Test History');
+      expect(res.body[0].url).toBeDefined();
+    });
   });
 });

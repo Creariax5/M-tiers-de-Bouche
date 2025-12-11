@@ -1,3 +1,5 @@
+import { formatIngredients } from './utils.js';
+
 export const defaultTemplate = (data) => {
   const {
     productName,
@@ -5,26 +7,6 @@ export const defaultTemplate = (data) => {
     nutrition,   // { energy, energyKcal, fat, saturatedFat, carbs, sugars, proteins, salt }
     mentions     // { manufacturer, dlc, netWeight, storage }
   } = data;
-
-  // Helper pour mettre en gras les allergènes
-  const formatIngredients = (ingredients) => {
-    if (!ingredients || ingredients.length === 0) return '';
-    
-    // Trier par quantité décroissante (si quantity est fourni)
-    const sorted = [...ingredients].sort((a, b) => (b.quantity || 0) - (a.quantity || 0));
-    
-    return sorted.map(ing => {
-      let name = ing.name;
-      // Si l'ingrédient contient des allergènes ou est un allergène, on le met en gras
-      // Note: Ceci est une simplification. Idéalement, on devrait détecter les allergènes dans le texte.
-      // Ici on suppose que si ing.isAllergen est vrai ou s'il a des allergènes, on met tout le nom en gras.
-      // Pour une conformité stricte, il faudrait mettre en gras SEULEMENT le mot clé de l'allergène.
-      if (ing.isAllergen || (ing.allergens && ing.allergens.length > 0)) {
-        return `<strong>${name}</strong>`;
-      }
-      return name;
-    }).join(', ');
-  };
 
   return `
     <!DOCTYPE html>
@@ -48,6 +30,7 @@ export const defaultTemplate = (data) => {
         <div class="ingredients">
           <strong>Ingrédients :</strong> ${formatIngredients(ingredients)}.
         </div>
+
 
         <table class="nutrition-table">
           <tr>

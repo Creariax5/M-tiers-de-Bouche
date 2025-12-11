@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import api from '../lib/api';
 import { Button } from '../components/ui/Button';
+import LabelGenerationModal from '../components/LabelGenerationModal';
 
 export default function RecipeDetailPage() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function RecipeDetailPage() {
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showLabelModal, setShowLabelModal] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -94,9 +96,14 @@ export default function RecipeDetailPage() {
                 <p className="mt-4 text-gray-600">{recipe.description}</p>
               )}
             </div>
-            <Button onClick={() => navigate(`/recipes/${id}/edit`)} variant="primary">
-              Modifier
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={() => setShowLabelModal(true)} variant="secondary">
+                🏷️ Générer étiquette
+              </Button>
+              <Button onClick={() => navigate(`/recipes/${id}/edit`)} variant="primary">
+                Modifier
+              </Button>
+            </div>
           </div>
 
           <div className="mt-6 grid grid-cols-4 gap-4">
@@ -219,6 +226,13 @@ export default function RecipeDetailPage() {
           </Button>
         </div>
       </div>
+
+      {/* Modal de génération d'étiquette */}
+      <LabelGenerationModal
+        recipe={recipe}
+        isOpen={showLabelModal}
+        onClose={() => setShowLabelModal(false)}
+      />
     </div>
   );
 }

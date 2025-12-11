@@ -1,5 +1,15 @@
 import puppeteer from 'puppeteer';
 import { defaultTemplate } from '../templates/default.template.js';
+import { classicTemplate } from '../templates/classic.template.js';
+import { modernTemplate } from '../templates/modern.template.js';
+import { minimalistTemplate } from '../templates/minimalist.template.js';
+
+const templates = {
+  default: defaultTemplate,
+  classic: classicTemplate,
+  modern: modernTemplate,
+  minimalist: minimalistTemplate
+};
 
 export const generatePdf = async (data) => {
   const browser = await puppeteer.launch({
@@ -15,8 +25,11 @@ export const generatePdf = async (data) => {
   try {
     const page = await browser.newPage();
     
-    // Utiliser le template par défaut
-    const html = defaultTemplate(data);
+    // Sélectionner le template (défaut si non trouvé)
+    const templateName = data.template || 'default';
+    const templateFn = templates[templateName] || defaultTemplate;
+    
+    const html = templateFn(data);
     
     await page.setContent(html);
     
@@ -32,3 +45,4 @@ export const generatePdf = async (data) => {
     await browser.close();
   }
 };
+
