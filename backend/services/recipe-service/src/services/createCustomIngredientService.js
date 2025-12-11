@@ -14,13 +14,13 @@ const prisma = new PrismaClient();
  * @returns {Promise<Object>} Ingrédient créé avec tous ses champs
  */
 export async function createCustomIngredient(ingredientData, userId) {
-  // Préparer les données pour Prisma
+  // Préparer les données pour Prisma avec valeurs par défaut
   const data = {
     userId,
     name: ingredientData.name,
-    category: ingredientData.category,
-    price: ingredientData.price,
-    priceUnit: ingredientData.priceUnit,
+    category: ingredientData.category || 'AUTRE',
+    price: ingredientData.price ?? 0,
+    priceUnit: ingredientData.priceUnit || 'KG',
     
     // Champs optionnels - Fournisseur et traçabilité
     supplier: ingredientData.supplier || null,

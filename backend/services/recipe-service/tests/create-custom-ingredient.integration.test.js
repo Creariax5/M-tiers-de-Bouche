@@ -169,17 +169,35 @@ describe('POST /ingredients/custom - Create custom ingredient', () => {
         .expect(401);
     });
 
-    it('should reject missing required fields', async () => {
+    it('should reject missing name (only required field)', async () => {
       const response = await request(app)
         .post('/ingredients/custom')
         .set('Authorization', `Bearer ${token}`)
         .send({
-          name: 'Incomplete ingredient'
-          // Missing: category, price, priceUnit
+          // Missing: name (the only required field)
+          category: 'FARINES',
+          price: 2.50,
+          priceUnit: 'KG'
         })
         .expect(400);
 
       expect(response.body).toHaveProperty('error');
+    });
+
+    it('should accept ingredient with only name (other fields have defaults)', async () => {
+      const response = await request(app)
+        .post('/ingredients/custom')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          name: 'Minimal ingredient'
+          // category defaults to AUTRE, price to 0, priceUnit to KG
+        })
+        .expect(201);
+
+      expect(response.body.name).toBe('Minimal ingredient');
+      expect(response.body.category).toBe('AUTRE');
+      expect(response.body.price).toBe(0);
+      expect(response.body.priceUnit).toBe('KG');
     });
 
     it('should reject invalid category', async () => {
