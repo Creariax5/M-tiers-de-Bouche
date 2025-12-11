@@ -63,7 +63,12 @@ jobs:
       - name: Build and test auth-service
         run: |
           docker compose build auth-service
-          docker compose run --rm auth-service npm test
+          docker compose run --rm auth-service sh -c "npx prisma migrate deploy && npm test"
+      
+      - name: Build and test recipe-service
+        run: |
+          docker compose build recipe-service
+          docker compose run --rm recipe-service sh -c "npx prisma migrate deploy && npm test"
       
       - name: Show logs on failure
         if: failure()
