@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer';
+import { defaultTemplate } from '../templates/default.template.js';
 
 export const generatePdf = async (data) => {
   const browser = await puppeteer.launch({
@@ -14,20 +15,18 @@ export const generatePdf = async (data) => {
   try {
     const page = await browser.newPage();
     
-    // Basic template for now
-    const html = `
-      <html>
-        <body>
-          <h1>${data.productName || 'Produit'}</h1>
-          <ul>
-            ${data.ingredients?.map(i => `<li>${i.name}: ${i.quantity}${i.unit}</li>`).join('') || ''}
-          </ul>
-        </body>
-      </html>
-    `;
+    // Utiliser le template par défaut
+    const html = defaultTemplate(data);
     
     await page.setContent(html);
-    const pdfBuffer = await page.pdf({ format: 'A4' });
+    
+    // Format étiquette (ex: 100x150mm ou A4)
+    // Pour l'instant on reste sur A4 ou format personnalisé si fourni
+    const pdfBuffer = await page.pdf({ 
+      format: data.format || 'A4',
+      printBackground: true
+    });
+    
     return pdfBuffer;
   } finally {
     await browser.close();
