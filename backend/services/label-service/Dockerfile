@@ -18,8 +18,8 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 
 WORKDIR /app
 
-# Installer curl pour healthcheck
-RUN apk add --no-cache curl
+# Installer curl pour healthcheck et openssl pour Prisma
+RUN apk add --no-cache curl openssl
 
 # Copier package.json
 COPY package*.json ./
