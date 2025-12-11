@@ -1,0 +1,167 @@
+version: '3.8'
+
+networks:
+  saas-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  minio-data:
+  letsencrypt:
+
+services:
+  # ========================================
+  # TRAEFIK - Reverse Proxy & SSL
+  # ========================================
+  traefik:
+    image: traefik:v2.10
+    container_name: saas-traefik
+    restart: always
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # Dashboard (optional, secure in prod)
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "letsencrypt:/letsencrypt"
+    networks:
+      - saas-network
+
+  # ========================================
+  # INFRASTRUCTURE (DB, Cache, Storage)
+  # ========================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: saas-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh
+    networks:
+      - saas-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: saas-redis
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    networks:
+      - saas-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: saas-minio
+    restart: always
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio-data:/data
+    networks:
+      - saas-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minio.rule=Host(`storage.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.minio.entrypoints=websecure"
+      - "traefik.http.routers.minio.tls.certresolver=myresolver"
+      - "traefik.http.services.minio.loadbalancer.server.port=9000"
+
+  # ========================================
+  # BACKEND SERVICES
+  # ========================================
+  api-gateway:
+    image: ghcr.io/${GITHUB_REPOSITORY}/api-gateway:latest
+    container_name: saas-api-gateway
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      AUTH_SERVICE_URL: http://auth-service:3001
+      RECIPE_SERVICE_URL: http://recipe-service:3002
+      LABEL_SERVICE_URL: http://label-service:3003
+      PRODUCTION_SERVICE_URL: http://production-service:3004
+    networks:
+      - saas-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`api.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=myresolver"
+      - "traefik.http.services.api.loadbalancer.server.port=3000"
+
+  auth-service:
+    image: ghcr.io/${GITHUB_REPOSITORY}/auth-service:latest
+    restart: always
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/saas_auth
+      JWT_SECRET: ${JWT_SECRET}
+    networks:
+      - saas-network
+
+  recipe-service:
+    image: ghcr.io/${GITHUB_REPOSITORY}/recipe-service:latest
+    restart: always
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/saas_recipes
+    networks:
+      - saas-network
+
+  label-service:
+    image: ghcr.io/${GITHUB_REPOSITORY}/label-service:latest
+    restart: always
+    networks:
+      - saas-network
+
+  production-service:
+    image: ghcr.io/${GITHUB_REPOSITORY}/production-service:latest
+    restart: always
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/saas_production
+    networks:
+      - saas-network
+
+  # ========================================
+  # FRONTEND APPLICATIONS
+  # ========================================
+  frontend:
+    image: ghcr.io/${GITHUB_REPOSITORY}/frontend:latest
+    container_name: saas-frontend
+    restart: always
+    networks:
+      - saas-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`app.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+
+  design-system:
+    image: ghcr.io/${GITHUB_REPOSITORY}/design-system:latest
+    container_name: saas-design-system
+    restart: always
+    networks:
+      - saas-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.design.rule=Host(`design.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.design.entrypoints=websecure"
+      - "traefik.http.routers.design.tls.certresolver=myresolver"
+      - "traefik.http.services.design.loadbalancer.server.port=5173"
