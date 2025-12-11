@@ -11,6 +11,7 @@ const generateToken = (userId = 'test-user-id') => {
 };
 
 describe('Label Service Integration Tests', () => {
+  // Test de génération de PDF avec données complètes
   describe('POST /labels/generate', () => {
     it('should generate a PDF label', async () => {
       const token = generateToken();
