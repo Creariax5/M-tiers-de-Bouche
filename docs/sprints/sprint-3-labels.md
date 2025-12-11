@@ -1,6 +1,6 @@
 # 🚀 SPRINT 3 : Label Service & PDF Generation
 **Durée** : 2 semaines (Semaines 6-7)  
-**Dates** : À définir  
+**Dates** : 11 Décembre 2025 - 25 Décembre 2025
 **Sprint Goal** : Génération automatique d'étiquettes conformes à la réglementation
 
 ---
@@ -28,7 +28,7 @@
 ## 📝 USER STORIES DU SPRINT
 
 ### US-028 : Label Service - Génération PDF
-**Points** : 13 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 13 | **Priorité** : 🔴 MUST | **Assigné à** : GitHub Copilot
 
 **Description** :  
 En tant qu'artisan, je veux générer une étiquette PDF afin de l'imprimer pour mes produits.
