@@ -34,19 +34,19 @@
 En tant qu'artisan, je veux générer une étiquette PDF afin de l'imprimer pour mes produits.
 
 **Critères d'acceptation** :
-- [ ] POST /labels/generate
-- [ ] PDF généré avec PDFKit ou Puppeteer
-- [ ] Contenu : nom produit, ingrédients (ordre décroissant), allergènes EN GRAS, valeurs nutritionnelles (100g)
-- [ ] Mentions obligatoires : date fabrication, DLUO, poids net, conditions conservation, fabricant (nom + adresse)
-- [ ] Format A4 ou étiquettes (40x30, 50x30, 70x50mm)
-- [ ] Stockage MinIO (bucket labels)
+- [x] POST /labels/generate
+- [x] PDF généré avec PDFKit ou Puppeteer
+- [x] Contenu : nom produit, ingrédients (ordre décroissant), allergènes EN GRAS, valeurs nutritionnelles (100g)
+- [x] Mentions obligatoires : date fabrication, DLUO, poids net, conditions conservation, fabricant (nom + adresse)
+- [x] Format A4 ou étiquettes (40x30, 50x30, 70x50mm)
+- [x] Stockage MinIO (bucket labels)
 
 **Tâches** :
-- [ ] Créer label-service
-- [ ] Template avec TOUS les champs obligatoires
-- [ ] Génération PDF conforme INCO
-- [ ] Upload vers MinIO
-- [ ] Tests
+- [x] Créer label-service
+- [x] Template avec TOUS les champs obligatoires
+- [x] Génération PDF conforme INCO
+- [x] Upload vers MinIO
+- [x] Tests
 
 ---
 
@@ -69,23 +69,23 @@ En tant qu'artisan, je veux choisir un template d'étiquette afin de personnalis
 ---
 
 ### US-030 : Conformité réglementaire INCO
-**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : GitHub Copilot
 
 **Description** :  
 En tant qu'artisan, je veux que mes étiquettes soient conformes à la réglementation INCO afin d'éviter des amendes.
 
 **Critères d'acceptation** :
-- [ ] Allergènes en GRAS ou CAPITALES
-- [ ] Valeurs nutritionnelles pour 100g (tableau obligatoire)
-- [ ] Ingrédients par ordre décroissant de poids
-- [ ] Mentions obligatoires : date fabrication, DLUO, poids net, conditions conservation, nom et adresse fabricant
+- [x] Allergènes en GRAS ou CAPITALES
+- [x] Valeurs nutritionnelles pour 100g (tableau obligatoire)
+- [x] Ingrédients par ordre décroissant de poids
+- [x] Mentions obligatoires : date fabrication, DLUO, poids net, conditions conservation, nom et adresse fabricant
 - [ ] Validation selon Règlement UE n°1169/2011
 
 **Tâches** :
 - [ ] Validator conformité INCO complet
-- [ ] Tri automatique ingrédients par poids
-- [ ] Règles de formatage allergènes
-- [ ] Tests conformité avec cas réels
+- [x] Tri automatique ingrédients par poids
+- [x] Règles de formatage allergènes
+- [x] Tests conformité avec cas réels
 
 ---
 
