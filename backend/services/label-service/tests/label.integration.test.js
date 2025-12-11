@@ -12,7 +12,7 @@ const generateToken = (userId = 'test-user-id') => {
 
 describe('Label Service Integration Tests', () => {
   // Test de génération de PDF avec données complètes
-  describe('POST /labels/generate', () => {
+  describe('POST /generate', () => {
     it('should generate a PDF label', async () => {
       const token = generateToken();
       const labelData = {
@@ -41,7 +41,7 @@ describe('Label Service Integration Tests', () => {
       };
 
       const res = await request(app)
-        .post('/labels/generate')
+        .post('/generate')
         .set('Authorization', `Bearer ${token}`)
         .send(labelData);
 
@@ -52,7 +52,7 @@ describe('Label Service Integration Tests', () => {
 
     it('should return 401 if no token provided', async () => {
       const res = await request(app)
-        .post('/labels/generate')
+        .post('/generate')
         .send({});
       
       expect(res.status).toBe(401);
@@ -64,7 +64,7 @@ describe('Label Service Integration Tests', () => {
       
       for (const template of templates) {
         const res = await request(app)
-          .post('/labels/generate')
+          .post('/generate')
           .set('Authorization', `Bearer ${token}`)
           .send({ 
             productName: `Test ${template}`,
@@ -77,19 +77,19 @@ describe('Label Service Integration Tests', () => {
     });
   });
 
-  describe('GET /labels', () => {
+  describe('GET /', () => {
     it('should return label history for user', async () => {
       const token = generateToken();
       
       // D'abord générer un label
       await request(app)
-        .post('/labels/generate')
+        .post('/generate')
         .set('Authorization', `Bearer ${token}`)
         .send({ productName: 'Test History' });
         
       // Ensuite récupérer l'historique
       const res = await request(app)
-        .get('/labels')
+        .get('/')
         .set('Authorization', `Bearer ${token}`);
         
       expect(res.status).toBe(200);

@@ -16,7 +16,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'label-service' });
 });
 
-// Routes
-app.use('/labels', labelRoutes);
+// Routes - montées à '/' car API Gateway fait déjà pathRewrite: '^/api/labels' → ''
+app.use('/', labelRoutes);
 
 export default app;
