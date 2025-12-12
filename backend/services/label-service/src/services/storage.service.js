@@ -17,5 +17,19 @@ export const uploadLabel = async (pdfBuffer, userId) => {
 };
 
 export const getLabelUrl = async (fileName) => {
-  return await minioClient.presignedGetObject(BUCKET_NAME, fileName, 24 * 60 * 60); // Valide 24h
+  // Utiliser l'URL publique directe puisque le bucket est en mode download public
+  const externalEndpoint = process.env.MINIO_EXTERNAL_ENDPOINT || 'localhost:9000';
+  const protocol = process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http';
+  return `${protocol}://${externalEndpoint}/${BUCKET_NAME}/${fileName}`;
+};
+
+export const downloadLabel = async (fileName) => {
+  const chunks = [];
+  const stream = await minioClient.getObject(BUCKET_NAME, fileName);
+  
+  return new Promise((resolve, reject) => {
+    stream.on('data', (chunk) => chunks.push(chunk));
+    stream.on('end', () => resolve(Buffer.concat(chunks)));
+    stream.on('error', reject);
+  });
 };

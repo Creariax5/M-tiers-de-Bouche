@@ -11,6 +11,12 @@ const templates = {
   minimalist: minimalistTemplate
 };
 
+export const generateHtml = (data) => {
+  const templateName = data.template || 'default';
+  const templateFn = templates[templateName] || defaultTemplate;
+  return templateFn(data);
+};
+
 export const generatePdf = async (data) => {
   const browser = await puppeteer.launch({
     headless: 'new',
@@ -25,11 +31,7 @@ export const generatePdf = async (data) => {
   try {
     const page = await browser.newPage();
     
-    // Sélectionner le template (défaut si non trouvé)
-    const templateName = data.template || 'default';
-    const templateFn = templates[templateName] || defaultTemplate;
-    
-    const html = templateFn(data);
+    const html = generateHtml(data);
     
     await page.setContent(html);
     

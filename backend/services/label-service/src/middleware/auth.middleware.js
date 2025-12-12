@@ -4,6 +4,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key-change-in-productio
 
 export const authenticateToken = (req, res, next) => {
   // console.log(`🔐 [AUTH] ${req.method} ${req.path}`);
+  // console.log(`🔐 [AUTH] Headers:`, JSON.stringify(req.headers, null, 2));
   const authHeader = req.headers['authorization'];
   const tokenFromHeader = authHeader && authHeader.split(' ')[1];
   const tokenFromQuery = req.query.token;

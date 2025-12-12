@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from './ui/Button';
 import api from '../lib/api';
+import { useAuthStore } from '../stores/authStore';
 
 const TEMPLATES = [
   { value: 'default', label: 'Standard' },
@@ -25,78 +26,97 @@ export default function LabelGenerationModal({ recipe, isOpen, onClose }) {
   const [manufacturer, setManufacturer] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [pdfUrl, setPdfUrl] = useState(null);
+  const [previewHtml, setPreviewHtml] = useState(null);
 
   if (!isOpen) return null;
 
-  const handleGenerate = async () => {
+  const getLabelData = () => ({
+    productName: recipe.name,
+    template,
+    format,
+    ingredients: recipe.ingredients?.map(ing => ({
+      name: ing.baseIngredient?.name || ing.customIngredient?.name || ing.subRecipe?.name || 'Inconnu',
+      quantity: ing.quantity || 0,
+      unit: ing.unit || 'g',
+      isAllergen: recipe.allergens?.some(a => 
+        (ing.baseIngredient?.allergens || []).includes(a)
+      ) || false,
+      allergens: ing.baseIngredient?.allergens || []
+    })) || [],
+    nutrition: recipe.nutrition?.per100g ? {
+      energy: recipe.nutrition.per100g.energyKj || 0,
+      energyKcal: recipe.nutrition.per100g.energyKcal || 0,
+      fat: recipe.nutrition.per100g.fats || 0,
+      saturatedFat: recipe.nutrition.per100g.saturatedFats || 0,
+      carbs: recipe.nutrition.per100g.carbs || 0,
+      sugars: recipe.nutrition.per100g.sugars || 0,
+      proteins: recipe.nutrition.per100g.proteins || 0,
+      salt: recipe.nutrition.per100g.salt || 0
+    } : {},
+    mentions: {
+      dlc: dlc || 'À définir',
+      netWeight: netWeight || (recipe.nutrition?.totalWeight ? `${recipe.nutrition.totalWeight}g` : 'N/A'),
+      storage: storage || 'Conserver au frais',
+      manufacturer: manufacturer || 'Mon Entreprise'
+    }
+  });
+
+  const handlePreview = async () => {
     setLoading(true);
     setError('');
-    setPdfUrl(null);
+    setPreviewHtml(null);
 
     try {
-      // Préparer les données pour le label-service
-      const labelData = {
-        productName: recipe.name,
-        template,
-        format,
-        ingredients: recipe.ingredients?.map(ing => ({
-          name: ing.baseIngredient?.name || ing.customIngredient?.name || ing.subRecipe?.name || 'Inconnu',
-          quantity: ing.quantity || 0,
-          unit: ing.unit || 'g',
-          isAllergen: recipe.allergens?.some(a => 
-            (ing.baseIngredient?.allergens || []).includes(a)
-          ) || false,
-          allergens: ing.baseIngredient?.allergens || []
-        })) || [],
-        nutrition: recipe.nutrition?.per100g ? {
-          energy: recipe.nutrition.per100g.energyKj || 0,
-          energyKcal: recipe.nutrition.per100g.energyKcal || 0,
-          fat: recipe.nutrition.per100g.fats || 0,
-          saturatedFat: recipe.nutrition.per100g.saturatedFats || 0,
-          carbs: recipe.nutrition.per100g.carbs || 0,
-          sugars: recipe.nutrition.per100g.sugars || 0,
-          proteins: recipe.nutrition.per100g.proteins || 0,
-          salt: recipe.nutrition.per100g.salt || 0
-        } : {},
-        mentions: {
-          dlc: dlc || 'À définir',
-          netWeight: netWeight || (recipe.nutrition?.totalWeight ? `${recipe.nutrition.totalWeight}g` : 'N/A'),
-          storage: storage || 'Conserver au frais',
-          manufacturer: manufacturer || 'Mon Entreprise'
-        }
-      };
-
-      const response = await api.post('/labels/generate', labelData, {
-        responseType: 'blob'
-      });
-
-      // Créer une URL pour le blob PDF
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      setPdfUrl(url);
+      const response = await api.post('/labels/preview', getLabelData());
+      setPreviewHtml(response.data);
     } catch (err) {
-      console.error('Error generating label:', err);
-      setError(err.response?.data?.error || 'Erreur lors de la génération');
+      console.error('Error generating preview:', err);
+      setError(err.response?.data?.error || 'Erreur lors de la prévisualisation');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDownload = () => {
-    if (pdfUrl) {
-      const link = document.createElement('a');
-      link.href = pdfUrl;
-      link.download = `etiquette-${recipe.name.replace(/\s+/g, '-').toLowerCase()}.pdf`;
-      link.click();
+  const handleDownload = async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await api.post('/labels/generate', getLabelData(), {
+        headers: { Accept: 'application/json' }
+      });
+
+      if (response.data.fileName) {
+        const token = useAuthStore.getState().token;
+        const viewUrl = `/api/labels/view/${response.data.fileName}?token=${token}`;
+        
+        // Télécharger le PDF en blob
+        const pdfResponse = await api.get(viewUrl.replace('/api', ''), {
+          responseType: 'blob'
+        });
+        
+        const blob = new Blob([pdfResponse.data], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `etiquette-${recipe.name.replace(/\s+/g, '-').toLowerCase()}.pdf`;
+        link.click();
+        
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error('Error downloading label:', err);
+      setError(err.response?.data?.error || 'Erreur lors du téléchargement');
+    } finally {
+      setLoading(false);
     }
   };
 
+
+
   const handleClose = () => {
-    if (pdfUrl) {
-      URL.revokeObjectURL(pdfUrl);
-    }
-    setPdfUrl(null);
+    setPreviewHtml(null);
     setError('');
     onClose();
   };
@@ -203,8 +223,8 @@ export default function LabelGenerationModal({ recipe, isOpen, onClose }) {
               </div>
             )}
 
-            <Button onClick={handleGenerate} disabled={loading} variant="primary" className="w-full">
-              {loading ? 'Génération en cours...' : 'Générer l\'étiquette'}
+            <Button onClick={handlePreview} disabled={loading} variant="primary" className="w-full">
+              {loading ? 'Génération en cours...' : 'Prévisualiser'}
             </Button>
           </div>
 
@@ -212,19 +232,15 @@ export default function LabelGenerationModal({ recipe, isOpen, onClose }) {
           <div className="w-1/2 p-6 bg-gray-50 overflow-y-auto max-h-[70vh]">
             <h3 className="font-semibold text-gray-700 mb-4">Aperçu</h3>
             
-            {pdfUrl ? (
+            {previewHtml ? (
               <div>
-                <iframe
-                  src={pdfUrl}
-                  className="w-full h-96 border border-gray-300 rounded-lg"
-                  title="Aperçu étiquette"
+                <div 
+                  className="w-full h-96 border border-gray-300 rounded-lg overflow-auto bg-white p-4"
+                  dangerouslySetInnerHTML={{ __html: previewHtml }}
                 />
                 <div className="mt-4 flex gap-2">
                   <Button onClick={handleDownload} variant="primary" className="flex-1">
                     Télécharger PDF
-                  </Button>
-                  <Button onClick={() => window.print()} variant="secondary" className="flex-1">
-                    Imprimer
                   </Button>
                 </div>
               </div>
@@ -234,7 +250,7 @@ export default function LabelGenerationModal({ recipe, isOpen, onClose }) {
                   <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                  <p className="mt-2">Cliquez sur "Générer l'étiquette" pour voir l'aperçu</p>
+                  <p className="mt-2">Cliquez sur "Prévisualiser" pour voir l'aperçu</p>
                 </div>
               </div>
             )}
