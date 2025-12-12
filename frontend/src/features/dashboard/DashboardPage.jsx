@@ -63,16 +63,21 @@ export default function DashboardPage() {
         ) : (
           <>
             {/* Statistiques en grille */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card className="text-center">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="text-center cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/recipes')}>
                 <div className="text-4xl mb-2">📋</div>
                 <div className="text-3xl font-bold text-gray-900">{stats.totalRecipes}</div>
                 <div className="text-sm text-gray-500">Recettes</div>
               </Card>
-              <Card className="text-center">
+              <Card className="text-center cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/ingredients/custom')}>
                 <div className="text-4xl mb-2">🥄</div>
                 <div className="text-3xl font-bold text-gray-900">{ingredients.length}</div>
                 <div className="text-sm text-gray-500">Ingrédients personnalisés</div>
+              </Card>
+              <Card className="text-center cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/labels')}>
+                <div className="text-4xl mb-2">🏷️</div>
+                <div className="text-3xl font-bold text-blue-600">Étiquettes</div>
+                <div className="text-sm text-gray-500">Générer & Historique</div>
               </Card>
             </div>
 

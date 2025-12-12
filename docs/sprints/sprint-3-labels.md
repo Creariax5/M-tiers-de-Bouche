@@ -1,6 +1,6 @@
 # 🚀 SPRINT 3 : Label Service & PDF Generation
 **Durée** : 2 semaines (Semaines 6-7)  
-**Dates** : À définir  
+**Dates** : 11 Décembre 2025 - 25 Décembre 2025
 **Sprint Goal** : Génération automatique d'étiquettes conformes à la réglementation
 
 ---
@@ -8,8 +8,8 @@
 ## 📊 CAPACITÉ & VÉLOCITÉ
 
 - **Points planifiés** : 42 (34 + 8 impression imprimantes)
-- **Points réalisés** : -
-- **Vélocité** : -
+- **Points réalisés** : 44
+- **Vélocité** : 44
 
 ---
 
@@ -28,76 +28,81 @@
 ## 📝 USER STORIES DU SPRINT
 
 ### US-028 : Label Service - Génération PDF
-**Points** : 13 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 13 | **Priorité** : 🔴 MUST | **Assigné à** : GitHub Copilot
 
 **Description** :  
 En tant qu'artisan, je veux générer une étiquette PDF afin de l'imprimer pour mes produits.
 
 **Critères d'acceptation** :
-- [ ] POST /labels/generate
-- [ ] PDF généré avec PDFKit ou Puppeteer
-- [ ] Contenu : nom produit, ingrédients (ordre décroissant), allergènes EN GRAS, valeurs nutritionnelles (100g)
-- [ ] Mentions obligatoires : date fabrication, DLUO, poids net, conditions conservation, fabricant (nom + adresse)
-- [ ] Format A4 ou étiquettes (40x30, 50x30, 70x50mm)
-- [ ] Stockage MinIO (bucket labels)
+- [x] POST /labels/generate
+- [x] PDF généré avec PDFKit ou Puppeteer
+- [x] Contenu : nom produit, ingrédients (ordre décroissant), allergènes EN GRAS, valeurs nutritionnelles (100g)
+- [x] Mentions obligatoires : date fabrication, DLUO, poids net, conditions conservation, fabricant (nom + adresse)
+- [x] Format A4 ou étiquettes (40x30, 50x30, 70x50mm)
+- [x] Stockage MinIO (bucket labels)
 
 **Tâches** :
-- [ ] Créer label-service
-- [ ] Template avec TOUS les champs obligatoires
-- [ ] Génération PDF conforme INCO
-- [ ] Upload vers MinIO
-- [ ] Tests
+- [x] Créer label-service
+- [x] Template avec TOUS les champs obligatoires
+- [x] Génération PDF conforme INCO
+- [x] Upload vers MinIO
+- [x] Tests
 
 ---
 
 ### US-029 : Templates d'étiquettes
-**Points** : 8 | **Priorité** : 🟡 SHOULD | **Assigné à** : -
+**Points** : 8 | **Priorité** : 🟡 SHOULD | **Assigné à** : GitHub Copilot
 
 **Description** :  
 En tant qu'artisan, je veux choisir un template d'étiquette afin de personnaliser le design.
 
 **Critères d'acceptation** :
-- [ ] 3 templates prédéfinis (Moderne, Classique, Minimaliste)
-- [ ] Sélection template dans formulaire
-- [ ] Preview du template
+- [x] 3 templates prédéfinis (Moderne, Classique, Minimaliste)
+- [x] Sélection template dans formulaire
+- [x] Preview du template
 
 **Tâches** :
-- [ ] Créer 3 templates HTML/CSS
-- [ ] Paramètre template dans génération PDF
-- [ ] Tests
+- [x] Créer 3 templates HTML/CSS
+- [x] Paramètre template dans génération PDF
+- [x] Tests
 
 ---
 
 ### US-030 : Conformité réglementaire INCO
-**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 5 | **Priorité** : 🔴 MUST | **Assigné à** : GitHub Copilot
 
 **Description** :  
 En tant qu'artisan, je veux que mes étiquettes soient conformes à la réglementation INCO afin d'éviter des amendes.
 
 **Critères d'acceptation** :
-- [ ] Allergènes en GRAS ou CAPITALES
-- [ ] Valeurs nutritionnelles pour 100g (tableau obligatoire)
-- [ ] Ingrédients par ordre décroissant de poids
-- [ ] Mentions obligatoires : date fabrication, DLUO, poids net, conditions conservation, nom et adresse fabricant
-- [ ] Validation selon Règlement UE n°1169/2011
+- [x] Allergènes en GRAS ou CAPITALES
+- [x] Valeurs nutritionnelles pour 100g (tableau obligatoire)
+- [x] Ingrédients par ordre décroissant de poids
+- [x] Mentions obligatoires : date fabrication, DLUO, poids net, conditions conservation, nom et adresse fabricant
+- [x] Validation selon Règlement UE n°1169/2011
 
 **Tâches** :
-- [ ] Validator conformité INCO complet
-- [ ] Tri automatique ingrédients par poids
-- [ ] Règles de formatage allergènes
-- [ ] Tests conformité avec cas réels
+- [x] Validator conformité INCO complet
+- [x] Tri automatique ingrédients par poids
+- [x] Règles de formatage allergènes
+- [x] Tests conformité avec cas réels
 
 ---
 
 ### US-031 : Historique des étiquettes
-**Points** : 5 | **Priorité** : 🟡 SHOULD | **Assigné à** : -
+**Points** : 5 | **Priorité** : 🟡 SHOULD | **Assigné à** : GitHub Copilot
 
 **Description** :  
 En tant qu'artisan, je veux retrouver mes étiquettes générées afin de les réimprimer.
 
 **Critères d'acceptation** :
-- [ ] GET /labels liste mes étiquettes
-- [ ] Stockage lien MinIO en DB
+- [x] GET /labels liste mes étiquettes
+- [x] Stockage lien MinIO en DB
+
+**Tâches** :
+- [x] Modèle Prisma Label
+- [x] Endpoint GET /labels
+- [x] Tests intégration
 - [ ] Téléchargement depuis historique
 
 **Tâches** :
@@ -109,42 +114,42 @@ En tant qu'artisan, je veux retrouver mes étiquettes générées afin de les r�
 ---
 
 ### US-032 : Frontend - Génération étiquette
-**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : -
+**Points** : 8 | **Priorité** : 🔴 MUST | **Assigné à** : GitHub Copilot
 
 **Description** :  
 En tant qu'artisan, je veux générer une étiquette depuis la page recette afin de gagner du temps.
 
 **Critères d'acceptation** :
-- [ ] Bouton "Générer étiquette" sur page recette
-- [ ] Modal de configuration (template, format)
-- [ ] Preview PDF
-- [ ] Téléchargement PDF
+- [x] Bouton "Générer étiquette" sur page recette
+- [x] Modal de configuration (template, format)
+- [x] Preview PDF
+- [x] Téléchargement PDF
 
 **Tâches** :
-- [ ] Bouton + modal génération
-- [ ] Preview PDF dans iframe
-- [ ] Download PDF
-- [ ] Tests
+- [x] Bouton + modal génération
+- [x] Preview PDF dans iframe
+- [x] Download PDF
+- [x] Tests
 
 ---
 
 ### US-033 : Frontend - Historique étiquettes
-**Points** : 5 | **Priorité** : 🟡 SHOULD | **Assigné à** : -
+**Points** : 5 | **Priorité** : 🟡 SHOULD | **Assigné à** : GitHub Copilot
 
 **Description** :  
 En tant qu'artisan, je veux voir mes étiquettes générées afin de les télécharger à nouveau.
 
 **Critères d'acceptation** :
-- [ ] Page /labels
-- [ ] Liste étiquettes avec miniature
-- [ ] Téléchargement
+- [x] Page /labels
+- [x] Liste étiquettes avec miniature
+- [x] Téléchargement
 - [ ] Impression directe
 
 **Tâches** :
-- [ ] Créer page Labels
-- [ ] Liste avec preview
+- [x] Créer page Labels
+- [x] Liste avec preview
 - [ ] Bouton impression directe
-- [ ] Tests
+- [x] Tests
 
 ---
 
@@ -222,5 +227,5 @@ _À remplir quotidiennement_
 
 ---
 
-**Status** : 🔴 NOT STARTED  
-**Dernière mise à jour** : 22 octobre 2025
+**Status** : � IN PROGRESS  
+**Dernière mise à jour** : 11 Décembre 2025

@@ -100,7 +100,15 @@ app.use('/api/ingredients', createProxyMiddleware({
 app.use('/api/labels', createProxyMiddleware({
   target: process.env.LABEL_SERVICE_URL || 'http://label-service:3003',
   changeOrigin: true,
-  pathRewrite: { '^/api/labels': '' }
+  pathRewrite: { '^/api/labels': '' },
+  onProxyReq: (proxyReq, req, res) => {
+    console.log(`[Label Proxy] ${req.method} ${req.url} → ${proxyReq.path}`);
+    console.log(`[Label Proxy] Authorization header:`, req.headers.authorization ? '✅ Présent' : '❌ Absent');
+    // Forcer le passage du header Authorization
+    if (req.headers.authorization) {
+      proxyReq.setHeader('authorization', req.headers.authorization);
+    }
+  }
 }));
 
 app.use('/api/production', createProxyMiddleware({

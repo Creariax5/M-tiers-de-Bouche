@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuthStore } from '../stores/authStore';
 import api from '../lib/api';
 import { Button } from '../components/ui/Button';
+import { PageContainer } from '../components/layout';
+import LabelGenerationModal from '../components/LabelGenerationModal';
 
 export default function RecipeDetailPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { user, logout } = useAuthStore();
 
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showLabelModal, setShowLabelModal] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -52,35 +53,8 @@ export default function RecipeDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex space-x-4">
-              <Button onClick={() => navigate('/dashboard')} variant="secondary">
-                Dashboard
-              </Button>
-              <Button onClick={() => navigate('/recipes')} variant="secondary">
-                Mes Recettes
-              </Button>
-              <Button onClick={() => navigate('/recipes/new')} variant="secondary">
-                Nouvelle Recette
-              </Button>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">{user?.email}</span>
-              <Button onClick={logout} variant="secondary">
-                Déconnexion
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* Contenu */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* En-tête */}
+    <PageContainer>
+      {/* En-tête */}
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
           <div className="flex justify-between items-start">
             <div>
@@ -94,9 +68,14 @@ export default function RecipeDetailPage() {
                 <p className="mt-4 text-gray-600">{recipe.description}</p>
               )}
             </div>
-            <Button onClick={() => navigate(`/recipes/${id}/edit`)} variant="primary">
-              Modifier
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={() => setShowLabelModal(true)} variant="secondary">
+                🏷️ Générer étiquette
+              </Button>
+              <Button onClick={() => navigate(`/recipes/${id}/edit`)} variant="primary">
+                Modifier
+              </Button>
+            </div>
           </div>
 
           <div className="mt-6 grid grid-cols-4 gap-4">
@@ -218,7 +197,12 @@ export default function RecipeDetailPage() {
             Modifier cette recette
           </Button>
         </div>
-      </div>
-    </div>
+      {/* Modal de génération d'étiquette */}
+      <LabelGenerationModal
+        recipe={recipe}
+        isOpen={showLabelModal}
+        onClose={() => setShowLabelModal(false)}
+      />
+    </PageContainer>
   );
 }

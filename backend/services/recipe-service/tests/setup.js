@@ -4,13 +4,18 @@
 import { PrismaClient } from '@prisma/client';
 
 process.env.NODE_ENV = 'test';
-// Utiliser le schéma 'test' au lieu de 'public' pour isoler les tests
-process.env.DATABASE_URL = process.env.DATABASE_URL?.replace('?schema=public', '?schema=test') 
-  || 'postgresql://postgres:postgres@postgres:5432/saas_recipes?schema=test';
+
+// CRITIQUE: Forcer l'utilisation du schéma 'test' - NE JAMAIS TOUCHER AU SCHEMA 'public'
+const baseUrl = process.env.DATABASE_URL || 'postgresql://postgres:postgres@postgres:5432/saas_recipes';
+// Supprimer tout paramètre schema existant et forcer schema=test
+const cleanUrl = baseUrl.split('?')[0];
+process.env.DATABASE_URL = `${cleanUrl}?schema=test`;
+
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key-change-in-production';
 
 // Créer le schéma test et appliquer les migrations
 console.log('🌱 Setting up test database...');
+console.log(`📍 Using DATABASE_URL: ${process.env.DATABASE_URL}`);
 
 const prisma = new PrismaClient();
 

@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Label {
+  id          String   @id @default(uuid())
+  userId      String
+  productName String
+  fileName    String   // Chemin dans MinIO
+  createdAt   DateTime @default(now())
+  
+  // Métadonnées pour recherche
+  format      String?  // A4, 40x30, etc.
+  template    String?  // default, modern, etc.
+  
+  @@index([userId])
+}
