@@ -1,0 +1,75 @@
+name: Deploy to OVH VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script: |
+            set -e
+            
+            echo "🚀 Starting deployment..."
+            
+            # Aller dans le dossier du projet
+            cd /opt/metiers-de-bouche || {
+              echo "❌ Project directory not found"
+              exit 1
+            }
+            
+            # Récupérer les dernières modifications
+            echo "📥 Pulling latest changes..."
+            git fetch origin
+            git reset --hard origin/main
+            
+            # Vérifier si docker-compose est installé
+            if ! command -v docker-compose &> /dev/null; then
+              echo "❌ docker-compose not found"
+              exit 1
+            fi
+            
+            # Arrêter les services
+            echo "🛑 Stopping services..."
+            docker-compose down
+            
+            # Rebuild et redémarrer
+            echo "🔨 Building and starting services..."
+            docker-compose build --no-cache
+            docker-compose up -d
+            
+            # Attendre que les services démarrent
+            echo "⏳ Waiting for services to start..."
+            sleep 10
+            
+            # Vérifier l'état des services
+            echo "✅ Checking service status..."
+            docker-compose ps
+            
+            # Nettoyer les images inutilisées
+            echo "🧹 Cleaning up unused Docker images..."
+            docker image prune -af
+            
+            echo "✅ Deployment completed successfully!"
+
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "✅ Deployment succeeded"
+          else
+            echo "❌ Deployment failed"
+          fi
