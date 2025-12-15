@@ -3,6 +3,12 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import HomePage from './pages/HomePage';
 import BrandPage from './pages/fundamentals/BrandPage';
+import ConfigurationPage from './pages/fundamentals/ConfigurationPage';
+import TypographyPage from './pages/fundamentals/TypographyPage';
+import ColorsPage from './pages/fundamentals/ColorsPage';
+import CardsPage from './pages/components/CardsPage';
+import InputsPage from './pages/components/InputsPage';
+import BadgesPage from './pages/components/BadgesPage';
 import ButtonsPage from './pages/components/ButtonsPage';
 import RecipeDetailPage from './pages/examples/RecipeDetailPage';
 
@@ -14,15 +20,16 @@ function App() {
           <Route index element={<HomePage />} />
           
           {/* Fundamentals */}
+          <Route path="fundamentals/configuration" element={<ConfigurationPage />} />
           <Route path="fundamentals/brand" element={<BrandPage />} />
-          <Route path="fundamentals/typography" element={<div className="p-8 text-center text-stone-brown">Page Typographie en construction</div>} />
-          <Route path="fundamentals/colors" element={<div className="p-8 text-center text-stone-brown">Page Couleurs en construction</div>} />
+          <Route path="fundamentals/typography" element={<TypographyPage />} />
+          <Route path="fundamentals/colors" element={<ColorsPage />} />
           
           {/* Components */}
           <Route path="components/buttons" element={<ButtonsPage />} />
-          <Route path="components/cards" element={<div className="p-8 text-center text-stone-brown">Page Cards en construction</div>} />
-          <Route path="components/inputs" element={<div className="p-8 text-center text-stone-brown">Page Inputs en construction</div>} />
-          <Route path="components/badges" element={<div className="p-8 text-center text-stone-brown">Page Badges en construction</div>} />
+          <Route path="components/cards" element={<CardsPage />} />
+          <Route path="components/inputs" element={<InputsPage />} />
+          <Route path="components/badges" element={<BadgesPage />} />
 
           {/* Examples */}
           <Route path="examples/recipe-detail" element={<RecipeDetailPage />} />
