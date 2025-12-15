@@ -4,6 +4,9 @@
 
 ### Informations VPS
 - **Hostname**: vps-63198d57.vps.ovh.net
+- **IPv4**: 217.182.171.135
+- **IPv6**: 2001:41d0:305:2100::69f8
+- **Gateway IPv6**: 2001:41d0:305:2100::1
 - **OS**: Ubuntu 24.04
 - **RAM**: 8 Go
 - **CPU**: 4 vCores
@@ -20,11 +23,50 @@
 
 ## 🔧 Configuration Initiale du VPS
 
+### 0. Vérifications préalables
+
+**Avant de commencer, vérifier dans l'interface OVH** :
+
+1. Aller sur [ovh.com/manager](https://www.ovh.com/manager/)
+2. **Serveurs** → **VPS** → `vps-63198d57.vps.ovh.net`
+3. Vérifier que :
+   - Statut : **Actif** ✅
+   - Boot : **LOCAL** (pas en mode Rescue)
+   - Noter l'**adresse IPv4** du VPS
+
+**Si SSH timeout** :
+- Utiliser la console **KVM** depuis l'interface OVH (accès direct sans réseau)
+- Vérifier que le service SSH est actif : `systemctl status ssh`
+- Vérifier le firewall : `ufw status`
+
 ### 1. Connexion SSH
 
 ```bash
+# Depuis PowerShell Windows
+ssh root@217.182.171.135
+
+# Ou avec le hostname
 ssh root@vps-63198d57.vps.ovh.net
 ```
+
+**⚠️ Si timeout (Connection timed out)** :
+1. **Utiliser la console KVM** (obligatoire) :
+   - Interface OVH → Votre VPS → Bouton **"KVM"**
+   - Se connecter avec `root` et le mot de passe reçu par email OVH
+   
+2. **Dans KVM, activer SSH** :
+   ```bash
+   systemctl start ssh
+   systemctl enable ssh
+   ufw allow 22/tcp  # Autoriser SSH dans le firewall
+   ```
+
+3. **Réessayer depuis Windows** :
+   ```powershell
+   ssh root@217.182.171.135
+   ```
+
+**Mot de passe non reçu ?** → Interface OVH → Votre VPS → **"Réinitialiser le mot de passe root"**
 
 ### 2. Mise à jour du système
 
@@ -366,6 +408,42 @@ sudo systemctl restart sshd
 ---
 
 ## 🚨 Troubleshooting
+
+### SSH Timeout
+
+**Symptôme** : `ssh: connect to host vps-63198d57.vps.ovh.net port 22: Connection timed out`
+
+**Causes possibles** :
+
+1. **VPS éteint ou en maintenance**
+   - Vérifier le statut dans l'interface OVH
+   - Redémarrer le VPS si nécessaire
+
+2. **Service SSH non démarré**
+   ```bash
+   # Via console KVM (interface OVH)
+   systemctl start ssh
+   systemctl enable ssh
+   ```
+
+3. **Firewall bloque le port 22**
+   ```bash
+   # Via console KVM
+   ufw allow 22/tcp
+   ufw reload
+   ```
+
+4. **DNS ne résout pas le hostname**
+   ```bash
+   # Utiliser l'IP directement
+   ssh root@<IP_RECUPEREE_DANS_OVH>
+   ```
+
+5. **VPS nouvellement créé** (pas encore complètement initialisé)
+   - Attendre 5-10 minutes après la création
+   - Vérifier les emails OVH pour confirmation
+
+**Solution rapide** : Utiliser la **console KVM** depuis l'interface OVH pour accéder au VPS sans réseau.
 
 ### Service ne démarre pas
 
