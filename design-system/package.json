@@ -1,0 +1,53 @@
+{
+  "name": "@regal/design-system",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/regal-design-system.umd.js",
+  "module": "./dist/regal-design-system.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/regal-design-system.es.js",
+      "require": "./dist/regal-design-system.umd.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "dependencies": {
+    "clsx": "^2.1.0",
+    "lucide-react": "^0.344.0",
+    "react-router-dom": "^7.10.1",
+    "tailwind-merge": "^2.2.1"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "^1.2.25",
+    "@storybook/addon-essentials": "^8.0.5",
+    "@storybook/addon-interactions": "^8.0.5",
+    "@storybook/addon-links": "^8.0.5",
+    "@storybook/addon-onboarding": "^8.0.5",
+    "@storybook/blocks": "^8.0.5",
+    "@storybook/react": "^8.0.5",
+    "@storybook/react-vite": "^8.0.5",
+    "@storybook/test": "^8.0.5",
+    "@types/react": "^18.2.64",
+    "@types/react-dom": "^18.2.21",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.18",
+    "postcss": "^8.4.35",
+    "prop-types": "^15.8.1",
+    "storybook": "^8.0.5",
+    "tailwindcss": "^3.4.1",
+    "vite": "^5.1.6"
+  }
+}
