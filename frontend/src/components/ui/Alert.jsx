@@ -1,4 +1,5 @@
 import React from 'react';
+import { Alert as DSAlert } from '@regal/design-system';
 
 /**
  * Composant Alert réutilisable pour messages d'erreur/succès/info
@@ -18,37 +19,35 @@ export function Alert({
   onDismiss,
   className = '' 
 }) {
-  const variantStyles = {
-    error: 'bg-red-50 border-red-500 text-red-700',
-    success: 'bg-green-50 border-green-500 text-green-700',
-    warning: 'bg-yellow-50 border-yellow-500 text-yellow-700',
-    info: 'bg-blue-50 border-blue-500 text-blue-700',
-  };
-
-  const iconMap = {
-    error: '⚠️',
-    success: '✅',
-    warning: '⚡',
-    info: 'ℹ️',
-  };
+  // DS Alert supporte variant, title, children, className
+  // On ajoute le bouton dismiss manuellement en wrapper ou absolute
+  
+  if (dismissible && onDismiss) {
+    return (
+      <div className="relative">
+        <DSAlert variant={variant} title={title} className={className}>
+          <div className="pr-8">
+            {children}
+          </div>
+        </DSAlert>
+        <button 
+          onClick={onDismiss}
+          className="absolute top-4 right-4 text-secondary hover:text-primary"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className={`border-l-4 px-6 py-4 rounded ${variantStyles[variant]} ${className}`}>
-      <div className="flex items-start justify-between">
-        <div className="flex items-start space-x-3">
-          <span className="text-lg">{iconMap[variant]}</span>
-          <div>
-            {title && (
-              <p className="font-semibold mb-1">{title}</p>
-            )}
-            <div>{children}</div>
-          </div>
-        </div>
-        {dismissible && onDismiss && (
-          <button 
-            onClick={onDismiss}
-            className="text-gray-400 hover:text-gray-600 ml-4"
-          >
+    <DSAlert variant={variant} title={title} className={className}>
+      {children}
+    </DSAlert>
+  );
+}          >
             ✕
           </button>
         )}

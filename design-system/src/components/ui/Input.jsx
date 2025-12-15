@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 
-const Input = ({ label, error, className = '', ...props }) => {
+const Input = forwardRef(({ label, error, className = '', ...props }, ref) => {
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
       {label && (
@@ -9,6 +9,7 @@ const Input = ({ label, error, className = '', ...props }) => {
         </label>
       )}
       <input
+        ref={ref}
         className={`
           px-4 py-2 rounded-lg border border-transparent bg-neutral-light
           font-secondary text-primary placeholder-neutral-dark/50
@@ -24,6 +25,8 @@ const Input = ({ label, error, className = '', ...props }) => {
       )}
     </div>
   );
-};
+});
+
+Input.displayName = 'Input';
 
 export default Input;
