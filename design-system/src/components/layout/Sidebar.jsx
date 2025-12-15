@@ -87,6 +87,16 @@ const Sidebar = () => {
                 Modals
               </Link>
             </li>
+            <li>
+              <Link to="/components/extras" className={`block px-4 py-2 rounded-lg text-sm transition-colors ${isActive('/components/extras')}`}>
+                Extras (Toast, Loader...)
+              </Link>
+            </li>
+            <li>
+              <Link to="/components/nutrition" className={`block px-4 py-2 rounded-lg text-sm transition-colors ${isActive('/components/nutrition')}`}>
+                Nutrition & Étiquettes
+              </Link>
+            </li>
           </ul>
         </div>
 

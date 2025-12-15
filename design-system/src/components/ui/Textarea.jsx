@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Input = ({ label, error, className = '', ...props }) => {
+const Textarea = ({ label, error, className = '', ...props }) => {
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
       {label && (
@@ -8,13 +8,13 @@ const Input = ({ label, error, className = '', ...props }) => {
           {label}
         </label>
       )}
-      <input
+      <textarea
         className={`
           px-4 py-2 rounded-lg border border-transparent bg-neutral-light
           font-secondary text-primary placeholder-neutral-dark/50
           focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white focus:border-primary
           disabled:bg-neutral-medium disabled:text-neutral-dark
-          transition-all duration-200
+          transition-all duration-200 min-h-[100px] resize-y
           ${error ? 'border-error focus:ring-error bg-red-50' : ''}
         `}
         {...props}
@@ -26,4 +26,4 @@ const Input = ({ label, error, className = '', ...props }) => {
   );
 };
 
-export default Input;
+export default Textarea;
