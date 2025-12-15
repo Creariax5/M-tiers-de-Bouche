@@ -10,6 +10,10 @@ import CardsPage from './pages/components/CardsPage';
 import InputsPage from './pages/components/InputsPage';
 import BadgesPage from './pages/components/BadgesPage';
 import ButtonsPage from './pages/components/ButtonsPage';
+import TablesPage from './pages/components/TablesPage';
+import TabsPage from './pages/components/TabsPage';
+import AlertsPage from './pages/components/AlertsPage';
+import ModalsPage from './pages/components/ModalsPage';
 import RecipeDetailPage from './pages/examples/RecipeDetailPage';
 
 function App() {
@@ -30,6 +34,10 @@ function App() {
           <Route path="components/cards" element={<CardsPage />} />
           <Route path="components/inputs" element={<InputsPage />} />
           <Route path="components/badges" element={<BadgesPage />} />
+          <Route path="components/tables" element={<TablesPage />} />
+          <Route path="components/tabs" element={<TabsPage />} />
+          <Route path="components/alerts" element={<AlertsPage />} />
+          <Route path="components/modals" element={<ModalsPage />} />
 
           {/* Examples */}
           <Route path="examples/recipe-detail" element={<RecipeDetailPage />} />

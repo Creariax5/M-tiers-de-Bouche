@@ -71,13 +71,13 @@ const RecipeDetailPage = () => {
                   </tr>
                 </thead>
                 <tbody className="font-secondary">
-                  <tr className="border-b border-gray-50">
+                  <tr className="border-b border-neutral-light">
                     <td className="px-4 py-3 font-medium text-primary">Pâte Sablée</td>
                     <td className="px-4 py-3">250</td>
                     <td className="px-4 py-3">g</td>
                     <td className="px-4 py-3 text-right">0.85€</td>
                   </tr>
-                  <tr className="border-b border-gray-50">
+                  <tr className="border-b border-neutral-light">
                     <td className="px-4 py-3 font-medium text-primary">Crème Citron</td>
                     <td className="px-4 py-3">400</td>
                     <td className="px-4 py-3">g</td>

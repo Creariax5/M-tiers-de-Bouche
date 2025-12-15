@@ -67,6 +67,26 @@ const Sidebar = () => {
                 Badges
               </Link>
             </li>
+            <li>
+              <Link to="/components/tables" className={`block px-4 py-2 rounded-lg text-sm transition-colors ${isActive('/components/tables')}`}>
+                Tables
+              </Link>
+            </li>
+            <li>
+              <Link to="/components/tabs" className={`block px-4 py-2 rounded-lg text-sm transition-colors ${isActive('/components/tabs')}`}>
+                Tabs
+              </Link>
+            </li>
+            <li>
+              <Link to="/components/alerts" className={`block px-4 py-2 rounded-lg text-sm transition-colors ${isActive('/components/alerts')}`}>
+                Alerts
+              </Link>
+            </li>
+            <li>
+              <Link to="/components/modals" className={`block px-4 py-2 rounded-lg text-sm transition-colors ${isActive('/components/modals')}`}>
+                Modals
+              </Link>
+            </li>
           </ul>
         </div>
 
