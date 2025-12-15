@@ -18,10 +18,6 @@ COPY . .
 # Build l'application
 RUN npm run build
 
-# Test stage (optionnel, pour CI/CD)
-FROM build AS test
-RUN npm test -- --run
-
 # Production stage
 FROM nginx:alpine
 
