@@ -1,7 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
-import { Button, Card, Alert } from '../components/ui';
+import { 
+  Button, 
+  Card, 
+  Alert,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell
+} from '../components/ui';
 import { Loading } from '../components/ui/Loading';
 import { EmptyState } from '../components/ui/EmptyState';
 import { PageContainer } from '../components/layout';
@@ -101,81 +111,77 @@ export default function LabelsPage() {
             />
           </Card>
         ) : (
-          <Card noPadding className="overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-neutral-medium">
-                <thead className="bg-neutral-light">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-neutral-dark uppercase tracking-wider font-secondary">
-                      Produit
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-neutral-dark uppercase tracking-wider font-secondary">
-                      Format
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-neutral-dark uppercase tracking-wider font-secondary">
-                      Date création
-                    </th>
-                    <th className="px-6 py-4 text-right text-xs font-bold text-neutral-dark uppercase tracking-wider font-secondary">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-neutral-medium">
-                  {labels.map((label) => (
-                    <tr key={label.id} className="hover:bg-neutral-light/50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0">
-                            <FileText size={20} className="text-primary" />
-                          </div>
-                          <div>
-                            <div className="text-sm font-bold text-primary font-primary">
-                              {label.productName}
-                            </div>
-                            {label.template && (
-                              <div className="text-xs text-secondary font-secondary">
-                                {label.template}
-                              </div>
-                            )}
-                          </div>
+          <Card padding="p-0" className="overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Produit</TableHead>
+                  <TableHead>Format</TableHead>
+                  <TableHead>Date création</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {labels.map((label) => (
+                  <TableRow key={label.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0">
+                          <FileText size={20} className="text-primary" />
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-accent-light/20 text-accent-dark border border-accent-light/30">
-                          {label.format || 'A4'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-secondary font-secondary">
-                        {formatDate(label.createdAt)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                        <button
-                          onClick={() => window.open(label.url, '_blank')}
-                          className="text-secondary hover:text-primary transition-colors p-1"
-                          title="Voir"
-                        >
-                          <Eye size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleDownload(label)}
-                          className="text-secondary hover:text-primary transition-colors p-1"
-                          title="Télécharger"
-                        >
-                          <Download size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(label.id)}
-                          className="text-red-400 hover:text-red-600 transition-colors p-1"
-                          title="Supprimer"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        <div>
+                          <div className="text-sm font-bold text-primary font-primary">
+                            {label.productName}
+                          </div>
+                          {label.template && (
+                            <div className="text-xs text-secondary font-secondary">
+                              {label.template}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-accent-light/20 text-accent-dark border border-accent-light/30">
+                        {label.format || 'A4'}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-secondary font-secondary">
+                      {formatDate(label.createdAt)}
+                    </TableCell>
+                    <TableCell className="text-right space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => window.open(label.url, '_blank')}
+                        title="Voir"
+                        className="!p-2"
+                      >
+                        <Eye size={18} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDownload(label)}
+                        title="Télécharger"
+                        className="!p-2"
+                      >
+                        <Download size={18} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(label.id)}
+                        title="Supprimer"
+                        className="!p-2 text-red-400 hover:text-red-600 hover:bg-red-50"
+                      >
+                        <Trash2 size={18} />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </Card>
         )}
       </div>
