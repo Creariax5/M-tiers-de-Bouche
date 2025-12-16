@@ -1,7 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageContainer } from '../components/layout';
-import { Button, Card, Alert, Loading, EmptyState, Input } from '../components/ui';
+import { 
+  Button, 
+  Card, 
+  Alert, 
+  Loading, 
+  EmptyState, 
+  Input, 
+  Select,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell
+} from '../components/ui';
 import api from '../lib/api';
 import { Search, Plus, Eye, Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -25,6 +39,11 @@ export default function RecipesListPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [total, setTotal] = useState(0);
   const limit = 20;
+  
+  const categoryOptions = [
+    { value: '', label: 'Toutes les catégories' },
+    ...CATEGORIES.map(cat => ({ value: cat, label: cat }))
+  ];
   
   useEffect(() => {
     fetchRecipes();
@@ -121,24 +140,15 @@ export default function RecipesListPage() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-bold text-neutral-dark mb-2 uppercase tracking-wider">
-                Catégorie
-              </label>
-              <select
+              <Select
+                label="Catégorie"
                 value={category}
                 onChange={(e) => {
                   setCategory(e.target.value);
                   setPage(1);
                 }}
-                className="w-full px-4 py-2 border border-neutral-medium rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-white font-secondary"
-              >
-                <option value="">Toutes les catégories</option>
-                {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
+                options={categoryOptions}
+              />
             </div>
           </div>
         </Card>
@@ -165,80 +175,74 @@ export default function RecipesListPage() {
         ) : (
           <>
             {/* Tableau */}
-            <Card noPadding className="overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-neutral-medium">
-                  <thead className="bg-neutral-light">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-neutral-dark uppercase tracking-wider font-secondary">
-                        Nom
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-neutral-dark uppercase tracking-wider font-secondary">
-                        Catégorie
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-neutral-dark uppercase tracking-wider font-secondary">
-                        Portions
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-neutral-dark uppercase tracking-wider font-secondary">
-                        Date création
-                      </th>
-                      <th className="px-6 py-4 text-right text-xs font-bold text-neutral-dark uppercase tracking-wider font-secondary">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-neutral-medium">
-                    {recipes.map((recipe) => (
-                      <tr key={recipe.id} className="hover:bg-neutral-light/50 transition-colors">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-bold text-primary font-primary">
-                            {recipe.name}
+            <Card padding="p-0" className="overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nom</TableHead>
+                    <TableHead>Catégorie</TableHead>
+                    <TableHead>Portions</TableHead>
+                    <TableHead>Date création</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recipes.map((recipe) => (
+                    <TableRow key={recipe.id}>
+                      <TableCell>
+                        <div className="text-sm font-bold text-primary font-primary">
+                          {recipe.name}
+                        </div>
+                        {recipe.description && (
+                          <div className="text-sm text-secondary truncate max-w-xs font-secondary">
+                            {recipe.description}
                           </div>
-                          {recipe.description && (
-                            <div className="text-sm text-secondary truncate max-w-xs font-secondary">
-                              {recipe.description}
-                            </div>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-accent-light/20 text-accent-dark border border-accent-light/30">
-                            {recipe.category || 'Non définie'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-secondary font-secondary">
-                          {recipe.servings} portion{recipe.servings > 1 ? 's' : ''}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-secondary font-secondary">
-                          {new Date(recipe.createdAt).toLocaleDateString('fr-FR')}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                          <button
-                            onClick={() => navigate(`/recipes/${recipe.id}`)}
-                            className="text-secondary hover:text-primary transition-colors p-1"
-                            title="Voir"
-                          >
-                            <Eye size={18} />
-                          </button>
-                          <button
-                            onClick={() => navigate(`/recipes/${recipe.id}/edit`)}
-                            className="text-secondary hover:text-primary transition-colors p-1"
-                            title="Modifier"
-                          >
-                            <Edit size={18} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(recipe.id)}
-                            className="text-red-400 hover:text-red-600 transition-colors p-1"
-                            title="Supprimer"
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-accent-light/20 text-accent-dark border border-accent-light/30">
+                          {recipe.category || 'Non définie'}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-secondary font-secondary">
+                        {recipe.servings} portion{recipe.servings > 1 ? 's' : ''}
+                      </TableCell>
+                      <TableCell className="text-secondary font-secondary">
+                        {new Date(recipe.createdAt).toLocaleDateString('fr-FR')}
+                      </TableCell>
+                      <TableCell className="text-right space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => navigate(`/recipes/${recipe.id}`)}
+                          title="Voir"
+                          className="!p-2"
+                        >
+                          <Eye size={18} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => navigate(`/recipes/${recipe.id}/edit`)}
+                          title="Modifier"
+                          className="!p-2"
+                        >
+                          <Edit size={18} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(recipe.id)}
+                          title="Supprimer"
+                          className="!p-2 text-red-400 hover:text-red-600 hover:bg-red-50"
+                        >
+                          <Trash2 size={18} />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </Card>
 
             {/* Pagination */}
