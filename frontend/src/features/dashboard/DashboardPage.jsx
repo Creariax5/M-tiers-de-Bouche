@@ -93,11 +93,11 @@ export default function DashboardPage() {
                 onClick={() => navigate('/ingredients/custom')}
               >
                 <div className="flex justify-center mb-4">
-                  <div className="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center group-hover:bg-secondary group-hover:text-white transition-all">
-                    <ChefHat size={32} className="text-secondary group-hover:text-white" />
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                    <ChefHat size={32} className="text-primary group-hover:text-white" />
                   </div>
                 </div>
-                <div className="text-4xl font-bold text-secondary font-primary mb-1">
+                <div className="text-4xl font-bold text-primary font-primary mb-1">
                   {ingredients.length}
                 </div>
                 <div className="text-sm text-secondary uppercase tracking-wider font-bold font-secondary">
@@ -111,11 +111,11 @@ export default function DashboardPage() {
                 onClick={() => navigate('/labels')}
               >
                 <div className="flex justify-center mb-4">
-                  <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center group-hover:bg-accent group-hover:text-white transition-all">
-                    <Tag size={32} className="text-accent group-hover:text-white" />
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                    <Tag size={32} className="text-primary group-hover:text-white" />
                   </div>
                 </div>
-                <div className="text-4xl font-bold text-accent font-primary mb-1">
+                <div className="text-4xl font-bold text-primary font-primary mb-1">
                   {labelsCount}
                 </div>
                 <div className="text-sm text-secondary uppercase tracking-wider font-bold font-secondary">
