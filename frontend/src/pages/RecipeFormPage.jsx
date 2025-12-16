@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../lib/api';
 import { PageContainer } from '../components/layout';
-import { Button, Card, Alert, Loading } from '../components/ui';
+import { Button, Card, Alert, Loading, Input, Textarea, Select } from '../components/ui';
 import IngredientAutocomplete from '../components/IngredientAutocomplete';
+import { Trash2 } from 'lucide-react';
 
 const CATEGORIES = [
   'Viennoiserie',
@@ -357,69 +358,43 @@ export default function RecipeFormPage() {
               <h2 className="text-xl font-semibold mb-6">Informations générales</h2>
 
               <div className="space-y-4">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                    Nom de la recette *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                      errors.name ? 'border-red-500' : 'border-secondary/30'
-                    }`}
-                    placeholder="Ex: Croissant"
-                  />
-                  {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
-                </div>
+                <Input
+                  label="Nom de la recette *"
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  error={errors.name}
+                  placeholder="Ex: Croissant"
+                />
 
-                <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
-                  </label>
-                  <textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-3 py-2 border border-secondary/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                    rows="3"
-                    placeholder="Description de la recette..."
-                  />
-                </div>
+                <Textarea
+                  label="Description"
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  rows="3"
+                  placeholder="Description de la recette..."
+                />
 
-                <div>
-                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-                    Catégorie
-                  </label>
-                  <select
-                    id="category"
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-3 py-2 border border-secondary/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    <option value="">Sélectionner une catégorie</option>
-                    {CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <Select
+                  label="Catégorie"
+                  id="category"
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  options={[
+                    { value: '', label: 'Sélectionner une catégorie' },
+                    ...CATEGORIES.map(cat => ({ value: cat, label: cat }))
+                  ]}
+                />
 
-                <div>
-                  <label htmlFor="portions" className="block text-sm font-medium text-gray-700 mb-1">
-                    Nombre de portions
-                  </label>
-                  <input
-                    type="number"
-                    id="portions"
-                    value={formData.portions}
-                    onChange={(e) => setFormData({ ...formData, portions: e.target.value })}
-                    className="w-full px-3 py-2 border border-secondary/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                    min="1"
-                  />
-                </div>
+                <Input
+                  label="Nombre de portions"
+                  type="number"
+                  id="portions"
+                  value={formData.portions}
+                  onChange={(e) => setFormData({ ...formData, portions: e.target.value })}
+                  min="1"
+                />
               </div>
 
               <div className="mt-6 flex justify-end">
@@ -449,53 +424,39 @@ export default function RecipeFormPage() {
                     <p className="font-medium mb-2">{selectedIngredient.name}</p>
 
                     <div className="grid grid-cols-3 gap-4">
-                      <div>
-                        <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">
-                          Quantité
-                        </label>
-                        <input
-                          type="number"
-                          id="quantity"
-                          value={ingredientQuantity}
-                          onChange={(e) => setIngredientQuantity(e.target.value)}
-                          className="w-full px-3 py-2 border border-secondary/30 rounded-lg"
-                          min="0"
-                          step="0.01"
-                        />
-                      </div>
+                      <Input
+                        label="Quantité"
+                        type="number"
+                        id="quantity"
+                        value={ingredientQuantity}
+                        onChange={(e) => setIngredientQuantity(e.target.value)}
+                        min="0"
+                        step="0.01"
+                      />
 
-                      <div>
-                        <label htmlFor="unit" className="block text-sm font-medium text-gray-700 mb-1">
-                          Unité
-                        </label>
-                        <select
-                          id="unit"
-                          value={ingredientUnit}
-                          onChange={(e) => setIngredientUnit(e.target.value)}
-                          className="w-full px-3 py-2 border border-secondary/30 rounded-lg"
-                        >
-                          <option value="G">Grammes (G)</option>
-                          <option value="KG">Kilogrammes (KG)</option>
-                          <option value="L">Litres (L)</option>
-                          <option value="ML">Millilitres (ML)</option>
-                          <option value="PIECE">Pièce(s)</option>
-                        </select>
-                      </div>
+                      <Select
+                        label="Unité"
+                        id="unit"
+                        value={ingredientUnit}
+                        onChange={(e) => setIngredientUnit(e.target.value)}
+                        options={[
+                          { value: 'G', label: 'Grammes (G)' },
+                          { value: 'KG', label: 'Kilogrammes (KG)' },
+                          { value: 'L', label: 'Litres (L)' },
+                          { value: 'ML', label: 'Millilitres (ML)' },
+                          { value: 'PIECE', label: 'Pièce(s)' }
+                        ]}
+                      />
 
-                      <div>
-                        <label htmlFor="loss" className="block text-sm font-medium text-gray-700 mb-1">
-                          Perte (%)
-                        </label>
-                        <input
-                          type="number"
-                          id="loss"
-                          value={ingredientLoss}
-                          onChange={(e) => setIngredientLoss(e.target.value)}
-                          className="w-full px-3 py-2 border border-secondary/30 rounded-lg"
-                          min="0"
-                          max="100"
-                        />
-                      </div>
+                      <Input
+                        label="Perte (%)"
+                        type="number"
+                        id="loss"
+                        value={ingredientLoss}
+                        onChange={(e) => setIngredientLoss(e.target.value)}
+                        min="0"
+                        max="100"
+                      />
                     </div>
 
                     <Button onClick={handleAddIngredient} className="mt-4" disabled={loading}>
@@ -516,43 +477,19 @@ export default function RecipeFormPage() {
                           {ing.name} - {ing.quantity} {ing.unit}
                           {ing.lossPercent > 0 && ` (perte ${ing.lossPercent}%)`}
                         </span>
-                        <button
-                          type="button"
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleRemoveIngredient(index)}
-                          className="text-red-500 hover:text-red-700 p-1"
                           title="Supprimer cet ingrédient"
                           disabled={loading}
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                          </svg>
-                        </button>
+                          <Trash2 size={18} />
+                        </Button>
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
-
-              <div className="mt-6 flex justify-between">
-                <Button variant="secondary" onClick={handlePrevious}>
-                  Précédent
-                </Button>
-                <Button onClick={handleStep2Next} disabled={loading}>
-                  {loading ? 'Chargement...' : 'Suivant'}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: Révision */}
-          {currentStep === 3 && (
-            <div>
-              <h2 className="text-xl font-semibold mb-6">Révision</h2>
-
-              {loading ? (
-                <p className="text-gray-600">Chargement des calculs...</p>
-              ) : (
-                <div className="space-y-6">
                   {/* Allergènes */}
                   <div>
                     <h3 className="font-medium mb-2">Allergènes</h3>
