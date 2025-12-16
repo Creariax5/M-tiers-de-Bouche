@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../lib/api';
-import { Button, Card, Badge, Alert, Loading, Logo } from '../components/ui';
+import { Button, Card, Badge, Alert, Loading, Logo, Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui';
 import { PageContainer } from '../components/layout';
 import LabelGenerationModal from '../components/LabelGenerationModal';
 import { Clock, Users, ChefHat, Scale, AlertTriangle, ArrowLeft, Edit, Tag, Printer } from 'lucide-react';
@@ -140,29 +140,27 @@ export default function RecipeDetailPage() {
             {/* Ingredients */}
             <Card>
               <h2 className="text-xl font-primary text-primary mb-6 border-b border-neutral-light pb-2">Ingrédients</h2>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left">
-                  <thead className="text-xs text-secondary uppercase bg-neutral-light">
-                    <tr>
-                      <th className="px-4 py-3 rounded-l-lg">Ingrédient</th>
-                      <th className="px-4 py-3">Quantité</th>
-                      <th className="px-4 py-3 rounded-r-lg">Unité</th>
-                    </tr>
-                  </thead>
-                  <tbody className="font-secondary">
-                    {recipe.ingredients && recipe.ingredients.map((ing, index) => (
-                      <tr key={index} className="border-b border-neutral-light last:border-none">
-                        <td className="px-4 py-3 font-medium text-primary">
-                          {ing.baseIngredient?.name || ing.customIngredient?.name || ing.subRecipe?.name}
-                          {ing.baseIngredient && <span className="ml-2 text-xs text-secondary">(base)</span>}
-                        </td>
-                        <td className="px-4 py-3">{ing.quantity}</td>
-                        <td className="px-4 py-3">{ing.unit}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Ingrédient</TableHead>
+                    <TableHead>Quantité</TableHead>
+                    <TableHead>Unité</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recipe.ingredients && recipe.ingredients.map((ing, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium text-primary">
+                        {ing.baseIngredient?.name || ing.customIngredient?.name || ing.subRecipe?.name}
+                        {ing.baseIngredient && <span className="ml-2 text-xs text-secondary">(base)</span>}
+                      </TableCell>
+                      <TableCell>{ing.quantity}</TableCell>
+                      <TableCell>{ing.unit}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </Card>
 
             {/* Steps */}
