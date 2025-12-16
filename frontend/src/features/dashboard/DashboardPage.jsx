@@ -127,43 +127,45 @@ export default function DashboardPage() {
             {/* Grille deux colonnes */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Dernières recettes */}
-              <Card className="overflow-hidden" padding="p-0">
+              <Card className="overflow-hidden h-full flex flex-col" padding="p-0">
                 <div className="px-6 py-4 border-b border-neutral-light">
                   <h3 className="text-lg font-bold text-primary font-primary">
                     Dernières recettes
                   </h3>
                 </div>
-                {recipes.length === 0 ? (
-                  <div className="p-8 text-center text-secondary font-secondary">
-                    <p className="mb-6">Aucune recette pour l'instant</p>
-                    <Button 
-                      variant="primary"
-                      onClick={() => navigate('/recipes/new')}
-                    >
-                      Créer ma première recette
-                    </Button>
-                  </div>
-                ) : (
-                  <ul className="divide-y divide-neutral-light">
-                    {recipes.map((recipe) => (
-                      <li 
-                        key={recipe.id} 
-                        className="px-6 py-4 hover:bg-neutral-smoke cursor-pointer flex justify-between items-center group transition-colors"
-                        onClick={() => navigate(`/recipes/${recipe.id}`)}
+                <div className="flex-grow">
+                  {recipes.length === 0 ? (
+                    <div className="p-8 text-center text-secondary font-secondary">
+                      <p className="mb-6">Aucune recette pour l'instant</p>
+                      <Button 
+                        variant="primary"
+                        onClick={() => navigate('/recipes/new')}
                       >
-                        <div>
-                          <p className="font-bold text-primary font-primary group-hover:text-secondary transition-colors">
-                            {recipe.name}
-                          </p>
-                          <p className="text-sm text-accent mt-1 font-secondary">
-                            {recipe.category || 'Sans catégorie'} • {recipe.servings || 1} portion(s)
-                          </p>
-                        </div>
-                        <ArrowRight size={18} className="text-accent group-hover:text-primary transition-colors" />
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                        Créer ma première recette
+                      </Button>
+                    </div>
+                  ) : (
+                    <ul className="divide-y divide-neutral-light">
+                      {recipes.map((recipe) => (
+                        <li 
+                          key={recipe.id} 
+                          className="px-6 py-4 hover:bg-neutral-smoke cursor-pointer flex justify-between items-center group transition-colors"
+                          onClick={() => navigate(`/recipes/${recipe.id}`)}
+                        >
+                          <div>
+                            <p className="font-bold text-primary font-primary group-hover:text-secondary transition-colors">
+                              {recipe.name}
+                            </p>
+                            <p className="text-sm text-accent mt-1 font-secondary">
+                              {recipe.category || 'Sans catégorie'} • {recipe.servings || 1} portion(s)
+                            </p>
+                          </div>
+                          <ArrowRight size={18} className="text-accent group-hover:text-primary transition-colors" />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
                 {recipes.length > 0 && (
                   <div className="px-6 py-4 border-t border-neutral-light bg-neutral-smoke/50 flex justify-end">
                     <Button 
@@ -177,40 +179,42 @@ export default function DashboardPage() {
               </Card>
 
               {/* Ingrédients personnalisés */}
-              <Card className="overflow-hidden" padding="p-0">
+              <Card className="overflow-hidden h-full flex flex-col" padding="p-0">
                 <div className="px-6 py-4 border-b border-neutral-light">
                   <h3 className="text-lg font-bold text-primary font-primary">
                     Mes ingrédients
                   </h3>
                 </div>
-                {ingredients.length === 0 ? (
-                  <div className="p-8 text-center text-secondary font-secondary">
-                    <p className="mb-6">Aucun ingrédient personnalisé</p>
-                    <Button 
-                      variant="secondary"
-                      onClick={() => navigate('/ingredients/custom')}
-                    >
-                      Ajouter un ingrédient
-                    </Button>
-                  </div>
-                ) : (
-                  <ul className="divide-y divide-neutral-light">
-                    {ingredients.slice(0, 5).map((ingredient) => (
-                      <li 
-                        key={ingredient.id} 
-                        className="px-6 py-4 hover:bg-neutral-smoke flex justify-between items-center font-secondary"
+                <div className="flex-grow">
+                  {ingredients.length === 0 ? (
+                    <div className="p-8 text-center text-secondary font-secondary">
+                      <p className="mb-6">Aucun ingrédient personnalisé</p>
+                      <Button 
+                        variant="secondary"
+                        onClick={() => navigate('/ingredients/custom')}
                       >
-                        <div>
-                          <p className="font-bold text-primary font-primary">{ingredient.name}</p>
-                          <p className="text-sm text-accent mt-1">
-                            {ingredient.price ? `${ingredient.price.toFixed(2)} €/${ingredient.priceUnit}` : 'Prix non défini'}
-                            {ingredient.supplier && ` • ${ingredient.supplier}`}
-                          </p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                        Ajouter un ingrédient
+                      </Button>
+                    </div>
+                  ) : (
+                    <ul className="divide-y divide-neutral-light">
+                      {ingredients.slice(0, 5).map((ingredient) => (
+                        <li 
+                          key={ingredient.id} 
+                          className="px-6 py-4 hover:bg-neutral-smoke flex justify-between items-center font-secondary"
+                        >
+                          <div>
+                            <p className="font-bold text-primary font-primary">{ingredient.name}</p>
+                            <p className="text-sm text-accent mt-1">
+                              {ingredient.price ? `${ingredient.price.toFixed(2)} €/${ingredient.priceUnit}` : 'Prix non défini'}
+                              {ingredient.supplier && ` • ${ingredient.supplier}`}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
                 {ingredients.length > 0 && (
                   <div className="px-6 py-4 border-t border-neutral-light bg-neutral-smoke/50 flex justify-end">
                     <Button 
