@@ -4,8 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Link } from 'react-router-dom';
 import api from '../../lib/api';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
+import { Button, Input, Logo } from '../../components/ui';
+import { Mail, ArrowLeft } from 'lucide-react';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('Email invalide'),
@@ -35,20 +35,22 @@ export default function ForgotPasswordPage() {
   
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="max-w-md w-full p-8 bg-white rounded-lg shadow text-center">
-          <div className="text-blue-600 text-6xl mb-4">📧</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+      <div className="min-h-screen flex items-center justify-center bg-neutral-smoke font-secondary">
+        <div className="max-w-md w-full p-8 bg-white rounded-3xl shadow-sm border border-neutral-light text-center">
+          <div className="flex justify-center mb-4">
+            <Mail size={64} className="text-primary" />
+          </div>
+          <h2 className="text-2xl font-bold text-primary font-primary mb-2">
             Email envoyé !
           </h2>
-          <p className="text-gray-600 mb-4">
+          <p className="text-secondary font-secondary mb-6">
             Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.
           </p>
           <Link
             to="/login"
-            className="text-blue-600 hover:text-blue-800 font-medium"
+            className="text-primary hover:text-primary-dark font-bold flex items-center justify-center gap-2 transition-colors"
           >
-            ← Retour à la connexion
+            <ArrowLeft size={16} /> Retour à la connexion
           </Link>
         </div>
       </div>
@@ -56,40 +58,34 @@ export default function ForgotPasswordPage() {
   }
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <div>
-          <h1 className="text-3xl font-bold text-center text-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-neutral-smoke font-secondary">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-3xl shadow-sm border border-neutral-light">
+        <div className="flex flex-col items-center">
+          <Logo size="xl" />
+          <h1 className="mt-6 text-2xl font-bold text-center text-primary font-primary">
             Mot de passe oublié
           </h1>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-secondary font-secondary">
             Entrez votre email pour recevoir un lien de réinitialisation
           </p>
         </div>
         
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <Input
-              id="email"
-              type="email"
-              error={!!errors.email}
-              {...register('email')}
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-            )}
-          </div>
+          <Input
+            id="email"
+            type="email"
+            label="EMAIL"
+            error={errors.email?.message}
+            {...register('email')}
+          />
           
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
               {error}
             </div>
           )}
           
-          <Button type="submit" disabled={isSubmitting} className="w-full">
+          <Button type="submit" disabled={isSubmitting} className="w-full" variant="primary">
             {isSubmitting ? 'Envoi...' : 'Envoyer le lien'}
           </Button>
         </form>
@@ -97,9 +93,9 @@ export default function ForgotPasswordPage() {
         <div className="text-center">
           <Link
             to="/login"
-            className="text-sm text-gray-600 hover:text-gray-900"
+            className="text-sm text-secondary hover:text-primary transition-colors flex items-center justify-center gap-2 font-secondary"
           >
-            ← Retour à la connexion
+            <ArrowLeft size={16} /> Retour à la connexion
           </Link>
         </div>
       </div>

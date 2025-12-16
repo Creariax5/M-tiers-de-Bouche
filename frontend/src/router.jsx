@@ -9,6 +9,7 @@ import RecipeDetailPage from './pages/RecipeDetailPage';
 import CustomIngredientsPage from './pages/CustomIngredientsPage';
 import LabelsPage from './pages/LabelsPage';
 import { useAuthStore } from './stores/authStore';
+import { Layout } from './components/layout';
 
 function ProtectedRoute({ children }) {
   const { token } = useAuthStore();
@@ -33,59 +34,44 @@ export const router = createBrowserRouter([
     element: <ForgotPasswordPage />,
   },
   {
-    path: '/dashboard',
     element: (
       <ProtectedRoute>
-        <DashboardPage />
+        <Layout />
       </ProtectedRoute>
     ),
-  },
-  {
-    path: '/recipes',
-    element: (
-      <ProtectedRoute>
-        <RecipesListPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/recipes/new',
-    element: (
-      <ProtectedRoute>
-        <RecipeFormPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/recipes/:id/edit',
-    element: (
-      <ProtectedRoute>
-        <RecipeFormPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/recipes/:id',
-    element: (
-      <ProtectedRoute>
-        <RecipeDetailPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/ingredients/custom',
-    element: (
-      <ProtectedRoute>
-        <CustomIngredientsPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/labels',
-    element: (
-      <ProtectedRoute>
-        <LabelsPage />
-      </ProtectedRoute>
-    ),
+    children: [
+      {
+        path: '/dashboard',
+        element: <DashboardPage />,
+      },
+      {
+        path: '/recipes',
+        element: <RecipesListPage />,
+      },
+      {
+        path: '/recipes/new',
+        element: <RecipeFormPage />,
+      },
+      {
+        path: '/recipes/:id/edit',
+        element: <RecipeFormPage />,
+      },
+      {
+        path: '/recipes/:id',
+        element: <RecipeDetailPage />,
+      },
+      {
+        path: '/ingredients',
+        element: <CustomIngredientsPage />,
+      },
+      {
+        path: '/ingredients/custom',
+        element: <Navigate to="/ingredients" replace />,
+      },
+      {
+        path: '/labels',
+        element: <LabelsPage />,
+      },
+    ]
   },
 ]);

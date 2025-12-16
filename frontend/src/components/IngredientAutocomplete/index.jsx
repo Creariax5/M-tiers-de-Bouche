@@ -142,7 +142,7 @@ export default function IngredientAutocomplete({
         onChange={(e) => setSearchTerm(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
         aria-label="Recherche d'ingrédient"
         aria-autocomplete="list"
         aria-controls="ingredient-suggestions"
@@ -227,7 +227,7 @@ export default function IngredientAutocomplete({
                         className={`ml-2 px-2 py-1 text-xs font-semibold rounded ${
                           ingredient.type === 'custom'
                             ? 'bg-purple-100 text-purple-800'
-                            : 'bg-blue-100 text-blue-800'
+                            : 'bg-info/10 text-info border border-info/30'
                         }`}
                       >
                         {ingredient.type === 'custom' ? 'Custom' : 'Base'}

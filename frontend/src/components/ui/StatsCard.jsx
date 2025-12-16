@@ -1,15 +1,9 @@
 import React from 'react';
 
 /**
- * Card de statistique réutilisable
- * @param {Object} props
- * @param {string} props.label - Label de la statistique
- * @param {string|number} props.value - Valeur à afficher
- * @param {string} props.icon - Emoji ou icône (optionnel)
- * @param {string} props.trend - Tendance (up, down, neutral)
- * @param {string} props.trendValue - Valeur de la tendance (ex: "+12%")
- * @param {string} props.variant - Style variant (default, success, warning, danger)
- * @param {string} props.className - Classes additionnelles
+ * Card de statistique réutilisable - Style Régal
+ * Utilise les variables du Design System (primary, secondary, accent)
+ * pour que les couleurs changent automatiquement si on modifie le DS
  */
 export function StatsCard({ 
   label, 
@@ -21,25 +15,27 @@ export function StatsCard({
   className = '' 
 }) {
   const variantStyles = {
-    default: 'bg-gray-50',
-    success: 'bg-green-50',
-    warning: 'bg-yellow-50',
-    danger: 'bg-red-50',
-    primary: 'bg-blue-50',
+    default: 'bg-neutral-smoke',
+    success: 'bg-success/10',
+    warning: 'bg-warning/10',
+    danger: 'bg-error/10',
+    primary: 'bg-primary/10',
+    secondary: 'bg-secondary/10',
   };
 
   const valueColors = {
-    default: 'text-gray-900',
-    success: 'text-green-700',
-    warning: 'text-yellow-700',
-    danger: 'text-red-700',
-    primary: 'text-blue-700',
+    default: 'text-primary',
+    success: 'text-success',
+    warning: 'text-warning',
+    danger: 'text-error',
+    primary: 'text-primary',
+    secondary: 'text-secondary',
   };
 
   const trendColors = {
-    up: 'text-green-600',
-    down: 'text-red-600',
-    neutral: 'text-gray-500',
+    up: 'text-success',
+    down: 'text-error',
+    neutral: 'text-secondary',
   };
 
   const trendIcons = {
@@ -49,15 +45,15 @@ export function StatsCard({
   };
 
   return (
-    <div className={`${variantStyles[variant]} rounded-lg p-6 ${className}`}>
+    <div className={`${variantStyles[variant]} rounded-3xl p-6 border border-neutral-light ${className}`}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm text-gray-600 mb-2">{label}</p>
-          <p className={`text-4xl font-bold ${valueColors[variant]}`}>
+          <p className="text-sm text-secondary mb-2 font-secondary uppercase tracking-wider">{label}</p>
+          <p className={`text-4xl font-bold font-primary ${valueColors[variant]}`}>
             {value}
           </p>
           {trend && trendValue && (
-            <p className={`text-sm mt-2 ${trendColors[trend]}`}>
+            <p className={`text-sm mt-2 font-secondary ${trendColors[trend]}`}>
               {trendIcons[trend]} {trendValue}
             </p>
           )}

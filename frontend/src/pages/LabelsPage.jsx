@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../stores/authStore';
 import api from '../lib/api';
-import { Button } from '../components/ui/Button';
+import { Button, Card, Badge, Alert } from '../components/ui';
+import { Loading } from '../components/ui/Loading';
+import { EmptyState } from '../components/ui/EmptyState';
+import { PageContainer } from '../components/layout';
+import { FileText, Download, ExternalLink, Calendar, Tag } from 'lucide-react';
 
 export default function LabelsPage() {
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
-
   const [labels, setLabels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -30,7 +31,6 @@ export default function LabelsPage() {
 
   const handleDownload = async (label) => {
     try {
-      // Ouvrir l'URL de téléchargement dans un nouvel onglet
       window.open(label.url, '_blank');
     } catch (err) {
       console.error('Error downloading label:', err);
@@ -47,103 +47,89 @@ export default function LabelsPage() {
     });
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-neutral-smoke flex items-center justify-center">
+        <Loading size="lg" />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex space-x-4">
-              <Button onClick={() => navigate('/dashboard')} variant="secondary">
-                Dashboard
-              </Button>
-              <Button onClick={() => navigate('/recipes')} variant="secondary">
-                Mes Recettes
-              </Button>
-              <Button onClick={() => navigate('/labels')} variant="primary">
-                Mes Étiquettes
-              </Button>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">{user?.email}</span>
-              <Button onClick={logout} variant="secondary">
-                Déconnexion
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <PageContainer>
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-primary font-primary mb-2">
+          Mes Étiquettes INCO
+        </h1>
+        <p className="text-secondary font-secondary">
+          {labels.length} étiquette{labels.length > 1 ? 's' : ''} générée{labels.length > 1 ? 's' : ''}
+        </p>
+      </div>
 
-      {/* Contenu */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Mes Étiquettes</h1>
-        </div>
+      {error && (
+        <Alert variant="error" title="Erreur" className="mb-6">
+          {error}
+        </Alert>
+      )}
 
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-center">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <p className="mt-2 text-gray-600">Chargement...</p>
-            </div>
-          </div>
-        ) : error ? (
-          <div className="bg-red-100 text-red-700 p-4 rounded-lg">
-            {error}
-          </div>
-        ) : labels.length === 0 ? (
-          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <h3 className="mt-4 text-lg font-medium text-gray-900">Aucune étiquette</h3>
-            <p className="mt-2 text-gray-500">
-              Vous n'avez pas encore généré d'étiquette. Allez sur une recette et cliquez sur "Générer étiquette".
-            </p>
-            <Button onClick={() => navigate('/recipes')} variant="primary" className="mt-4">
-              Voir mes recettes
-            </Button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {labels.map((label) => (
-              <div key={label.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 truncate">
-                        {label.productName}
-                      </h3>
-                      <p className="mt-1 text-sm text-gray-500">
-                        {formatDate(label.createdAt)}
-                      </p>
-                    </div>
-                    <span className="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
-                      {label.template || 'default'}
-                    </span>
-                  </div>
-
-                  <div className="mt-4 flex items-center text-sm text-gray-500">
-                    <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Format: {label.format || 'A4'}
-                  </div>
-
-                  <div className="mt-4 flex gap-2">
-                    <Button onClick={() => handleDownload(label)} variant="primary" className="flex-1">
-                      Télécharger
-                    </Button>
-                    <Button onClick={() => window.open(label.url, '_blank')} variant="secondary">
-                      Voir
-                    </Button>
-                  </div>
+      {labels.length === 0 ? (
+        <Card className="py-12">
+          <EmptyState
+            icon="🏷️"
+            title="Aucune étiquette"
+            description="Vous n'avez pas encore généré d'étiquette. Allez sur une recette et cliquez sur 'Générer étiquette'."
+            action={
+              <Button onClick={() => navigate('/recipes')} variant="primary">
+                Voir mes recettes
+              </Button>
+            }
+          />
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {labels.map((label) => (
+            <Card key={label.id} className="overflow-hidden hover:shadow-xl transition-all group">
+              {/* Header de la carte avec couleur */}
+              <div className="bg-gradient-to-br from-primary to-primary-dark px-6 py-4 border-b border-primary-light">
+                <div className="flex items-start justify-between">
+                  <h3 className="text-lg font-bold text-white font-primary truncate flex-1 mr-2" title={label.productName}>
+                    {label.productName}
+                  </h3>
+                  <Badge variant="secondary" size="sm" className="shrink-0 bg-white/20 text-white border-0">
+                    {label.template || 'standard'}
+                  </Badge>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+
+              {/* Corps */}
+              <div className="p-6 bg-gradient-to-br from-white to-neutral-smoke/30">
+                {/* Infos */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center text-sm text-secondary font-secondary">
+                    <Calendar size={16} className="mr-2 text-accent" />
+                    {formatDate(label.createdAt)}
+                  </div>
+                  <div className="flex items-center text-sm text-secondary font-secondary">
+                    <Tag size={16} className="mr-2 text-accent" />
+                    Format: <span className="font-bold ml-1">{label.format || 'A4'}</span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2">
+                  <Button onClick={() => handleDownload(label)} variant="primary" className="flex-1">
+                    <Download size={16} /> Télécharger
+                  </Button>
+                  <Button onClick={() => window.open(label.url, '_blank')} variant="outline" className="px-3">
+                    <ExternalLink size={16} />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </PageContainer>
   );
 }

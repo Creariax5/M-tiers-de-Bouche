@@ -1,13 +1,13 @@
 import React from 'react';
 
 const Button = ({ variant = 'primary', size = 'md', children, className = '', ...props }) => {
-  const baseStyles = "font-secondary font-bold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2";
+  const baseStyles = "font-secondary font-bold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 inline-flex items-center justify-center gap-2";
   
   const variants = {
-    primary: "bg-night-bordeaux text-white hover:bg-opacity-90 focus:ring-night-bordeaux",
-    secondary: "bg-stone-brown text-white hover:bg-opacity-90 focus:ring-stone-brown",
-    outline: "border-2 border-night-bordeaux text-night-bordeaux hover:bg-night-bordeaux hover:text-white focus:ring-night-bordeaux",
-    ghost: "text-stone-brown hover:bg-white-smoke hover:text-night-bordeaux",
+    primary: "bg-primary text-white hover:bg-opacity-90 focus:ring-primary",
+    secondary: "bg-secondary text-white hover:bg-opacity-90 focus:ring-secondary",
+    outline: "border-2 border-primary text-primary hover:bg-primary hover:text-white focus:ring-primary",
+    ghost: "text-secondary hover:bg-neutral-smoke hover:text-primary",
   };
 
   const sizes = {

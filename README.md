@@ -1,4 +1,4 @@
-# 🧁 Métiers de Bouche - SaaS HACCP
+# 👨‍🍳 Métiers de Bouche - SaaS HACCP
 
 > Plateforme SaaS pour artisans des métiers de bouche : fiches techniques, étiquettes nutritionnelles et gestion de production conformes HACCP.
 

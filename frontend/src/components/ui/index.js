@@ -1,24 +1,44 @@
-export { Button } from './Button';
-export { Input } from './Input';
-export { Card } from './Card';
-export { Alert } from './Alert';
-export { Loading } from './Loading';
-export { EmptyState } from './EmptyState';
-export { StatsCard } from './StatsCard';
+// ===========================================
+// UI Components - Re-export direct du Design System
+// ===========================================
+// Pas de wrappers inutiles, on utilise directement le DS
 
-// Exports directs du Design System
 export { 
+  Button,
+  Card,
+  Input,
+  Textarea,
+  Select,
+  Checkbox,
+  Badge,
+  Logo,
   Table, 
+  TableHeader, 
+  TableBody, 
+  TableRow, 
+  TableHead, 
+  TableCell,
   Tabs, 
+  TabsList, 
+  TabsTrigger, 
+  TabsContent,
+  Alert,
   Modal, 
   Dropdown, 
   DropdownItem,
   useToast, 
   ToastProvider,
+  Loader,
   Switch,
   Breadcrumbs,
   DatePicker,
   FileUpload,
   NutritionLabel,
-  ProductLabel
+  ProductLabel,
+  designConfig
 } from '@regal/design-system';
+
+// Composants custom du frontend (pas dans le DS)
+export { Loading } from './Loading';
+export { EmptyState } from './EmptyState';
+export { StatsCard } from './StatsCard';

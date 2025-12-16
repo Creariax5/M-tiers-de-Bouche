@@ -15,6 +15,7 @@
     "@hookform/resolvers": "^3.3.3",
     "@regal/design-system": "file:../design-system",
     "axios": "^1.6.2",
+    "lucide-react": "^0.344.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.49.2",

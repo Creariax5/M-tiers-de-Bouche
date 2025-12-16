@@ -2,12 +2,7 @@ import React from 'react';
 
 /**
  * Composant Empty State réutilisable
- * @param {Object} props
- * @param {string} props.icon - Emoji ou icône
- * @param {string} props.title - Titre principal
- * @param {string} props.description - Description
- * @param {React.ReactNode} props.action - Bouton d'action
- * @param {string} props.className - Classes additionnelles
+ * Utilise les variables du DS (primary, secondary) pour les couleurs
  */
 export function EmptyState({ 
   icon = '📭',
@@ -17,14 +12,14 @@ export function EmptyState({
   className = '' 
 }) {
   return (
-    <div className={`text-center py-16 ${className}`}>
+    <div className={`text-center py-16 flex flex-col items-center ${className}`}>
       <span className="text-6xl mb-4 block">{icon}</span>
-      <h3 className="text-lg font-medium text-gray-900 mb-2">{title}</h3>
+      <h3 className="text-lg font-bold text-primary font-primary mb-2">{title}</h3>
       {description && (
-        <p className="text-gray-500 mb-6 max-w-md mx-auto">{description}</p>
+        <p className="text-secondary font-secondary mb-6 max-w-md">{description}</p>
       )}
       {action && (
-        <div>{action}</div>
+        <div className="flex justify-center">{action}</div>
       )}
     </div>
   );

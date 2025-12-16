@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '../components/ui/Button';
+import { Button } from '../components/ui';
 import { PageContainer } from '../components/layout';
 import api from '../lib/api';
 
@@ -187,13 +187,10 @@ export default function CustomIngredientsPage() {
     <PageContainer title="Ingrédients personnalisés">
       <div className="px-4 py-6 sm:px-0">
         <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-primary font-primary">
               Ingrédients personnalisés ({ingredients.length})
             </h2>
-            <Button
-              onClick={handleOpenCreate}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
+            <Button onClick={handleOpenCreate}>
               + Nouvel ingrédient
             </Button>
           </div>
@@ -209,14 +206,11 @@ export default function CustomIngredientsPage() {
               <p className="text-gray-500">Chargement des ingrédients...</p>
             </div>
           ) : ingredients.length === 0 ? (
-            <div className="bg-white shadow rounded-lg p-12 text-center">
-              <p className="text-gray-500 mb-4">
+            <div className="bg-white shadow rounded-3xl p-12 text-center border border-neutral-light">
+              <p className="text-secondary mb-4 font-secondary">
                 Aucun ingrédient personnalisé trouvé
               </p>
-              <Button
-                onClick={handleOpenCreate}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
+              <Button onClick={handleOpenCreate}>
                 Créer mon premier ingrédient
               </Button>
             </div>
@@ -251,7 +245,7 @@ export default function CustomIngredientsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-accent/20 text-primary">
                           {CATEGORIES.find(c => c.value === ingredient.category)?.label || ingredient.category}
                         </span>
                       </td>
@@ -264,7 +258,7 @@ export default function CustomIngredientsPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                         <button
                           onClick={() => handleOpenEdit(ingredient)}
-                          className="text-indigo-600 hover:text-indigo-900"
+                          className="text-primary hover:text-primary/80"
                         >
                           Modifier
                         </button>
@@ -286,7 +280,7 @@ export default function CustomIngredientsPage() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-xl bg-white">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-medium text-gray-900">
                 {editingId ? "Modifier l'ingrédient" : "Créer un ingrédient"}
@@ -310,7 +304,7 @@ export default function CustomIngredientsPage() {
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                    className="mt-1 block w-full rounded-xl border-secondary/30 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-3 py-2 border"
                   />
                   {formErrors.name && (
                     <p className="mt-1 text-sm text-red-600">{formErrors.name}</p>
@@ -325,7 +319,7 @@ export default function CustomIngredientsPage() {
                     id="category"
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                    className="mt-1 block w-full rounded-xl border-secondary/30 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-3 py-2 border"
                   >
                     {CATEGORIES.map((cat) => (
                       <option key={cat.value} value={cat.value}>
@@ -348,7 +342,7 @@ export default function CustomIngredientsPage() {
                       placeholder="ex: 5.50"
                       value={formData.price}
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                      className="mt-1 block w-full rounded-xl border-secondary/30 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-3 py-2 border"
                     />
                     {formErrors.price && (
                       <p className="mt-1 text-sm text-red-600">{formErrors.price}</p>
@@ -363,7 +357,7 @@ export default function CustomIngredientsPage() {
                       id="priceUnit"
                       value={formData.priceUnit}
                       onChange={(e) => setFormData({ ...formData, priceUnit: e.target.value })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                      className="mt-1 block w-full rounded-xl border-secondary/30 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-3 py-2 border"
                     >
                       <option value="KG">1 KG</option>
                       <option value="L">1 L</option>
@@ -382,7 +376,7 @@ export default function CustomIngredientsPage() {
                     id="supplier"
                     value={formData.supplier}
                     onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                    className="mt-1 block w-full rounded-xl border-secondary/30 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-3 py-2 border"
                   />
                 </div>
 
@@ -404,7 +398,7 @@ export default function CustomIngredientsPage() {
                         placeholder="ex: 350"
                         value={formData.calories}
                         onChange={(e) => setFormData({ ...formData, calories: e.target.value })}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-2 py-1 border"
+                        className="mt-1 block w-full rounded-xl border-secondary/30 shadow-sm focus:border-primary focus:ring-primary text-sm px-2 py-1 border"
                       />
                     </div>
                     <div>
@@ -419,7 +413,7 @@ export default function CustomIngredientsPage() {
                         placeholder="ex: 10.5"
                         value={formData.proteins}
                         onChange={(e) => setFormData({ ...formData, proteins: e.target.value })}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-2 py-1 border"
+                        className="mt-1 block w-full rounded-xl border-secondary/30 shadow-sm focus:border-primary focus:ring-primary text-sm px-2 py-1 border"
                       />
                     </div>
                     <div>
@@ -434,7 +428,7 @@ export default function CustomIngredientsPage() {
                         placeholder="ex: 45.2"
                         value={formData.carbs}
                         onChange={(e) => setFormData({ ...formData, carbs: e.target.value })}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-2 py-1 border"
+                        className="mt-1 block w-full rounded-xl border-secondary/30 shadow-sm focus:border-primary focus:ring-primary text-sm px-2 py-1 border"
                       />
                     </div>
                     <div>
@@ -449,7 +443,7 @@ export default function CustomIngredientsPage() {
                         placeholder="ex: 12.3"
                         value={formData.fats}
                         onChange={(e) => setFormData({ ...formData, fats: e.target.value })}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-2 py-1 border"
+                        className="mt-1 block w-full rounded-xl border-secondary/30 shadow-sm focus:border-primary focus:ring-primary text-sm px-2 py-1 border"
                       />
                     </div>
                     <div>
@@ -464,7 +458,7 @@ export default function CustomIngredientsPage() {
                         placeholder="ex: 0.45"
                         value={formData.salt}
                         onChange={(e) => setFormData({ ...formData, salt: e.target.value })}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-2 py-1 border"
+                        className="mt-1 block w-full rounded-xl border-secondary/30 shadow-sm focus:border-primary focus:ring-primary text-sm px-2 py-1 border"
                       />
                     </div>
                   </div>
@@ -488,7 +482,7 @@ export default function CustomIngredientsPage() {
                               setFormData({ ...formData, allergens: formData.allergens.filter(a => a !== allergen.value) });
                             }
                           }}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-2"
+                          className="h-4 w-4 text-primary focus:ring-primary border-secondary/30 rounded mr-2"
                         />
                         {allergen.label}
                       </label>
@@ -500,15 +494,12 @@ export default function CustomIngredientsPage() {
               <div className="mt-6 flex justify-end space-x-3">
                 <Button
                   type="button"
+                  variant="secondary"
                   onClick={() => setShowModal(false)}
-                  className="bg-gray-600 hover:bg-gray-700"
                 >
                   Annuler
                 </Button>
-                <Button
-                  type="submit"
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
+                <Button type="submit">
                   {editingId ? 'Enregistrer' : 'Créer'}
                 </Button>
               </div>

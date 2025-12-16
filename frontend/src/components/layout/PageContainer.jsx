@@ -1,12 +1,13 @@
 import React from 'react';
-import { Header } from './Header';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../ui';
+import { ArrowLeft } from 'lucide-react';
 
 /**
- * Container de page avec Header intégré
+ * Container de page pour le contenu principal
  * @param {Object} props
  * @param {React.ReactNode} props.children - Contenu de la page
- * @param {string} props.title - Titre pour le mode minimal
- * @param {boolean} props.minimal - Header minimal (formulaires)
+ * @param {string} props.title - Titre de la page
  * @param {boolean} props.showBackButton - Afficher bouton retour
  * @param {string} props.backTo - URL du bouton retour
  * @param {string} props.maxWidth - max-w-* class (défaut: 7xl)
@@ -15,12 +16,13 @@ import { Header } from './Header';
 export function PageContainer({ 
   children, 
   title,
-  minimal = false,
   showBackButton = false,
   backTo = '/recipes',
   maxWidth = '7xl',
   className = ''
 }) {
+  const navigate = useNavigate();
+
   const maxWidthClasses = {
     'sm': 'max-w-sm',
     'md': 'max-w-md',
@@ -36,16 +38,30 @@ export function PageContainer({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header 
-        title={title}
-        minimal={minimal}
-        showBackButton={showBackButton}
-        backTo={backTo}
-      />
-      <main className={`${maxWidthClasses[maxWidth] || 'max-w-7xl'} mx-auto py-8 px-4 sm:px-6 lg:px-8 ${className}`}>
-        {children}
-      </main>
+    <div className={`${maxWidthClasses[maxWidth] || 'max-w-7xl'} mx-auto ${className}`}>
+      {/* En-tête de page */}
+      {(title || showBackButton) && (
+        <div className="mb-8 flex items-center gap-4">
+          {showBackButton && (
+            <Button 
+              onClick={() => navigate(backTo)}
+              variant="ghost"
+              size="sm"
+              className="p-2"
+            >
+              <ArrowLeft size={20} />
+            </Button>
+          )}
+          {title && (
+            <h1 className="text-3xl font-primary text-primary font-bold">
+              {title}
+            </h1>
+          )}
+        </div>
+      )}
+
+      {/* Contenu */}
+      {children}
     </div>
   );
 }

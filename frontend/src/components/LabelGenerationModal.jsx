@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button } from './ui/Button';
+import { Button } from './ui';
 import api from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 
@@ -125,7 +125,7 @@ export default function LabelGenerationModal({ recipe, isOpen, onClose }) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
+        <div className="bg-primary text-white px-6 py-4 flex justify-between items-center">
           <h2 className="text-xl font-semibold">Générer une étiquette</h2>
           <button onClick={handleClose} className="text-white hover:text-gray-200">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,7 +145,7 @@ export default function LabelGenerationModal({ recipe, isOpen, onClose }) {
               <select
                 value={template}
                 onChange={(e) => setTemplate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
               >
                 {TEMPLATES.map((t) => (
                   <option key={t.value} value={t.value}>{t.label}</option>
@@ -159,7 +159,7 @@ export default function LabelGenerationModal({ recipe, isOpen, onClose }) {
               <select
                 value={format}
                 onChange={(e) => setFormat(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
               >
                 {FORMATS.map((f) => (
                   <option key={f.value} value={f.value}>{f.label}</option>
@@ -177,7 +177,7 @@ export default function LabelGenerationModal({ recipe, isOpen, onClose }) {
                 type="date"
                 value={dlc}
                 onChange={(e) => setDlc(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
               />
             </div>
 
@@ -189,7 +189,7 @@ export default function LabelGenerationModal({ recipe, isOpen, onClose }) {
                 value={netWeight}
                 onChange={(e) => setNetWeight(e.target.value)}
                 placeholder={recipe.nutrition?.totalWeight ? `${recipe.nutrition.totalWeight}g` : 'Ex: 250g'}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
               />
             </div>
 
@@ -201,7 +201,7 @@ export default function LabelGenerationModal({ recipe, isOpen, onClose }) {
                 value={storage}
                 onChange={(e) => setStorage(e.target.value)}
                 placeholder="Ex: Conserver au frais entre 0°C et +4°C"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
               />
             </div>
 
@@ -213,7 +213,7 @@ export default function LabelGenerationModal({ recipe, isOpen, onClose }) {
                 onChange={(e) => setManufacturer(e.target.value)}
                 placeholder="Ex: Ma Boulangerie, 12 rue du Pain, 75001 Paris"
                 rows={2}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
               />
             </div>
 

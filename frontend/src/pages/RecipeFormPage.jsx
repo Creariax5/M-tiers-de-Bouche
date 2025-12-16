@@ -299,7 +299,7 @@ export default function RecipeFormPage() {
             <div className="flex items-center flex-1">
               <div
                 className={`flex items-center justify-center w-10 h-10 rounded-full ${
-                  currentStep >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+                  currentStep >= 1 ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600'
                 }`}
               >
                 1
@@ -309,14 +309,14 @@ export default function RecipeFormPage() {
 
             <div className="flex-1 h-1 mx-4 bg-gray-200">
               <div
-                className={`h-full ${currentStep >= 2 ? 'bg-blue-600' : 'bg-gray-200'}`}
+                className={`h-full ${currentStep >= 2 ? 'bg-primary' : 'bg-gray-200'}`}
               ></div>
             </div>
 
             <div className="flex items-center flex-1">
               <div
                 className={`flex items-center justify-center w-10 h-10 rounded-full ${
-                  currentStep >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+                  currentStep >= 2 ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600'
                 }`}
               >
                 2
@@ -326,14 +326,14 @@ export default function RecipeFormPage() {
 
             <div className="flex-1 h-1 mx-4 bg-gray-200">
               <div
-                className={`h-full ${currentStep >= 3 ? 'bg-blue-600' : 'bg-gray-200'}`}
+                className={`h-full ${currentStep >= 3 ? 'bg-primary' : 'bg-gray-200'}`}
               ></div>
             </div>
 
             <div className="flex items-center flex-1">
               <div
                 className={`flex items-center justify-center w-10 h-10 rounded-full ${
-                  currentStep >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+                  currentStep >= 3 ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600'
                 }`}
               >
                 3
@@ -366,8 +366,8 @@ export default function RecipeFormPage() {
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors.name ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                      errors.name ? 'border-red-500' : 'border-secondary/30'
                     }`}
                     placeholder="Ex: Croissant"
                   />
@@ -382,7 +382,7 @@ export default function RecipeFormPage() {
                     id="description"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-secondary/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                     rows="3"
                     placeholder="Description de la recette..."
                   />
@@ -396,7 +396,7 @@ export default function RecipeFormPage() {
                     id="category"
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-secondary/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="">Sélectionner une catégorie</option>
                     {CATEGORIES.map((cat) => (
@@ -416,7 +416,7 @@ export default function RecipeFormPage() {
                     id="portions"
                     value={formData.portions}
                     onChange={(e) => setFormData({ ...formData, portions: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-secondary/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                     min="1"
                   />
                 </div>
@@ -458,7 +458,7 @@ export default function RecipeFormPage() {
                           id="quantity"
                           value={ingredientQuantity}
                           onChange={(e) => setIngredientQuantity(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                          className="w-full px-3 py-2 border border-secondary/30 rounded-lg"
                           min="0"
                           step="0.01"
                         />
@@ -472,7 +472,7 @@ export default function RecipeFormPage() {
                           id="unit"
                           value={ingredientUnit}
                           onChange={(e) => setIngredientUnit(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                          className="w-full px-3 py-2 border border-secondary/30 rounded-lg"
                         >
                           <option value="G">Grammes (G)</option>
                           <option value="KG">Kilogrammes (KG)</option>
@@ -491,7 +491,7 @@ export default function RecipeFormPage() {
                           id="loss"
                           value={ingredientLoss}
                           onChange={(e) => setIngredientLoss(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                          className="w-full px-3 py-2 border border-secondary/30 rounded-lg"
                           min="0"
                           max="100"
                         />

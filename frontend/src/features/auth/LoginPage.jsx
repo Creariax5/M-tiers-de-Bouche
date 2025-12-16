@@ -5,8 +5,7 @@ import { z } from 'zod';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import api from '../../lib/api';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
+import { Button, Input, Logo } from '../../components/ui';
 
 const loginSchema = z.object({
   email: z.string().email('Email invalide'),
@@ -38,47 +37,30 @@ export default function LoginPage() {
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <div>
-          <h1 className="text-3xl font-bold text-center text-gray-900">
-            🧁 Métiers de Bouche
-          </h1>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Connectez-vous à votre compte
-          </p>
+    <div className="min-h-screen flex items-center justify-center bg-neutral-smoke font-secondary">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-3xl shadow-sm border border-neutral-light">
+        <div className="flex flex-col items-center">
+          <Logo size="xl" />
         </div>
         
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <Input
-              id="email"
-              type="email"
-              error={!!errors.email}
-              {...register('email')}
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-            )}
-          </div>
+          <Input
+            id="email"
+            type="email"
+            label="EMAIL"
+            placeholder="exemple@email.com"
+            error={errors.email?.message}
+            {...register('email')}
+          />
           
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Mot de passe
-            </label>
-            <Input
-              id="password"
-              type="password"
-              error={!!errors.password}
-              {...register('password')}
-            />
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-            )}
-          </div>
+          <Input
+            id="password"
+            type="password"
+            label="MOT DE PASSE"
+            placeholder="••••••••"
+            error={errors.password?.message}
+            {...register('password')}
+          />
           
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
@@ -86,21 +68,21 @@ export default function LoginPage() {
             </div>
           )}
           
-          <Button type="submit" disabled={isSubmitting} className="w-full">
+          <Button type="submit" disabled={isSubmitting} className="w-full" variant="primary">
             {isSubmitting ? 'Connexion...' : 'Se connecter'}
           </Button>
         </form>
         
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-4">
           <Link
             to="/forgot-password"
-            className="text-sm text-blue-600 hover:text-blue-800"
+            className="block text-sm text-primary hover:text-primary-dark transition-colors"
           >
             Mot de passe oublié ?
           </Link>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-secondary">
             Pas encore de compte ?{' '}
-            <Link to="/register" className="text-blue-600 hover:text-blue-800 font-medium">
+            <Link to="/register" className="font-bold text-primary hover:text-primary-dark transition-colors">
               S'inscrire
             </Link>
           </p>
