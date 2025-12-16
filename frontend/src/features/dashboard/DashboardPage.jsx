@@ -25,7 +25,7 @@ export default function DashboardPage() {
         // Charger stats, recettes, ingrédients et étiquettes en parallèle
         const [statsRes, recipesRes, ingredientsRes, labelsRes] = await Promise.all([
           api.get('/recipes/stats'),
-          api.get('/recipes?limit=5'),
+          api.get('/recipes?limit=4'),
           api.get('/ingredients/custom'),
           api.get('/labels').catch(() => ({ data: [] }))
         ]);
@@ -198,7 +198,7 @@ export default function DashboardPage() {
                     </div>
                   ) : (
                     <ul className="divide-y divide-neutral-light">
-                      {ingredients.slice(0, 5).map((ingredient) => (
+                      {ingredients.slice(0, 4).map((ingredient) => (
                         <li 
                           key={ingredient.id} 
                           className="px-6 py-4 hover:bg-neutral-smoke flex justify-between items-center font-secondary"
