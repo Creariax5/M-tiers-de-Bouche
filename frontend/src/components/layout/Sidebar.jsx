@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, UtensilsCrossed, Tag, ChefHat, LogOut } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
+import { Logo } from '../ui';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -22,9 +23,9 @@ const Sidebar = () => {
 
   return (
     <div className="w-64 h-screen bg-white border-r border-neutral-light fixed left-0 top-0 overflow-y-auto font-secondary flex flex-col">
-      <div className="p-6 border-b border-neutral-light">
+      <div className="p-6 border-b border-neutral-light flex justify-center">
         <Link to="/dashboard" className="block">
-          <h1 className="font-primary text-2xl text-primary">RÉGAL</h1>
+          <Logo size="lg" />
         </Link>
       </div>
 
