@@ -5,7 +5,7 @@ import { Button, Card, Alert } from '../components/ui';
 import { Loading } from '../components/ui/Loading';
 import { EmptyState } from '../components/ui/EmptyState';
 import { PageContainer } from '../components/layout';
-import { FileText, Download, Eye } from 'lucide-react';
+import { FileText, Download, Eye, Trash2 } from 'lucide-react';
 
 export default function LabelsPage() {
   const navigate = useNavigate();
@@ -34,6 +34,19 @@ export default function LabelsPage() {
       window.open(label.url, '_blank');
     } catch (err) {
       console.error('Error downloading label:', err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette étiquette ?')) {
+      return;
+    }
+    try {
+      await api.delete(`/labels/${id}`);
+      setLabels(labels.filter(l => l.id !== id));
+    } catch (err) {
+      console.error('Error deleting label:', err);
+      setError('Erreur lors de la suppression de l\'étiquette');
     }
   };
 
@@ -149,6 +162,13 @@ export default function LabelsPage() {
                           title="Télécharger"
                         >
                           <Download size={18} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(label.id)}
+                          className="text-red-400 hover:text-red-600 transition-colors p-1"
+                          title="Supprimer"
+                        >
+                          <Trash2 size={18} />
                         </button>
                       </td>
                     </tr>
