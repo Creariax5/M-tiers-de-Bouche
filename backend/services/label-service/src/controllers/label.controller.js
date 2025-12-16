@@ -75,6 +75,23 @@ export const getHistory = async (req, res) => {
   }
 };
 
+export const deleteLabel = async (req, res) => {
+  try {
+    const userId = String(req.user.userId);
+    const { id } = req.params;
+    
+    await labelService.deleteLabel(id, userId);
+    
+    res.status(204).send();
+  } catch (error) {
+    console.error('Delete Error:', error);
+    if (error.message === 'Label not found or access denied') {
+      return res.status(404).json({ error: 'Label not found' });
+    }
+    res.status(500).json({ error: 'Failed to delete label' });
+  }
+};
+
 export const viewLabel = async (req, res) => {
   try {
     const fileName = req.params.fileName;

@@ -18,3 +18,18 @@ export const getLabelsByUser = async (userId) => {
     orderBy: { createdAt: 'desc' }
   });
 };
+
+export const deleteLabel = async (id, userId) => {
+  // Vérifier que l'étiquette appartient à l'utilisateur
+  const label = await prisma.label.findFirst({
+    where: { id, userId }
+  });
+  
+  if (!label) {
+    throw new Error('Label not found or access denied');
+  }
+
+  return await prisma.label.delete({
+    where: { id }
+  });
+};
