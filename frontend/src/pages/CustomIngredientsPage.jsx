@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, Input, Select, Checkbox, Modal } from '../components/ui';
+import { Button, Card, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, Input, Select, Checkbox, Modal, Badge } from '../components/ui';
 import { PageContainer } from '../components/layout';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, Plus } from 'lucide-react';
 import api from '../lib/api';
 
 const CATEGORIES = [
@@ -185,16 +185,21 @@ export default function CustomIngredientsPage() {
   };
 
   return (
-    <PageContainer title="Ingrédients personnalisés">
-      <div className="px-4 py-6 sm:px-0">
-        <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-primary font-primary">
-              Ingrédients personnalisés ({ingredients.length})
+    <PageContainer>
+      <div className="space-y-8">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-3xl font-bold text-primary font-primary">
+              Ingrédients personnalisés
             </h2>
-            <Button onClick={handleOpenCreate}>
-              + Nouvel ingrédient
-            </Button>
+            <p className="text-secondary mt-1 font-secondary">
+              {ingredients.length} ingrédient{ingredients.length > 1 ? 's' : ''} personnalisé{ingredients.length > 1 ? 's' : ''}
+            </p>
           </div>
+          <Button onClick={handleOpenCreate} className="flex items-center gap-2">
+            <Plus size={20} /> Nouvel ingrédient
+          </Button>
+        </div>
 
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
@@ -234,9 +239,9 @@ export default function CustomIngredientsPage() {
                         {ingredient.name}
                       </TableCell>
                       <TableCell>
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-accent/20 text-primary">
+                        <Badge variant="info" className="bg-accent/20 text-primary border-none">
                           {CATEGORIES.find(c => c.value === ingredient.category)?.label || ingredient.category}
-                        </span>
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-gray-500">
                         {ingredient.price ? `${ingredient.price.toFixed(2)} €/${ingredient.priceUnit}` : '-'}
