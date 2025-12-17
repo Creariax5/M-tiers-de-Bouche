@@ -239,7 +239,7 @@ export default function CustomIngredientsPage() {
                         {ingredient.name}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="info" className="bg-accent/20 text-primary border-none">
+                        <Badge className="bg-accent-light/20 text-accent-dark border border-accent-light/30">
                           {CATEGORIES.find(c => c.value === ingredient.category)?.label || ingredient.category}
                         </Badge>
                       </TableCell>
