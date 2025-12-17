@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Card, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, Input, Select, Checkbox, Modal, Badge, EmptyState, Loading, Alert } from '../components/ui';
 import { PageContainer } from '../components/layout';
 import { Edit, Trash2, Plus } from 'lucide-react';
@@ -19,8 +19,6 @@ const CATEGORIES = [
   { value: 'AUTRE', label: 'Autre' },
 ];
 
-const UNITS = ['KG', 'L', 'PIECE'];
-
 const ALLERGENS = [
   { value: 'GLUTEN', label: 'Gluten' },
   { value: 'CRUSTACES', label: 'Crustacés' },
@@ -38,27 +36,27 @@ const ALLERGENS = [
   { value: 'MOLLUSQUES', label: 'Mollusques' },
 ];
 
+const emptyForm = {
+  name: '',
+  category: 'AUTRE',
+  price: '',
+  priceUnit: 'KG',
+  supplier: '',
+  calories: '',
+  proteins: '',
+  carbs: '',
+  fats: '',
+  salt: '',
+  allergens: [],
+};
+
 export default function CustomIngredientsPage() {
   const [ingredients, setIngredients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    category: 'AUTRE',
-    price: '',
-    priceUnit: 'KG',
-    supplier: '',
-    // Valeurs nutritionnelles (pour 100g)
-    calories: '',
-    proteins: '',
-    carbs: '',
-    fats: '',
-    salt: '',
-    // Allergènes
-    allergens: [],
-  });
+  const [formData, setFormData] = useState(emptyForm);
   const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
@@ -81,19 +79,7 @@ export default function CustomIngredientsPage() {
 
   const handleOpenCreate = () => {
     setEditingId(null);
-    setFormData({
-      name: '',
-      category: 'AUTRE',
-      price: '',
-      priceUnit: 'KG',
-      supplier: '',
-      calories: '',
-      proteins: '',
-      carbs: '',
-      fats: '',
-      salt: '',
-      allergens: [],
-    });
+    setFormData(emptyForm);
     setFormErrors({});
     setShowModal(true);
   };
@@ -119,25 +105,15 @@ export default function CustomIngredientsPage() {
 
   const validateForm = () => {
     const errors = {};
-
-    if (!formData.name || formData.name.trim().length === 0) {
-      errors.name = 'Le nom est requis';
-    }
-
-    if (formData.price && parseFloat(formData.price) <= 0) {
-      errors.price = 'Le prix doit être positif';
-    }
-
+    if (!formData.name?.trim()) errors.name = 'Le nom est requis';
+    if (formData.price && parseFloat(formData.price) < 0) errors.price = 'Le prix doit être positif';
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     try {
       const payload = {
@@ -146,13 +122,11 @@ export default function CustomIngredientsPage() {
         price: formData.price ? parseFloat(formData.price) : 0,
         priceUnit: formData.priceUnit,
         supplier: formData.supplier.trim() || null,
-        // Valeurs nutritionnelles
         calories: formData.calories ? parseFloat(formData.calories) : null,
         proteins: formData.proteins ? parseFloat(formData.proteins) : null,
         carbs: formData.carbs ? parseFloat(formData.carbs) : null,
         fats: formData.fats ? parseFloat(formData.fats) : null,
         salt: formData.salt ? parseFloat(formData.salt) : null,
-        // Allergènes
         allergens: formData.allergens.length > 0 ? formData.allergens : null,
       };
 
@@ -171,10 +145,7 @@ export default function CustomIngredientsPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cet ingrédient ?')) {
-      return;
-    }
-
+    if (!window.confirm('Supprimer cet ingrédient ?')) return;
     try {
       await api.delete(`/ingredients/custom/${id}`);
       fetchIngredients();
@@ -184,251 +155,269 @@ export default function CustomIngredientsPage() {
     }
   };
 
+  const getCategoryLabel = (value) => CATEGORIES.find(c => c.value === value)?.label || value;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-neutral-smoke flex items-center justify-center">
+        <Loading size="lg" />
+      </div>
+    );
+  }
+
   return (
     <PageContainer>
-      <div className="space-y-8">
-        <div className="flex justify-between items-center">
+      <div className="max-w-5xl mx-auto space-y-6">
+
+        {/* Header Simple */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-primary font-primary">
-              Ingrédients personnalisés
-            </h2>
-            <p className="text-secondary mt-1 font-secondary">
-              {ingredients.length} ingrédient{ingredients.length > 1 ? 's' : ''} personnalisé{ingredients.length > 1 ? 's' : ''}
+            <h1 className="text-3xl font-bold text-primary font-primary">Mes Ingrédients</h1>
+            <p className="text-secondary font-secondary mt-1">
+              Gérez vos ingrédients personnalisés, leurs prix et valeurs nutritionnelles
             </p>
           </div>
-          <Button onClick={handleOpenCreate} className="flex items-center gap-2">
-            <Plus size={20} /> Nouvel ingrédient
+          <Button onClick={handleOpenCreate} variant="primary">
+            <Plus size={18} className="mr-2" /> Nouvel ingrédient
           </Button>
         </div>
 
-          {error && (
-            <Alert variant="error" className="mb-6">
-              {error}
-            </Alert>
-          )}
+        {error && (
+          <Alert variant="error" title="Erreur">{error}</Alert>
+        )}
 
-          {loading ? (
-            <Loading fullPage text="Chargement des ingrédients..." />
-          ) : ingredients.length === 0 ? (
-            <Card>
-              <EmptyState
-                icon="🧂"
-                title="Aucun ingrédient personnalisé"
-                description="Ajoutez vos propres ingrédients pour les utiliser dans vos recettes."
-                action={
-                  <Button onClick={handleOpenCreate}>
-                    Créer mon premier ingrédient
-                  </Button>
-                }
-              />
-            </Card>
-          ) : (
-            <Card padding="p-0" className="overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nom</TableHead>
-                    <TableHead>Catégorie</TableHead>
-                    <TableHead>Prix</TableHead>
-                    <TableHead>Fournisseur</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {ingredients.map((ingredient) => (
-                    <TableRow key={ingredient.id}>
-                      <TableCell className="font-medium text-gray-900">
-                        {ingredient.name}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className="bg-accent-light/20 text-accent-dark border border-accent-light/30">
-                          {CATEGORIES.find(c => c.value === ingredient.category)?.label || ingredient.category}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-gray-500">
-                        {ingredient.price ? `${ingredient.price.toFixed(2)} €/${ingredient.priceUnit}` : '-'}
-                      </TableCell>
-                      <TableCell className="text-gray-500">
-                        {ingredient.supplier || '-'}
-                      </TableCell>
-                      <TableCell className="text-right space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleOpenEdit(ingredient)}
-                          title="Modifier"
-                        >
+        {/* Content */}
+        {ingredients.length === 0 ? (
+          <Card>
+            <EmptyState
+              icon="🧂"
+              title="Aucun ingrédient personnalisé"
+              description="Ajoutez vos propres ingrédients avec leurs prix, valeurs nutritionnelles et allergènes pour les utiliser dans vos recettes."
+              action={
+                <Button onClick={handleOpenCreate} variant="primary">
+                  <Plus size={18} className="mr-2" /> Créer mon premier ingrédient
+                </Button>
+              }
+            />
+          </Card>
+        ) : (
+          <Card padding="p-0" className="overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Ingrédient</TableHead>
+                  <TableHead>Catégorie</TableHead>
+                  <TableHead>Prix / Unité</TableHead>
+                  <TableHead>Calories</TableHead>
+                  <TableHead>Allergènes</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {ingredients.map((ing) => (
+                  <TableRow key={ing.id} className="hover:bg-neutral-50">
+                    <TableCell className="font-medium text-primary">
+                      {ing.name}
+                      {ing.supplier && (
+                        <div className="text-xs text-secondary font-normal mt-0.5">{ing.supplier}</div>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                       <Badge variant="outline" className="text-xs font-normal text-secondary border-neutral-200">
+                          {getCategoryLabel(ing.category)}
+                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {ing.price ? (
+                        <span className="font-mono text-sm text-primary">{ing.price.toFixed(2)} € / {ing.priceUnit}</span>
+                      ) : (
+                        <span className="text-secondary text-sm">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {ing.calories ? (
+                        <span className="text-sm text-primary">{ing.calories} kcal</span>
+                      ) : (
+                        <span className="text-secondary text-sm">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {ing.allergens?.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {ing.allergens.slice(0, 2).map((a, i) => (
+                            <Badge key={i} variant="danger" className="text-[10px] py-0 px-1.5">
+                              {ALLERGENS.find(al => al.value === a)?.label || a}
+                            </Badge>
+                          ))}
+                          {ing.allergens.length > 2 && (
+                            <Badge variant="secondary" className="text-[10px] py-0 px-1.5">
+                              +{ing.allergens.length - 2}
+                            </Badge>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-secondary text-sm">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button variant="ghost" size="sm" onClick={() => handleOpenEdit(ing)} title="Modifier">
                           <Edit size={16} />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDelete(ingredient.id)}
-                          className="text-red-600 hover:text-red-900 hover:bg-red-50"
+                          onClick={() => handleDelete(ing.id)}
+                          className="text-red-600 hover:bg-red-50"
                           title="Supprimer"
                         >
                           <Trash2 size={16} />
                         </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Card>
-          )}
-        </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+        )}
+      </div>
 
       {/* Modal */}
       <Modal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        title={editingId ? "Modifier l'ingrédient" : "Créer un ingrédient"}
+        title={editingId ? "Modifier l'ingrédient" : "Nouvel ingrédient"}
         size="lg"
         footer={
           <>
-            <Button
-              variant="secondary"
-              onClick={() => setShowModal(false)}
-            >
-              Annuler
-            </Button>
-            <Button onClick={handleSubmit}>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>Annuler</Button>
+            <Button onClick={handleSubmit} variant="primary">
               {editingId ? 'Enregistrer' : 'Créer'}
             </Button>
           </>
         }
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Nom *"
-            id="name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            error={formErrors.name}
-          />
-
-          <Select
-            label="Catégorie"
-            id="category"
-            value={formData.category}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-            options={CATEGORIES}
-          />
-
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="Prix (€)"
-              type="number"
-              id="price"
-              step="0.01"
-              min="0"
-              placeholder="ex: 5.50"
-              value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-              error={formErrors.price}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Infos de base */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <Input
+                label="Nom de l'ingrédient *"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                error={formErrors.name}
+                placeholder="Ex: Farine T55"
+              />
+            </div>
+            
+            <Select
+              label="Catégorie"
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              options={CATEGORIES}
             />
 
-            <Select
-              label="Par unité de"
-              id="priceUnit"
-              value={formData.priceUnit}
-              onChange={(e) => setFormData({ ...formData, priceUnit: e.target.value })}
-              options={[
-                { value: 'KG', label: '1 KG' },
-                { value: 'L', label: '1 L' },
-                { value: 'PIECE', label: '1 Pièce' }
-              ]}
+            <Input
+              label="Fournisseur (optionnel)"
+              value={formData.supplier}
+              onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
+              placeholder="Ex: Metro"
             />
           </div>
-          <p className="text-xs text-gray-500 -mt-3">Ex: 5.50 € par KG</p>
 
-          <Input
-            label="Fournisseur"
-            id="supplier"
-            value={formData.supplier}
-            onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
-          />
-
-          {/* Section Valeurs Nutritionnelles */}
-          <div className="border-t pt-4 mt-4">
-            <h4 className="text-sm font-medium text-gray-900 mb-3">
-              Valeurs nutritionnelles (pour 100g)
-            </h4>
-            <div className="grid grid-cols-3 gap-3">
+          {/* Prix */}
+          <div className="p-4 bg-neutral-50 rounded-lg border border-neutral-100">
+            <h3 className="text-sm font-bold text-primary mb-3">Prix</h3>
+            <div className="grid grid-cols-2 gap-4">
               <Input
-                label="Calories (kcal)"
+                label="Prix HT"
                 type="number"
-                id="calories"
-                step="0.1"
-                min="0"
-                placeholder="ex: 350"
-                value={formData.calories}
-                onChange={(e) => setFormData({ ...formData, calories: e.target.value })}
-              />
-              <Input
-                label="Protéines (g)"
-                type="number"
-                id="proteins"
-                step="0.1"
-                min="0"
-                placeholder="ex: 10.5"
-                value={formData.proteins}
-                onChange={(e) => setFormData({ ...formData, proteins: e.target.value })}
-              />
-              <Input
-                label="Glucides (g)"
-                type="number"
-                id="carbs"
-                step="0.1"
-                min="0"
-                placeholder="ex: 45.2"
-                value={formData.carbs}
-                onChange={(e) => setFormData({ ...formData, carbs: e.target.value })}
-              />
-              <Input
-                label="Lipides (g)"
-                type="number"
-                id="fats"
-                step="0.1"
-                min="0"
-                placeholder="ex: 12.3"
-                value={formData.fats}
-                onChange={(e) => setFormData({ ...formData, fats: e.target.value })}
-              />
-              <Input
-                label="Sel (g)"
-                type="number"
-                id="salt"
                 step="0.01"
-                min="0"
-                placeholder="ex: 0.45"
-                value={formData.salt}
-                onChange={(e) => setFormData({ ...formData, salt: e.target.value })}
+                value={formData.price}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                error={formErrors.price}
+                placeholder="0.00"
+              />
+              <Select
+                label="Unité"
+                value={formData.priceUnit}
+                onChange={(e) => setFormData({ ...formData, priceUnit: e.target.value })}
+                options={[
+                  { value: 'KG', label: 'par Kg' },
+                  { value: 'L', label: 'par Litre' },
+                  { value: 'UNIT', label: 'par Unité' },
+                ]}
               />
             </div>
           </div>
 
-          {/* Section Allergènes */}
-          <div className="border-t pt-4 mt-4">
-            <h4 className="text-sm font-medium text-gray-900 mb-3">
-              Allergènes (INCO)
-            </h4>
-            <div className="grid grid-cols-3 gap-2">
+          {/* Nutrition */}
+          <div className="p-4 bg-neutral-50 rounded-lg border border-neutral-100">
+            <h3 className="text-sm font-bold text-primary mb-3">Valeurs nutritionnelles (pour 100g)</h3>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+              <Input
+                label="Kcal"
+                type="number"
+                value={formData.calories}
+                onChange={(e) => setFormData({ ...formData, calories: e.target.value })}
+                placeholder="0"
+              />
+              <Input
+                label="Protéines"
+                type="number"
+                step="0.1"
+                value={formData.proteins}
+                onChange={(e) => setFormData({ ...formData, proteins: e.target.value })}
+                placeholder="0g"
+              />
+              <Input
+                label="Glucides"
+                type="number"
+                step="0.1"
+                value={formData.carbs}
+                onChange={(e) => setFormData({ ...formData, carbs: e.target.value })}
+                placeholder="0g"
+              />
+              <Input
+                label="Lipides"
+                type="number"
+                step="0.1"
+                value={formData.fats}
+                onChange={(e) => setFormData({ ...formData, fats: e.target.value })}
+                placeholder="0g"
+              />
+              <Input
+                label="Sel"
+                type="number"
+                step="0.01"
+                value={formData.salt}
+                onChange={(e) => setFormData({ ...formData, salt: e.target.value })}
+                placeholder="0g"
+              />
+            </div>
+          </div>
+
+          {/* Allergènes */}
+          <div>
+            <h3 className="text-sm font-bold text-primary mb-3">Allergènes présents</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
               {ALLERGENS.map((allergen) => (
-                <Checkbox
-                  key={allergen.value}
-                  id={`allergen-${allergen.value}`}
-                  label={allergen.label}
-                  checked={formData.allergens.includes(allergen.value)}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    if (checked) {
-                      setFormData({ ...formData, allergens: [...formData.allergens, allergen.value] });
-                    } else {
-                      setFormData({ ...formData, allergens: formData.allergens.filter(a => a !== allergen.value) });
-                    }
-                  }}
-                />
+                <div key={allergen.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`allergen-${allergen.value}`}
+                    checked={formData.allergens.includes(allergen.value)}
+                    onChange={(checked) => {
+                      const newAllergens = checked
+                        ? [...formData.allergens, allergen.value]
+                        : formData.allergens.filter(a => a !== allergen.value);
+                      setFormData({ ...formData, allergens: newAllergens });
+                    }}
+                  />
+                  <label htmlFor={`allergen-${allergen.value}`} className="text-sm text-secondary cursor-pointer select-none">
+                    {allergen.label}
+                  </label>
+                </div>
               ))}
             </div>
           </div>

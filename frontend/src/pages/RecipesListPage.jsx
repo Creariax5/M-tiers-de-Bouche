@@ -14,10 +14,11 @@ import {
   TableBody,
   TableRow,
   TableHead,
-  TableCell
+  TableCell,
+  Badge
 } from '../components/ui';
 import api from '../lib/api';
-import { Search, Plus, Eye, Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Plus, Eye, Edit, Trash2, ChevronLeft, ChevronRight, ChefHat } from 'lucide-react';
 
 const CATEGORIES = [
   'Viennoiserie',
@@ -100,13 +101,13 @@ export default function RecipesListPage() {
   
   return (
     <PageContainer>
-      <div className="space-y-8">
+      <div className="max-w-5xl mx-auto space-y-6">
         {/* En-tête */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 className="text-3xl font-bold font-primary text-primary">
-              Mes recettes
-            </h2>
+            <h1 className="text-3xl font-bold text-primary font-primary">
+              Mes Recettes
+            </h1>
             <p className="text-secondary mt-1 font-secondary">
               {total} recette{total > 1 ? 's' : ''} enregistrée{total > 1 ? 's' : ''}
             </p>
@@ -116,28 +117,23 @@ export default function RecipesListPage() {
             variant="primary"
             className="flex items-center gap-2"
           >
-            <Plus size={20} />
+            <Plus size={18} />
             Nouvelle recette
           </Button>
         </div>
 
         {/* Filtres */}
-        <Card>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="bg-neutral-50 border-neutral-200 shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-bold text-neutral-dark mb-2 uppercase tracking-wider">
-                Rechercher
-              </label>
-              <div className="relative">
-                <Input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Rechercher par nom..."
-                  className="pl-10"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-              </div>
+              <Input
+                label="Rechercher"
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Nom de la recette..."
+                icon={<Search size={18} className="text-secondary" />}
+              />
             </div>
             <div>
               <Select
@@ -158,16 +154,18 @@ export default function RecipesListPage() {
 
         {/* Chargement */}
         {loading ? (
-          <Loading fullPage text="Chargement des recettes..." />
+          <div className="min-h-[200px] flex items-center justify-center">
+            <Loading size="lg" text="Chargement des recettes..." />
+          </div>
         ) : recipes.length === 0 ? (
           <Card>
             <EmptyState
-              icon="📋"
+              icon="👨‍🍳"
               title="Aucune recette trouvée"
-              description="Créez votre première recette pour commencer"
+              description="Créez votre première recette pour commencer à construire votre catalogue."
               action={
                 <Button onClick={() => navigate('/recipes/new')} variant="primary">
-                  Créer ma première recette
+                  <Plus size={18} className="mr-2" /> Créer ma première recette
                 </Button>
               }
             />
@@ -175,69 +173,69 @@ export default function RecipesListPage() {
         ) : (
           <>
             {/* Tableau */}
-            <Card padding="p-0" className="overflow-hidden">
+            <Card padding="p-0" className="overflow-hidden border-neutral-200 shadow-sm">
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Nom</TableHead>
                     <TableHead>Catégorie</TableHead>
                     <TableHead>Portions</TableHead>
-                    <TableHead>Date création</TableHead>
+                    <TableHead>Date</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {recipes.map((recipe) => (
-                    <TableRow key={recipe.id}>
+                    <TableRow key={recipe.id} className="hover:bg-neutral-50">
                       <TableCell>
-                        <div className="text-sm font-bold text-primary font-primary">
+                        <div className="font-medium text-primary font-primary">
                           {recipe.name}
                         </div>
                         {recipe.description && (
-                          <div className="text-sm text-secondary truncate max-w-xs font-secondary">
+                          <div className="text-xs text-secondary truncate max-w-xs font-secondary mt-0.5">
                             {recipe.description}
                           </div>
                         )}
                       </TableCell>
                       <TableCell>
-                        <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-accent-light/20 text-accent-dark border border-accent-light/30">
+                        <Badge variant="outline" className="text-xs font-normal text-secondary border-neutral-200">
                           {recipe.category || 'Non définie'}
-                        </span>
+                        </Badge>
                       </TableCell>
-                      <TableCell className="text-secondary font-secondary">
+                      <TableCell className="text-sm text-primary font-secondary">
                         {recipe.servings} portion{recipe.servings > 1 ? 's' : ''}
                       </TableCell>
-                      <TableCell className="text-secondary font-secondary">
+                      <TableCell className="text-sm text-secondary font-secondary">
                         {new Date(recipe.createdAt).toLocaleDateString('fr-FR')}
                       </TableCell>
-                      <TableCell className="text-right space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => navigate(`/recipes/${recipe.id}`)}
-                          title="Voir"
-                          className="!p-2"
-                        >
-                          <Eye size={18} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => navigate(`/recipes/${recipe.id}/edit`)}
-                          title="Modifier"
-                          className="!p-2"
-                        >
-                          <Edit size={18} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDelete(recipe.id)}
-                          title="Supprimer"
-                          className="!p-2 text-red-400 hover:text-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 size={18} />
-                        </Button>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate(`/recipes/${recipe.id}`)}
+                            title="Voir"
+                          >
+                            <Eye size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate(`/recipes/${recipe.id}/edit`)}
+                            title="Modifier"
+                          >
+                            <Edit size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(recipe.id)}
+                            title="Supprimer"
+                            className="text-red-600 hover:bg-red-50"
+                          >
+                            <Trash2 size={16} />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -247,12 +245,13 @@ export default function RecipesListPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between bg-white p-4 rounded-lg border border-neutral-medium shadow-sm">
+              <div className="flex items-center justify-between bg-white p-4 rounded-lg border border-neutral-200 shadow-sm">
                 <div className="flex-1 flex justify-between sm:hidden">
                   <Button
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page === 1}
                     variant="secondary"
+                    size="sm"
                   >
                     Précédent
                   </Button>
@@ -260,6 +259,7 @@ export default function RecipesListPage() {
                     onClick={() => setPage(Math.min(totalPages, page + 1))}
                     disabled={page === totalPages}
                     variant="secondary"
+                    size="sm"
                   >
                     Suivant
                   </Button>
