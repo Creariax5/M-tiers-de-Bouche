@@ -142,50 +142,52 @@ export default function RecipeDetailPage() {
           {/* Left Column: Ingredients & Steps */}
           <div className="lg:col-span-2 space-y-8">
             {/* Ingredients */}
-            <Card padding="p-0" className="overflow-hidden">
-              <div className="p-6 border-b border-neutral-light">
-                <h2 className="text-xl font-primary text-primary">Ingrédients</h2>
-              </div>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Ingrédient</TableHead>
-                    <TableHead>Quantité</TableHead>
-                    <TableHead>Unité</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recipe.ingredients && recipe.ingredients.map((ing, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium text-primary">
-                        {ing.baseIngredient?.name || ing.customIngredient?.name || ing.subRecipe?.name}
-                        {ing.baseIngredient && <span className="ml-2 text-xs text-secondary">(base)</span>}
-                      </TableCell>
-                      <TableCell>{ing.quantity}</TableCell>
-                      <TableCell>{ing.unit}</TableCell>
+            <div>
+              <h2 className="text-xl font-primary text-primary mb-4">Ingrédients</h2>
+              <Card padding="p-0" className="overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Ingrédient</TableHead>
+                      <TableHead>Quantité</TableHead>
+                      <TableHead>Unité</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {recipe.ingredients && recipe.ingredients.map((ing, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium text-primary">
+                          {ing.baseIngredient?.name || ing.customIngredient?.name || ing.subRecipe?.name}
+                          {ing.baseIngredient && <span className="ml-2 text-xs text-secondary">(base)</span>}
+                        </TableCell>
+                        <TableCell>{ing.quantity}</TableCell>
+                        <TableCell>{ing.unit}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+            </div>
 
             {/* Steps */}
             {getInstructions().length > 0 && (
-              <Card>
-                <h2 className="text-xl font-primary text-primary mb-6 border-b border-neutral-light pb-2">Progression</h2>
-                <div className="space-y-6 font-secondary text-secondary">
-                  {getInstructions().map((step, index) => (
-                    <div key={index} className="flex gap-4">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold">
-                        {index + 1}
+              <div>
+                <h2 className="text-xl font-primary text-primary mb-4">Progression</h2>
+                <Card>
+                  <div className="space-y-6 font-secondary text-secondary">
+                    {getInstructions().map((step, index) => (
+                      <div key={index} className="flex gap-4">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold">
+                          {index + 1}
+                        </div>
+                        <div>
+                          <p className="text-sm leading-relaxed pt-1">{step}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm leading-relaxed pt-1">{step}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
+                    ))}
+                  </div>
+                </Card>
+              </div>
             )}
           </div>
 
