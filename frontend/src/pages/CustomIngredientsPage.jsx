@@ -221,7 +221,7 @@ export default function CustomIngredientsPage() {
               </Button>
             </div>
           ) : (
-            <Card className="overflow-hidden">
+            <Card padding="p-0" className="overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow>
