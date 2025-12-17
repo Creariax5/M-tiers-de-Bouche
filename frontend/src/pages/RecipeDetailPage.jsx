@@ -14,6 +14,7 @@ export default function RecipeDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showLabelModal, setShowLabelModal] = useState(false);
+  const [designVersion, setDesignVersion] = useState('v1');
 
   useEffect(() => {
     if (id) {
@@ -67,8 +68,194 @@ export default function RecipeDetailPage() {
     return recipe.ingredients.reduce((acc, ing) => acc + (Number(ing.quantity) || 0), 0);
   };
 
+  const renderIngredients = () => {
+    if (designVersion === 'v2') {
+      return (
+        <Card padding="p-0" className="overflow-hidden border-t-4 border-t-primary">
+          <div className="bg-neutral-50 p-4 border-b border-neutral-200 flex justify-between items-center">
+            <h2 className="text-lg font-bold text-primary uppercase tracking-wider flex items-center gap-2">
+              <Scale size={18} /> Ingrédients
+            </h2>
+            <Badge variant="secondary" className="text-xs">{recipe.ingredients?.length || 0} éléments</Badge>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-neutral-50/50">
+                <TableHead>Ingrédient</TableHead>
+                <TableHead>Quantité</TableHead>
+                <TableHead>Unité</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {recipe.ingredients && recipe.ingredients.map((ing, index) => (
+                <TableRow key={index} className="hover:bg-neutral-50 transition-colors">
+                  <TableCell className="font-medium text-primary">
+                    {ing.baseIngredient?.name || ing.customIngredient?.name || ing.subRecipe?.name}
+                    {ing.baseIngredient && <span className="ml-2 text-xs text-secondary bg-neutral-100 px-1.5 py-0.5 rounded">(base)</span>}
+                  </TableCell>
+                  <TableCell className="font-mono text-primary">{ing.quantity}</TableCell>
+                  <TableCell className="text-secondary text-sm">{ing.unit}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      );
+    }
+
+    if (designVersion === 'v3') {
+      return (
+        <div className="bg-white rounded-xl shadow-sm border border-neutral-100 overflow-hidden">
+          <div className="p-6 pb-2">
+            <h2 className="text-2xl font-primary text-primary mb-2">Ingrédients</h2>
+            <div className="h-1 w-12 bg-accent-light rounded-full"></div>
+          </div>
+          <div className="p-2">
+            <table className="w-full">
+              <tbody>
+                {recipe.ingredients && recipe.ingredients.map((ing, index) => (
+                  <tr key={index} className="border-b border-neutral-50 last:border-0 hover:bg-neutral-50/50 transition-colors">
+                    <td className="py-3 px-4 font-medium text-primary">
+                      {ing.baseIngredient?.name || ing.customIngredient?.name || ing.subRecipe?.name}
+                    </td>
+                    <td className="py-3 px-4 text-right font-bold text-primary w-24">
+                      {ing.quantity} <span className="text-xs font-normal text-secondary ml-1">{ing.unit}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    // V1 (Default)
+    return (
+      <div>
+        <h2 className="text-xl font-primary text-primary mb-4">Ingrédients</h2>
+        <Card padding="p-0" className="overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Ingrédient</TableHead>
+                <TableHead>Quantité</TableHead>
+                <TableHead>Unité</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {recipe.ingredients && recipe.ingredients.map((ing, index) => (
+                <TableRow key={index}>
+                  <TableCell className="font-medium text-primary">
+                    {ing.baseIngredient?.name || ing.customIngredient?.name || ing.subRecipe?.name}
+                    {ing.baseIngredient && <span className="ml-2 text-xs text-secondary">(base)</span>}
+                  </TableCell>
+                  <TableCell>{ing.quantity}</TableCell>
+                  <TableCell>{ing.unit}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderSteps = () => {
+    const steps = getInstructions();
+    if (steps.length === 0) return null;
+
+    if (designVersion === 'v2') {
+      return (
+        <Card padding="p-0" className="overflow-hidden border-t-4 border-t-secondary">
+          <div className="bg-neutral-50 p-4 border-b border-neutral-200">
+            <h2 className="text-lg font-bold text-primary uppercase tracking-wider flex items-center gap-2">
+              <ChefHat size={18} /> Progression
+            </h2>
+          </div>
+          <div className="p-6 space-y-6 bg-white">
+            {steps.map((step, index) => (
+              <div key={index} className="flex gap-4 group">
+                <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-neutral-100 text-primary border border-neutral-200 flex items-center justify-center font-bold group-hover:bg-primary group-hover:text-white transition-colors">
+                  {index + 1}
+                </div>
+                <div>
+                  <p className="text-sm leading-relaxed pt-1.5 text-primary">{step}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      );
+    }
+
+    if (designVersion === 'v3') {
+      return (
+        <div className="bg-white rounded-xl shadow-sm border border-neutral-100 p-6">
+          <h2 className="text-2xl font-primary text-primary mb-2">Progression</h2>
+          <div className="h-1 w-12 bg-secondary rounded-full mb-8"></div>
+          
+          <div className="space-y-8 relative before:absolute before:left-[15px] before:top-2 before:bottom-2 before:w-0.5 before:bg-neutral-100">
+            {steps.map((step, index) => (
+              <div key={index} className="relative pl-10">
+                <div className="absolute left-0 top-0 w-8 h-8 rounded-full bg-white border-2 border-secondary text-secondary flex items-center justify-center font-bold text-sm z-10">
+                  {index + 1}
+                </div>
+                <p className="text-base leading-relaxed text-primary/80">{step}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // V1 (Default)
+    return (
+      <div>
+        <h2 className="text-xl font-primary text-primary mb-4">Progression</h2>
+        <Card>
+          <div className="space-y-6 font-secondary text-secondary">
+            {steps.map((step, index) => (
+              <div key={index} className="flex gap-4">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold">
+                  {index + 1}
+                </div>
+                <div>
+                  <p className="text-sm leading-relaxed pt-1">{step}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
   return (
     <PageContainer>
+      {/* Design Switcher (Dev Only) */}
+      <div className="fixed bottom-4 right-4 z-50 bg-white p-2 rounded-lg shadow-lg border border-neutral-200 flex gap-2">
+        <span className="text-xs font-bold uppercase text-secondary self-center mr-2">Design:</span>
+        <button 
+          onClick={() => setDesignVersion('v1')}
+          className={`px-3 py-1 text-xs rounded ${designVersion === 'v1' ? 'bg-primary text-white' : 'bg-neutral-100 hover:bg-neutral-200'}`}
+        >
+          Classique
+        </button>
+        <button 
+          onClick={() => setDesignVersion('v2')}
+          className={`px-3 py-1 text-xs rounded ${designVersion === 'v2' ? 'bg-primary text-white' : 'bg-neutral-100 hover:bg-neutral-200'}`}
+        >
+          Intégré
+        </button>
+        <button 
+          onClick={() => setDesignVersion('v3')}
+          className={`px-3 py-1 text-xs rounded ${designVersion === 'v3' ? 'bg-primary text-white' : 'bg-neutral-100 hover:bg-neutral-200'}`}
+        >
+          Moderne
+        </button>
+      </div>
+
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Top Bar / Breadcrumb */}
         <div className="flex justify-between items-center">
@@ -141,54 +328,8 @@ export default function RecipeDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Ingredients & Steps */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Ingredients */}
-            <div>
-              <h2 className="text-xl font-primary text-primary mb-4">Ingrédients</h2>
-              <Card padding="p-0" className="overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Ingrédient</TableHead>
-                      <TableHead>Quantité</TableHead>
-                      <TableHead>Unité</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {recipe.ingredients && recipe.ingredients.map((ing, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium text-primary">
-                          {ing.baseIngredient?.name || ing.customIngredient?.name || ing.subRecipe?.name}
-                          {ing.baseIngredient && <span className="ml-2 text-xs text-secondary">(base)</span>}
-                        </TableCell>
-                        <TableCell>{ing.quantity}</TableCell>
-                        <TableCell>{ing.unit}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Card>
-            </div>
-
-            {/* Steps */}
-            {getInstructions().length > 0 && (
-              <div>
-                <h2 className="text-xl font-primary text-primary mb-4">Progression</h2>
-                <Card>
-                  <div className="space-y-6 font-secondary text-secondary">
-                    {getInstructions().map((step, index) => (
-                      <div key={index} className="flex gap-4">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold">
-                          {index + 1}
-                        </div>
-                        <div>
-                          <p className="text-sm leading-relaxed pt-1">{step}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              </div>
-            )}
+            {renderIngredients()}
+            {renderSteps()}
           </div>
 
           {/* Right Column: Nutrition & Label Preview */}
