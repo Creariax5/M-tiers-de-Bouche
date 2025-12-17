@@ -98,7 +98,11 @@ export default function RecipeDetailPage() {
             )}
             
             <div className="flex gap-4 mt-6">
-              {recipe.category && <Badge variant="secondary">{recipe.category}</Badge>}
+              {recipe.category && (
+                <Badge className="bg-accent-light/20 text-accent-dark border border-accent-light/30">
+                  {recipe.category}
+                </Badge>
+              )}
               {recipe.allergens && recipe.allergens.length > 0 && (
                 <Badge variant="warning">Allergènes: {recipe.allergens.length}</Badge>
               )}
@@ -138,8 +142,10 @@ export default function RecipeDetailPage() {
           {/* Left Column: Ingredients & Steps */}
           <div className="lg:col-span-2 space-y-8">
             {/* Ingredients */}
-            <Card>
-              <h2 className="text-xl font-primary text-primary mb-6 border-b border-neutral-light pb-2">Ingrédients</h2>
+            <Card padding="p-0" className="overflow-hidden">
+              <div className="p-6 border-b border-neutral-light">
+                <h2 className="text-xl font-primary text-primary">Ingrédients</h2>
+              </div>
               <Table>
                 <TableHeader>
                   <TableRow>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, Input, Select, Checkbox, Modal, Badge } from '../components/ui';
+import { Button, Card, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, Input, Select, Checkbox, Modal, Badge, EmptyState, Loading, Alert } from '../components/ui';
 import { PageContainer } from '../components/layout';
 import { Edit, Trash2, Plus } from 'lucide-react';
 import api from '../lib/api';
@@ -202,24 +202,26 @@ export default function CustomIngredientsPage() {
         </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+            <Alert variant="error" className="mb-6">
               {error}
-            </div>
+            </Alert>
           )}
 
           {loading ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500">Chargement des ingrédients...</p>
-            </div>
+            <Loading fullPage text="Chargement des ingrédients..." />
           ) : ingredients.length === 0 ? (
-            <div className="bg-white shadow rounded-3xl p-12 text-center border border-neutral-light">
-              <p className="text-secondary mb-4 font-secondary">
-                Aucun ingrédient personnalisé trouvé
-              </p>
-              <Button onClick={handleOpenCreate}>
-                Créer mon premier ingrédient
-              </Button>
-            </div>
+            <Card>
+              <EmptyState
+                icon="🧂"
+                title="Aucun ingrédient personnalisé"
+                description="Ajoutez vos propres ingrédients pour les utiliser dans vos recettes."
+                action={
+                  <Button onClick={handleOpenCreate}>
+                    Créer mon premier ingrédient
+                  </Button>
+                }
+              />
+            </Card>
           ) : (
             <Card padding="p-0" className="overflow-hidden">
               <Table>
