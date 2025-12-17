@@ -10,10 +10,11 @@ import {
   TableBody,
   TableRow,
   TableHead,
-  TableCell
+  TableCell,
+  Badge,
+  Loading,
+  EmptyState
 } from '../components/ui';
-import { Loading } from '../components/ui/Loading';
-import { EmptyState } from '../components/ui/EmptyState';
 import { PageContainer } from '../components/layout';
 import { FileText, Download, Eye, Trash2 } from 'lucide-react';
 
@@ -56,7 +57,7 @@ export default function LabelsPage() {
       setLabels(labels.filter(l => l.id !== id));
     } catch (err) {
       console.error('Error deleting label:', err);
-      setError('Erreur lors de la suppression de l\'étiquette');
+      setError("Erreur lors de la suppression de l'étiquette");
     }
   };
 
@@ -78,105 +79,90 @@ export default function LabelsPage() {
 
   return (
     <PageContainer>
-      <div className="space-y-8">
-        {/* En-tête */}
-        <div className="flex justify-between items-center">
+      <div className="max-w-5xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 className="text-3xl font-bold font-primary text-primary">
-              Mes étiquettes
-            </h2>
+            <h1 className="text-3xl font-bold text-primary font-primary">
+              Mes Étiquettes
+            </h1>
             <p className="text-secondary mt-1 font-secondary">
               {labels.length} étiquette{labels.length > 1 ? 's' : ''} générée{labels.length > 1 ? 's' : ''}
             </p>
           </div>
         </div>
 
-        {error && (
-          <Alert variant="error" title="Erreur">
-            {error}
-          </Alert>
-        )}
+        {error && <Alert variant="error">{error}</Alert>}
 
         {labels.length === 0 ? (
           <Card>
             <EmptyState
               icon="🏷️"
               title="Aucune étiquette générée"
-              description="Créez vos premières étiquettes INCO conformes à partir de vos recettes en un clic."
+              description="Créez vos premières étiquettes INCO conformes à partir de vos recettes."
               action={
                 <Button onClick={() => navigate('/recipes')} variant="primary">
-                  <FileText size={18} /> Voir mes recettes
+                  <FileText size={18} className="mr-2" /> Voir mes recettes
                 </Button>
               }
             />
           </Card>
         ) : (
-          <Card padding="p-0" className="overflow-hidden">
+          <Card padding="p-0" className="overflow-hidden border-neutral-200 shadow-sm">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Produit</TableHead>
                   <TableHead>Format</TableHead>
-                  <TableHead>Date création</TableHead>
+                  <TableHead>Date</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {labels.map((label) => (
-                  <TableRow key={label.id}>
+                  <TableRow key={label.id} className="hover:bg-neutral-50">
                     <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0">
-                          <FileText size={20} className="text-primary" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-bold text-primary font-primary">
-                            {label.productName}
-                          </div>
-                          {label.template && (
-                            <div className="text-xs text-secondary font-secondary">
-                              {label.template}
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                      <div className="font-medium text-primary">{label.productName}</div>
+                      {label.template && (
+                        <div className="text-xs text-secondary mt-0.5">{label.template}</div>
+                      )}
                     </TableCell>
                     <TableCell>
-                      <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-accent-light/20 text-accent-dark border border-accent-light/30">
+                      <Badge variant="outline" className="text-xs font-normal text-secondary border-neutral-200">
                         {label.format || 'A4'}
-                      </span>
+                      </Badge>
                     </TableCell>
-                    <TableCell className="text-secondary font-secondary">
+                    <TableCell className="text-sm text-secondary">
                       {formatDate(label.createdAt)}
                     </TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => window.open(label.url, '_blank')}
-                        title="Voir"
-                        className="!p-2"
-                      >
-                        <Eye size={18} />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDownload(label)}
-                        title="Télécharger"
-                        className="!p-2"
-                      >
-                        <Download size={18} />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(label.id)}
-                        title="Supprimer"
-                        className="!p-2 text-red-400 hover:text-red-600 hover:bg-red-50"
-                      >
-                        <Trash2 size={18} />
-                      </Button>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => window.open(label.url, '_blank')}
+                          title="Voir"
+                        >
+                          <Eye size={16} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDownload(label)}
+                          title="Télécharger"
+                        >
+                          <Download size={16} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(label.id)}
+                          title="Supprimer"
+                          className="text-red-600 hover:bg-red-50"
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

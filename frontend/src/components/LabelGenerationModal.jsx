@@ -134,9 +134,9 @@ export default function LabelGenerationModal({ recipe, isOpen, onClose }) {
           </button>
         </div>
 
-        <div className="flex">
+        <div className="flex flex-col md:flex-row">
           {/* Options */}
-          <div className="w-1/2 p-6 border-r border-gray-200 overflow-y-auto max-h-[70vh]">
+          <div className="md:w-1/2 w-full p-6 border-r border-gray-200 overflow-y-auto max-h-[70vh] flex-shrink-0">
             <h3 className="font-semibold text-gray-700 mb-4">Configuration</h3>
 
             {/* Template */}
@@ -229,7 +229,7 @@ export default function LabelGenerationModal({ recipe, isOpen, onClose }) {
           </div>
 
           {/* Preview */}
-          <div className="w-1/2 p-6 bg-gray-50 overflow-y-auto max-h-[70vh]">
+          <div className="md:w-1/2 w-full p-6 bg-gray-50 overflow-y-auto max-h-[70vh] flex-shrink-0">
             <h3 className="font-semibold text-gray-700 mb-4">Aperçu</h3>
             
             {previewHtml ? (
