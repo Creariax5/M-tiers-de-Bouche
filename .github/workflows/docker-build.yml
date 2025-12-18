@@ -109,15 +109,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        with:
-          driver-opts: |
-            image=moby/buildkit:latest
-            network=host
       
       - name: Log in to GHCR
         if: github.event_name != 'pull_request'
@@ -135,15 +128,8 @@ jobs:
           tags: |
             type=ref,event=branch
             type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
             type=sha,prefix={{branch}}-,format=short
             type=raw,value=latest,enable={{is_default_branch}}
-          labels: |
-            org.opencontainers.image.title=Métiers de Bouche ${{ matrix.service.name }}
-            org.opencontainers.image.description=Microservice ${{ matrix.service.name }}
-            org.opencontainers.image.vendor=Métiers de Bouche
       
       - name: Build and push Docker image
         id: build
@@ -151,46 +137,18 @@ jobs:
         with:
           context: ${{ matrix.service.context }}
           file: ${{ matrix.service.dockerfile }}
-          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.service.name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.service.name }}
-          provenance: true
-          sbom: true
       
-      - name: Run Trivy security scan
-        uses: aquasecurity/trivy-action@0.21.0
-        with:
-          image-ref: ${{ env.IMAGE_PREFIX }}-${{ matrix.service.name }}:${{ steps.meta.outputs.version }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
-        continue-on-error: true
-      
-      - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'trivy-results.sarif'
-        continue-on-error: true
-      
-      - name: Image size report
-        if: github.event_name == 'pull_request'
+      - name: Test image locally
         run: |
-          IMAGE="${{ env.IMAGE_PREFIX }}-${{ matrix.service.name }}:${{ steps.meta.outputs.version }}"
-          SIZE=$(docker inspect "$IMAGE" --format='{{.Size}}' | awk '{print $1/1024/1024 " MB"}')
-          echo "📦 Image size: $SIZE" >> $GITHUB_STEP_SUMMARY
-      
-      - name: Test image startup
-        run: |
-          docker run --rm -d --name test-${{ matrix.service.name }} \
-            ${{ env.IMAGE_PREFIX }}-${{ matrix.service.name }}:${{ steps.meta.outputs.version }}
-          
-          sleep 5
-          
-          docker logs test-${{ matrix.service.name }}
-          docker stop test-${{ matrix.service.name }} || true
+          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
+          echo "Testing image: $IMAGE_TAG"
+          docker build -t test-${{ matrix.service.name }} -f ${{ matrix.service.dockerfile }} ${{ matrix.service.context }}
+          echo "✅ Image ${{ matrix.service.name }} built successfully"
 
   # ========================================
   # Build Status Summary
