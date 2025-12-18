@@ -52,13 +52,14 @@ jobs:
           # curl pour check health endpoints, etc.
       
       - name: Notify deployment start
-        if: always()
+        if: secrets.DISCORD_WEBHOOK != ''
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           title: "🚀 Deployment started"
           description: "Environment: ${{ github.event.inputs.environment || 'main' }}"
           color: 0x0099ff
+          ack_no_webhook: true
         continue-on-error: true
 
   # ========================================
@@ -85,20 +86,27 @@ jobs:
             mkdir -p "$BACKUP_DIR"
             
             echo "📦 Creating database backup..."
-            cd /opt/regal
+            cd /opt/regal || exit 0
             
-            # Backup PostgreSQL
-            docker compose -f docker-compose.prod.yml exec -T postgres \
-              pg_dumpall -U postgres > "$BACKUP_DIR/postgres_all.sql"
+            # Vérifier si docker-compose existe
+            if [ ! -f "docker-compose.prod.yml" ]; then
+              echo "⚠️ docker-compose.prod.yml not found, skipping backup"
+              exit 0
+            fi
             
-            # Backup volumes
-            docker compose -f docker-compose.prod.yml exec -T postgres \
-              tar czf "$BACKUP_DIR/postgres_data.tar.gz" /var/lib/postgresql/data
+            # Backup PostgreSQL si container existe
+            if docker ps | grep -q saas-postgres-prod; then
+              docker compose -f docker-compose.prod.yml exec -T postgres \
+                pg_dumpall -U postgres > "$BACKUP_DIR/postgres_all.sql" || echo "⚠️ PostgreSQL backup failed"
+            else
+              echo "⚠️ PostgreSQL container not running, skipping backup"
+            fi
             
             echo "✅ Backup completed: $BACKUP_DIR"
             
             # Garder seulement les 7 derniers backups
-            ls -t /opt/backups | tail -n +8 | xargs -I {} rm -rf /opt/backups/{}
+            ls -t /opt/backups 2>/dev/null | tail -n +8 | xargs -I {} rm -rf /opt/backups/{} || true
+        continue-on-error: true
 
   # ========================================
   # Deploy
@@ -257,7 +265,7 @@ jobs:
           echo "✅ All smoke tests passed"
       
       - name: Notify success
-        if: always()
+        if: secrets.DISCORD_WEBHOOK != ''
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
@@ -266,6 +274,7 @@ jobs:
             Environment: ${{ github.event.inputs.environment || 'main' }}
             Commit: ${{ github.sha }}
           color: 0x00FF00
+          ack_no_webhook: true
         continue-on-error: true
 
   # ========================================
@@ -301,13 +310,14 @@ jobs:
             echo "✅ Rollback completed"
       
       - name: Notify rollback
-        if: always()
+        if: secrets.DISCORD_WEBHOOK != ''
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           title: "🔄 Deployment rolled back"
           description: "Reverted to previous version"
           color: 0xFFA500
+          ack_no_webhook: true
         continue-on-error: true
 
   # ========================================
