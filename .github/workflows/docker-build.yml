@@ -70,15 +70,12 @@ jobs:
               - 'docker-compose*.yml'
 
   # ========================================
-  # Build Matrix (conditionnel)
+  # Build Matrix
   # ========================================
   build:
     name: 🐳 Build ${{ matrix.service.name }}
     runs-on: ubuntu-latest
     needs: changes
-    if: |
-      needs.changes.outputs[matrix.service.name] == 'true' ||
-      github.event_name == 'release'
     
     permissions:
       contents: read
