@@ -38,7 +38,8 @@ jobs:
           - name: production-service
             path: backend/services/production-service
           - name: frontend
-            path: frontend
+            path: .
+            dockerfile: frontend/Dockerfile
     
     steps:
       - name: Checkout code
@@ -72,6 +73,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ${{ matrix.service.path }}
+          file: ${{ matrix.service.dockerfile || format('{0}/Dockerfile', matrix.service.path) }}
           push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -80,7 +82,11 @@ jobs:
       
       - name: Test image
         run: |
-          docker build -t test-${{ matrix.service.name }} ${{ matrix.service.path }}
+          if [ -n "${{ matrix.service.dockerfile }}" ]; then
+            docker build -t test-${{ matrix.service.name }} -f ${{ matrix.service.dockerfile }} ${{ matrix.service.path }}
+          else
+            docker build -t test-${{ matrix.service.name }} ${{ matrix.service.path }}
+          fi
           echo "✅ Image ${{ matrix.service.name }} built successfully"
 
   build-status:

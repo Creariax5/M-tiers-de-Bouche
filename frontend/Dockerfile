@@ -10,7 +10,6 @@ WORKDIR /app
 COPY design-system ./design-system
 WORKDIR /app/design-system
 RUN npm install
-# Fix pour rollup sur alpine/linux si nécessaire, sinon npm run build standard
 RUN npm run build
 
 # 2. Copier et builder le Frontend
@@ -28,7 +27,7 @@ FROM nginx:alpine
 COPY --from=build /app/frontend/dist /usr/share/nginx/html
 
 # Copier la configuration nginx
-COPY --from=build /app/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Installer curl pour healthcheck
 RUN apk add --no-cache curl
