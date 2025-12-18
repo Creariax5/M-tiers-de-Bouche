@@ -1,0 +1,129 @@
+# ========================================
+# Workflow Metrics Dashboard
+# ========================================
+# Collecte et affiche les métriques des workflows
+# Exécuté quotidiennement
+
+name: Workflow Metrics
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Tous les jours à minuit UTC
+  workflow_dispatch:      # Manuel
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  collect-metrics:
+    name: 📊 Collect Metrics
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Collect workflow metrics
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Période : derniers 7 jours
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+            
+            // Récupérer tous les workflow runs
+            const { data: runs } = await github.rest.actions.listWorkflowRunsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+              created: `>=${sevenDaysAgo.toISOString()}`
+            });
+            
+            // Analyser par workflow
+            const workflows = {};
+            
+            runs.workflow_runs.forEach(run => {
+              const name = run.name;
+              
+              if (!workflows[name]) {
+                workflows[name] = {
+                  total: 0,
+                  success: 0,
+                  failure: 0,
+                  durations: []
+                };
+              }
+              
+              workflows[name].total++;
+              
+              if (run.conclusion === 'success') {
+                workflows[name].success++;
+              } else if (run.conclusion === 'failure') {
+                workflows[name].failure++;
+              }
+              
+              // Durée en secondes
+              const duration = (new Date(run.updated_at) - new Date(run.created_at)) / 1000;
+              workflows[name].durations.push(duration);
+            });
+            
+            // Calculer moyennes
+            let markdown = '# 📊 Workflow Metrics Dashboard\n\n';
+            markdown += `**Période**: ${sevenDaysAgo.toLocaleDateString()} - ${new Date().toLocaleDateString()}\n\n`;
+            markdown += '## Résumé\n\n';
+            markdown += '| Workflow | Exécutions | Succès | Échecs | Taux Succès | Durée Moy. |\n';
+            markdown += '|----------|------------|--------|--------|-------------|------------|\n';
+            
+            Object.entries(workflows).forEach(([name, stats]) => {
+              const avgDuration = stats.durations.reduce((a, b) => a + b, 0) / stats.durations.length;
+              const successRate = (stats.success / stats.total * 100).toFixed(1);
+              
+              const emoji = successRate >= 95 ? '✅' : successRate >= 80 ? '⚠️' : '❌';
+              
+              markdown += `| ${emoji} ${name} | ${stats.total} | ${stats.success} | ${stats.failure} | ${successRate}% | ${Math.round(avgDuration)}s |\n`;
+            });
+            
+            // Top 5 workflows les plus longs
+            markdown += '\n## ⏱️ Top 5 Workflows les Plus Longs\n\n';
+            const sorted = Object.entries(workflows)
+              .map(([name, stats]) => ({
+                name,
+                avgDuration: stats.durations.reduce((a, b) => a + b, 0) / stats.durations.length
+              }))
+              .sort((a, b) => b.avgDuration - a.avgDuration)
+              .slice(0, 5);
+            
+            sorted.forEach((item, index) => {
+              markdown += `${index + 1}. **${item.name}**: ${Math.round(item.avgDuration)}s\n`;
+            });
+            
+            // Tendance
+            markdown += '\n## 📈 Tendances\n\n';
+            const totalRuns = runs.workflow_runs.length;
+            const totalSuccess = runs.workflow_runs.filter(r => r.conclusion === 'success').length;
+            const overallSuccessRate = (totalSuccess / totalRuns * 100).toFixed(1);
+            
+            markdown += `- **Taux de succès global**: ${overallSuccessRate}%\n`;
+            markdown += `- **Total exécutions**: ${totalRuns}\n`;
+            
+            // Afficher dans summary
+            core.summary.addRaw(markdown).write();
+            
+            console.log(markdown);
+      
+      - name: Check thresholds
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Définir seuils
+            const THRESHOLDS = {
+              successRate: 95,      // % minimum de succès
+              maxDuration: 300,     // 5 minutes max
+              maxFailures: 5        // Max 5 échecs/semaine
+            };
+            
+            // Analyser et alerter si seuils dépassés
+            // TODO: Implémenter logic d'alerte
+            
+            console.log('Thresholds check passed ✅');

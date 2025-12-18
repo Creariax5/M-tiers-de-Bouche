@@ -1,54 +1,128 @@
 # ========================================
-# Docker Build - Métiers de Bouche
+# Docker Build Amélioré - Métiers de Bouche
 # ========================================
-# Build et vérifie les images Docker
-# Exécuté sur chaque push sur main
+# 🎯 Améliorations:
+# - Push automatique des images sur GHCR
+# - Multi-platform builds (amd64 + arm64)
+# - Cache Docker Layer intelligent
+# - Scan de sécurité (Trivy)
+# - Image size reporting
+# - Attestations SLSA
 
-name: Docker Build
+name: Docker Build (Improved)
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
+  release:
+    types: [published]
+
+# Annule les builds en cours si nouveau push
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/metiers-de-bouche
 
 jobs:
-  build-services:
-    name: Build Docker Images
+  # ========================================
+  # Détection des changements
+  # ========================================
+  changes:
+    name: 🔍 Detect Changes
     runs-on: ubuntu-latest
+    outputs:
+      api-gateway: ${{ steps.filter.outputs.api-gateway }}
+      auth-service: ${{ steps.filter.outputs.auth-service }}
+      recipe-service: ${{ steps.filter.outputs.recipe-service }}
+      label-service: ${{ steps.filter.outputs.label-service }}
+      production-service: ${{ steps.filter.outputs.production-service }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            api-gateway:
+              - 'backend/api-gateway/**'
+              - 'docker-compose*.yml'
+            auth-service:
+              - 'backend/services/auth-service/**'
+              - 'docker-compose*.yml'
+            recipe-service:
+              - 'backend/services/recipe-service/**'
+              - 'docker-compose*.yml'
+            label-service:
+              - 'backend/services/label-service/**'
+              - 'docker-compose*.yml'
+            production-service:
+              - 'backend/services/production-service/**'
+              - 'docker-compose*.yml'
+            frontend:
+              - 'frontend/**'
+              - 'design-system/**'
+              - 'docker-compose*.yml'
+
+  # ========================================
+  # Build Matrix (conditionnel)
+  # ========================================
+  build:
+    name: 🐳 Build ${{ matrix.service.name }}
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      needs.changes.outputs[matrix.service.name] == 'true' ||
+      github.event_name == 'release'
+    
     permissions:
       contents: read
       packages: write
+      id-token: write # Pour SLSA attestation
     
     strategy:
+      fail-fast: false
       matrix:
         service:
           - name: api-gateway
-            path: backend/api-gateway
+            context: backend/api-gateway
+            dockerfile: backend/api-gateway/Dockerfile
           - name: auth-service
-            path: backend/services/auth-service
+            context: backend/services/auth-service
+            dockerfile: backend/services/auth-service/Dockerfile
           - name: recipe-service
-            path: backend/services/recipe-service
+            context: backend/services/recipe-service
+            dockerfile: backend/services/recipe-service/Dockerfile
           - name: label-service
-            path: backend/services/label-service
+            context: backend/services/label-service
+            dockerfile: backend/services/label-service/Dockerfile
           - name: production-service
-            path: backend/services/production-service
+            context: backend/services/production-service
+            dockerfile: backend/services/production-service/Dockerfile
           - name: frontend
-            path: .
+            context: .
             dockerfile: frontend/Dockerfile
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: |
+            image=moby/buildkit:latest
+            network=host
       
-      - name: Log in to GitHub Container Registry
+      - name: Log in to GHCR
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
@@ -60,48 +134,88 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.IMAGE_PREFIX }}/metiers-de-bouche-${{ matrix.service.name }}
+          images: ${{ env.IMAGE_PREFIX }}-${{ matrix.service.name }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix={{branch}}-
+            type=semver,pattern={{major}}
+            type=sha,prefix={{branch}}-,format=short
             type=raw,value=latest,enable={{is_default_branch}}
+          labels: |
+            org.opencontainers.image.title=Métiers de Bouche ${{ matrix.service.name }}
+            org.opencontainers.image.description=Microservice ${{ matrix.service.name }}
+            org.opencontainers.image.vendor=Métiers de Bouche
       
-      - name: Build Docker image
+      - name: Build and push Docker image
+        id: build
         uses: docker/build-push-action@v5
         with:
-          context: ${{ matrix.service.path }}
-          file: ${{ matrix.service.dockerfile || format('{0}/Dockerfile', matrix.service.path) }}
-          push: false
+          context: ${{ matrix.service.context }}
+          file: ${{ matrix.service.dockerfile }}
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.service.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service.name }}
+          provenance: true
+          sbom: true
       
-      - name: Test image
+      - name: Run Trivy security scan
+        uses: aquasecurity/trivy-action@0.21.0
+        with:
+          image-ref: ${{ env.IMAGE_PREFIX }}-${{ matrix.service.name }}:${{ steps.meta.outputs.version }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+        continue-on-error: true
+      
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+        continue-on-error: true
+      
+      - name: Image size report
+        if: github.event_name == 'pull_request'
         run: |
-          if [ -n "${{ matrix.service.dockerfile }}" ]; then
-            docker build -t test-${{ matrix.service.name }} -f ${{ matrix.service.dockerfile }} ${{ matrix.service.path }}
-          else
-            docker build -t test-${{ matrix.service.name }} ${{ matrix.service.path }}
-          fi
-          echo "✅ Image ${{ matrix.service.name }} built successfully"
+          IMAGE="${{ env.IMAGE_PREFIX }}-${{ matrix.service.name }}:${{ steps.meta.outputs.version }}"
+          SIZE=$(docker inspect "$IMAGE" --format='{{.Size}}' | awk '{print $1/1024/1024 " MB"}')
+          echo "📦 Image size: $SIZE" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Test image startup
+        run: |
+          docker run --rm -d --name test-${{ matrix.service.name }} \
+            ${{ env.IMAGE_PREFIX }}-${{ matrix.service.name }}:${{ steps.meta.outputs.version }}
+          
+          sleep 5
+          
+          docker logs test-${{ matrix.service.name }}
+          docker stop test-${{ matrix.service.name }} || true
 
-  build-status:
-    name: Build Status
+  # ========================================
+  # Build Status Summary
+  # ========================================
+  build-summary:
+    name: 📊 Build Summary
     runs-on: ubuntu-latest
-    needs: [build-services]
+    needs: [build]
     if: always()
     
     steps:
-      - name: Check build status
+      - name: Check build results
         run: |
-          if [ "${{ needs.build-services.result }}" == "success" ]; then
-            echo "✅ All Docker images built successfully"
-            exit 0
+          echo "## 🐳 Docker Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.build.result }}" == "success" ]; then
+            echo "✅ All images built successfully" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Registry:** ${{ env.REGISTRY }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Prefix:** ${{ env.IMAGE_PREFIX }}" >> $GITHUB_STEP_SUMMARY
           else
-            echo "❌ Some Docker images failed to build"
+            echo "❌ Some builds failed" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi

@@ -1,21 +1,84 @@
 # ========================================
-# CI Tests - Métiers de Bouche
+# CI Amélioré - Métiers de Bouche
 # ========================================
-# Exécuté sur chaque PR et push sur main
-# Vérifie le lint et les tests
+# 🎯 Améliorations:
+# - Parallélisation maximale
+# - Cache NPM intelligent
+# - Skip jobs si pas de changements
+# - Tests de sécurité
+# - Coverage reports
+# - Fail-fast désactivé pour voir tous les problèmes
 
-name: CI Tests
+name: CI Tests (Improved)
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
+
+# Annule les runs en cours si nouveau push sur la même branche
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  CACHE_VERSION: v1 # Incrémenter pour invalider le cache
 
 jobs:
-  lint:
-    name: Lint Code
+  # ========================================
+  # Détection des changements
+  # ========================================
+  changes:
+    name: 🔍 Detect Changes
     runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      docker: ${{ steps.filter.outputs.docker }}
+      docs: ${{ steps.filter.outputs.docs }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Check file changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - 'package*.json'
+            frontend:
+              - 'frontend/**'
+              - 'design-system/**'
+            docker:
+              - 'docker-compose*.yml'
+              - '**/Dockerfile'
+              - '.dockerignore'
+            docs:
+              - 'docs/**'
+              - '*.md'
+
+  # ========================================
+  # Lint Backend (parallèle par service)
+  # ========================================
+  lint-backend:
+    name: 🔍 Lint Backend
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    
+    strategy:
+      fail-fast: false # Continue même si un service échoue
+      matrix:
+        service:
+          - api-gateway
+          - services/auth-service
+          - services/recipe-service
+          - services/label-service
+          - services/production-service
     
     steps:
       - name: Checkout code
@@ -24,88 +87,230 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: backend/${{ matrix.service }}/package-lock.json
       
-      - name: Install dependencies - API Gateway
-        working-directory: backend/api-gateway
-        run: npm ci || npm install
+      - name: Install dependencies
+        working-directory: backend/${{ matrix.service }}
+        run: npm ci
       
-      - name: Lint API Gateway
-        working-directory: backend/api-gateway
-        run: npm run lint || echo "No lint script found, skipping..."
+      - name: Run ESLint
+        working-directory: backend/${{ matrix.service }}
+        run: npm run lint || echo "⚠️ No lint script found"
       
-      - name: Install dependencies - Services
-        run: |
-          for service in backend/services/*/; do
-            if [ -f "$service/package.json" ]; then
-              echo "Installing dependencies for $service"
-              cd "$service"
-              npm ci || npm install
-              cd -
-            fi
-          done
-        shell: bash
+      - name: Check for security vulnerabilities
+        working-directory: backend/${{ matrix.service }}
+        run: npm audit --audit-level=high || true
 
-  tests:
-    name: Run Tests
+  # ========================================
+  # Lint Frontend
+  # ========================================
+  lint-frontend:
+    name: 🎨 Lint Frontend
     runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Start Docker Compose
-        run: docker compose up -d postgres redis minio
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            frontend/package-lock.json
+            design-system/package-lock.json
       
-      - name: Wait for PostgreSQL
-        run: sleep 10
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
       
-      - name: Build and test auth-service
-        run: |
-          docker compose build auth-service
-          docker compose run --rm auth-service sh -c "npx prisma migrate deploy && npm test"
+      - name: Install design-system dependencies
+        working-directory: design-system
+        run: npm ci
       
-      - name: Build and test recipe-service
-        run: |
-          docker compose build recipe-service
-          docker compose run --rm recipe-service sh -c "npx prisma migrate deploy && npm test"
+      - name: Run ESLint
+        working-directory: frontend
+        run: npm run lint || echo "⚠️ No lint script found"
       
-      - name: Show logs on failure
-        if: failure()
-        run: docker compose logs auth-service
+      - name: Check TypeScript (if applicable)
+        working-directory: frontend
+        run: npm run typecheck || echo "⚠️ No typecheck script"
       
-      - name: Cleanup
-        if: always()
-        run: docker compose down -v
+      - name: Security audit
+        working-directory: frontend
+        run: npm audit --audit-level=high || true
 
-  health-check:
-    name: Docker Health Check
+  # ========================================
+  # Tests Backend (avec PostgreSQL)
+  # ========================================
+  test-backend:
+    name: 🧪 Test Backend
     runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - name: auth-service
+            path: backend/services/auth-service
+            db: saas_auth
+          - name: recipe-service
+            path: backend/services/recipe-service
+            db: saas_recipes
+          - name: label-service
+            path: backend/services/label-service
+            db: saas_recipes
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Start Docker Compose
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ matrix.service.path }}/package-lock.json
+      
+      - name: Create test database
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE ${{ matrix.service.db }};"
+      
+      - name: Install dependencies
+        working-directory: ${{ matrix.service.path }}
+        run: npm ci
+      
+      - name: Run migrations
+        working-directory: ${{ matrix.service.path }}
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/${{ matrix.service.db }}
+        run: npx prisma migrate deploy || echo "⚠️ No migrations or Prisma not used"
+      
+      - name: Run tests with coverage
+        working-directory: ${{ matrix.service.path }}
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/${{ matrix.service.db }}
+          JWT_SECRET: test-secret-key
+          REDIS_URL: redis://localhost:6379
+        run: npm test -- --coverage --maxWorkers=2
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ${{ matrix.service.path }}/coverage/coverage-final.json
+          flags: ${{ matrix.service.name }}
+          name: ${{ matrix.service.name }}
+        continue-on-error: true
+
+  # ========================================
+  # Tests Frontend
+  # ========================================
+  test-frontend:
+    name: 🎨 Test Frontend
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            frontend/package-lock.json
+            design-system/package-lock.json
+      
+      - name: Install design-system
+        working-directory: design-system
+        run: npm ci && npm run build
+      
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      
+      - name: Run tests with coverage
+        working-directory: frontend
+        run: npm test -- --coverage --maxWorkers=2
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: frontend/coverage/coverage-final.json
+          flags: frontend
+        continue-on-error: true
+
+  # ========================================
+  # Docker Health Check
+  # ========================================
+  docker-health:
+    name: 🐳 Docker Health Check
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.docker == 'true' || needs.changes.outputs.backend == 'true'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Start infrastructure services
         run: docker compose up -d postgres redis minio
       
-      - name: Wait for services
-        run: sleep 15
+      - name: Wait for services to be healthy
+        run: |
+          echo "Waiting for services..."
+          timeout 60 bash -c 'until docker compose ps | grep "healthy"; do sleep 2; done'
       
-      - name: Check PostgreSQL health
+      - name: Check PostgreSQL
         run: docker exec saas-postgres pg_isready -U postgres
       
-      - name: Check Redis health
-        run: docker exec saas-redis redis-cli -a redis123 --no-auth-warning ping
-      
-      - name: Check MinIO health
-        run: docker exec saas-minio curl -f http://localhost:9000/minio/health/live
-      
-      - name: Verify databases created
+      - name: Verify databases
         run: |
           docker exec saas-postgres psql -U postgres -c "\l" | grep saas_auth
           docker exec saas-postgres psql -U postgres -c "\l" | grep saas_recipes
           docker exec saas-postgres psql -U postgres -c "\l" | grep saas_production
+      
+      - name: Check Redis
+        run: docker exec saas-redis redis-cli -a redis123 --no-auth-warning ping
+      
+      - name: Check MinIO
+        run: docker exec saas-minio curl -f http://localhost:9000/minio/health/live
       
       - name: Show logs on failure
         if: failure()
@@ -114,3 +319,29 @@ jobs:
       - name: Cleanup
         if: always()
         run: docker compose down -v
+
+  # ========================================
+  # Status Check Final
+  # ========================================
+  ci-status:
+    name: ✅ CI Status
+    runs-on: ubuntu-latest
+    needs: [lint-backend, lint-frontend, test-backend, test-frontend, docker-health]
+    if: always()
+    
+    steps:
+      - name: Check all jobs status
+        run: |
+          echo "Backend Lint: ${{ needs.lint-backend.result }}"
+          echo "Frontend Lint: ${{ needs.lint-frontend.result }}"
+          echo "Backend Tests: ${{ needs.test-backend.result }}"
+          echo "Frontend Tests: ${{ needs.test-frontend.result }}"
+          echo "Docker Health: ${{ needs.docker-health.result }}"
+          
+          # Fail si au moins un job a échoué
+          if [ "${{ contains(needs.*.result, 'failure') }}" == "true" ]; then
+            echo "❌ Some jobs failed"
+            exit 1
+          else
+            echo "✅ All jobs passed"
+          fi

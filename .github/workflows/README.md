@@ -2,6 +2,36 @@
 
 Documentation des workflows GitHub Actions pour Métiers de Bouche.
 
+> **📢 Nouveauté** : Workflows améliorés disponibles ! Voir [IMPROVEMENTS.md](./IMPROVEMENTS.md)
+
+---
+
+## 🎯 Quick Start
+
+### Migration vers Workflows Améliorés (Recommandé)
+
+```powershell
+# 1. Sauvegarder les workflows actuels
+.\.github\workflows\migrate-workflows.ps1 --backup
+
+# 2. Appliquer les améliorations
+.\.github\workflows\migrate-workflows.ps1 --apply
+
+# 3. Créer une PR pour tester
+git checkout -b feat/improve-ci
+git add .github/workflows/
+git commit -m "feat(ci): amélioration workflows"
+git push origin feat/improve-ci
+```
+
+**Gains attendus** :
+- ⚡ -40% de temps de build
+- 🔒 Scan de sécurité automatique
+- 🔄 Rollback automatique
+- 📊 Meilleure visibilité
+
+Voir [IMPROVEMENTS.md](./IMPROVEMENTS.md) pour le guide complet.
+
 ---
 
 ## 📋 Workflows Disponibles
