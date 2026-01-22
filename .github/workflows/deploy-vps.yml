@@ -52,7 +52,7 @@ jobs:
           # curl pour check health endpoints, etc.
       
       - name: Notify deployment start
-        if: secrets.DISCORD_WEBHOOK != ''
+        if: ${{ secrets.DISCORD_WEBHOOK != '' }}
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
@@ -265,7 +265,7 @@ jobs:
           echo "✅ All smoke tests passed"
       
       - name: Notify success
-        if: secrets.DISCORD_WEBHOOK != ''
+        if: ${{ secrets.DISCORD_WEBHOOK != '' }}
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
@@ -310,7 +310,7 @@ jobs:
             echo "✅ Rollback completed"
       
       - name: Notify rollback
-        if: secrets.DISCORD_WEBHOOK != ''
+        if: ${{ secrets.DISCORD_WEBHOOK != '' }}
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
