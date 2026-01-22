@@ -1,0 +1,28 @@
+name: Install SSH Key (Simple)
+
+on:
+  workflow_dispatch:
+    inputs:
+      public_key:
+        description: 'SSH public key to install'
+        required: true
+        type: string
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SSH key on VPS
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          command_timeout: 30s
+          script: |
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+            echo "${{ inputs.public_key }}" >> ~/.ssh/authorized_keys
+            chmod 600 ~/.ssh/authorized_keys
+            echo "✅ Key installed"
