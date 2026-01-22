@@ -1,0 +1,159 @@
+name: Debug SSH & Install Key
+
+on:
+  workflow_dispatch:
+    inputs:
+      public_key:
+        description: 'SSH public key to install'
+        required: true
+        type: string
+
+jobs:
+  test-connection:
+    name: 🔍 Test SSH Connection
+    runs-on: ubuntu-latest
+    outputs:
+      ssh_works: ${{ steps.test.outputs.success }}
+    
+    steps:
+      - name: 📊 Display connection info
+        run: |
+          echo "🎯 Target: ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}"
+          echo "📅 Date: $(date)"
+          echo "🌍 Runner IP: $(curl -s ifconfig.me)"
+          
+      - name: 🌐 Test network connectivity
+        run: |
+          echo "🏓 Ping test..."
+          ping -c 3 ${{ secrets.VPS_HOST }} || echo "⚠️ Ping failed"
+          
+          echo ""
+          echo "🔌 Port 22 test..."
+          nc -zv -w 10 ${{ secrets.VPS_HOST }} 22 || echo "⚠️ Port 22 not reachable"
+          
+      - name: 🔐 Test SSH authentication
+        id: test
+        uses: appleboy/ssh-action@v1.0.0
+        continue-on-error: true
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          command_timeout: 30s
+          script: |
+            echo "✅ SSH connection successful!"
+            echo "📍 Hostname: $(hostname)"
+            echo "👤 User: $(whoami)"
+            echo "📁 Home: $HOME"
+            echo "🕐 Uptime: $(uptime)"
+            echo "💾 Disk: $(df -h / | tail -1)"
+            echo "🧠 Memory: $(free -h | grep Mem)"
+            
+      - name: 📊 Connection test result
+        run: |
+          if [ "${{ steps.test.outcome }}" == "success" ]; then
+            echo "✅ SSH connection SUCCESSFUL"
+            echo "success=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ SSH connection FAILED"
+            echo "success=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+  install-key:
+    name: 🔑 Install SSH Key
+    runs-on: ubuntu-latest
+    needs: test-connection
+    if: needs.test-connection.outputs.ssh_works == 'true'
+    
+    steps:
+      - name: 📝 Validate public key format
+        run: |
+          echo "🔍 Validating key format..."
+          if [[ ! "${{ inputs.public_key }}" =~ ^ssh-(rsa|ed25519|ecdsa).* ]]; then
+            echo "❌ Invalid SSH public key format"
+            exit 1
+          fi
+          echo "✅ Key format valid"
+          
+      - name: 🔐 Check existing authorized_keys
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          command_timeout: 30s
+          script: |
+            echo "📂 Checking ~/.ssh directory..."
+            ls -la ~/ | grep ssh || echo "⚠️ .ssh directory not found"
+            
+            if [ -d ~/.ssh ]; then
+              echo ""
+              echo "📄 Current authorized_keys:"
+              if [ -f ~/.ssh/authorized_keys ]; then
+                wc -l ~/.ssh/authorized_keys
+                echo "First key:"
+                head -1 ~/.ssh/authorized_keys | cut -c1-80
+              else
+                echo "⚠️ authorized_keys file not found"
+              fi
+            fi
+            
+      - name: 🔧 Install new SSH key
+        id: install
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          command_timeout: 30s
+          script: |
+            echo "🔐 Installing new SSH public key..."
+            
+            # Create .ssh directory if not exists
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+            echo "✅ .ssh directory ready"
+            
+            # Check if key already exists
+            if [ -f ~/.ssh/authorized_keys ]; then
+              if grep -q "${{ inputs.public_key }}" ~/.ssh/authorized_keys; then
+                echo "⚠️ Key already exists in authorized_keys"
+                exit 0
+              fi
+            fi
+            
+            # Add new key
+            echo "${{ inputs.public_key }}" >> ~/.ssh/authorized_keys
+            chmod 600 ~/.ssh/authorized_keys
+            echo "✅ Key added to authorized_keys"
+            
+            # Verify
+            echo ""
+            echo "📊 Verification:"
+            echo "Total keys: $(wc -l < ~/.ssh/authorized_keys)"
+            echo "Last key added:"
+            tail -1 ~/.ssh/authorized_keys | cut -c1-80
+            
+      - name: 🎉 Success summary
+        run: |
+          echo "## 🎉 SSH Key Installation Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ New SSH key successfully installed on VPS" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "1. Test connection from local:" >> $GITHUB_STEP_SUMMARY
+          echo '   ```bash' >> $GITHUB_STEP_SUMMARY
+          echo "   ssh -i ~/github_vps_new ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" >> $GITHUB_STEP_SUMMARY
+          echo '   ```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "2. Update GitHub secret VPS_SSH_KEY:" >> $GITHUB_STEP_SUMMARY
+          echo '   ```bash' >> $GITHUB_STEP_SUMMARY
+          echo "   cat ~/github_vps_new" >> $GITHUB_STEP_SUMMARY
+          echo '   ```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "3. Test deployment workflow" >> $GITHUB_STEP_SUMMARY
