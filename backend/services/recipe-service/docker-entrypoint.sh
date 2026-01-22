@@ -1,7 +1,10 @@
 #!/bin/sh
 set -e
 
-echo "🔄 Running Prisma migrations..."
+echo "� Generating Prisma Client..."
+npx prisma generate
+
+echo "�🔄 Running Prisma migrations..."
 npx prisma migrate deploy
 
 echo "✅ Migrations completed"

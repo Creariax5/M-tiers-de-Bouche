@@ -30,14 +30,11 @@ COPY prisma ./prisma/
 # Installer les dépendances (incluant devDependencies pour les tests)
 RUN npm install
 
-# Générer le client Prisma
-RUN npx prisma generate
-
 # Copier le code source
 COPY . .
 
 # Exposer le port
 EXPOSE 3003
 
-# Démarrer l'application
-CMD ["node", "src/index.js"]
+# Démarrer l'application avec génération Prisma et migrations
+CMD ["sh", "-c", "npx prisma generate && npx prisma migrate deploy && node src/index.js"]

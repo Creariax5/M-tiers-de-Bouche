@@ -21,9 +21,6 @@ COPY . .
 RUN chmod +x docker-entrypoint.sh && \
     sed -i 's/\r$//' docker-entrypoint.sh
 
-# Générer le client Prisma
-RUN npx prisma generate
-
 # Exposer le port
 EXPOSE 3002
 

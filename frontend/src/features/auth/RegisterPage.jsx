@@ -10,7 +10,7 @@ import { CheckCircle } from 'lucide-react';
 const registerSchema = z
   .object({
     email: z.string().email('Email invalide'),
-    password: z.string().min(6, 'Minimum 6 caractères'),
+    password: z.string().min(8, 'Minimum 8 caractères'),
     confirmPassword: z.string(),
     firstName: z.string().min(2, 'Prénom requis'),
     lastName: z.string().min(2, 'Nom requis'),
@@ -81,6 +81,7 @@ export default function RegisterPage() {
             type="email"
             label="EMAIL PROFESSIONNEL"
             error={errors.email?.message}
+            autoComplete="email"
             {...register('email')}
           />
           
@@ -90,6 +91,7 @@ export default function RegisterPage() {
               type="text"
               label="PRÉNOM"
               error={errors.firstName?.message}
+              autoComplete="given-name"
               {...register('firstName')}
             />
             
@@ -98,6 +100,7 @@ export default function RegisterPage() {
               type="text"
               label="NOM"
               error={errors.lastName?.message}
+              autoComplete="family-name"
               {...register('lastName')}
             />
           </div>
@@ -107,6 +110,7 @@ export default function RegisterPage() {
             type="text"
             label="NOM DE L'ENTREPRISE"
             error={errors.company?.message}
+            autoComplete="organization"
             {...register('company')}
           />
           
@@ -115,6 +119,7 @@ export default function RegisterPage() {
             type="password"
             label="MOT DE PASSE"
             error={errors.password?.message}
+            autoComplete="new-password"
             {...register('password')}
           />
 
@@ -123,6 +128,7 @@ export default function RegisterPage() {
             type="password"
             label="CONFIRMER LE MOT DE PASSE"
             error={errors.confirmPassword?.message}
+            autoComplete="new-password"
             {...register('confirmPassword')}
           />
           
