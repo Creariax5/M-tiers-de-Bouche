@@ -1,30 +1,28 @@
-name: Rotate VPS SSH Key
+name: Install SSH Key on VPS
 
 on:
   workflow_dispatch:
+    inputs:
+      new_public_key:
+        description: 'New SSH public key (from github_vps_new.pub)'
+        required: true
+        type: string
 
-# Minimal permissions; gh CLI uses GH_TOKEN to update secrets
 permissions:
   contents: read
-  actions: write
 
 jobs:
-  rotate:
+  install-key:
     runs-on: ubuntu-latest
     steps:
-      - name: Generate ed25519 key pair
-        id: gen
+      - name: Validate public key format
         run: |
           set -euo pipefail
-          ssh-keygen -t ed25519 -f ./github_vps_new -C "github-actions" -N ""
-          echo "PUB=$(cat github_vps_new.pub)" >> "$GITHUB_ENV"
-          # Store private key in env as a multiline value
-          {
-            echo "PRIV<<'EOF'"
-            cat github_vps_new
-            echo "EOF"
-          } >> "$GITHUB_ENV"
-          rm -f github_vps_new
+          if [[ ! "${{ inputs.new_public_key }}" =~ ^ssh-(rsa|ed25519|ecdsa).* ]]; then
+            echo "❌ Invalid SSH public key format"
+            exit 1
+          fi
+          echo "✅ Public key format valid"
 
       - name: Install new public key on VPS
         env:
@@ -36,45 +34,15 @@ jobs:
           mkdir -p ~/.ssh
           echo "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          # Append new public key to authorized_keys
-          ssh -o StrictHostKeyChecking=no "$VPS_USER@$VPS_HOST" "mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo '${{ env.PUB }}' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+          # Add new public key to authorized_keys
+          ssh -o StrictHostKeyChecking=no "$VPS_USER@$VPS_HOST" "mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo '${{ inputs.new_public_key }}' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+          echo "✅ New public key installed on VPS"
 
-      - name: Update repository secret VPS_SSH_KEY
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Success message
         run: |
-          set -euo pipefail
-          # Mask private key in logs proactively
-          echo "::add-mask::${{ env.PRIV }}"
-          # Install gh CLI
-          sudo apt-get update -y
-          sudo apt-get install -y jq
-          curl -sL https://github.com/cli/cli/releases/latest/download/gh_2.46.0_linux_amd64.deb -o gh.deb
-          sudo dpkg -i gh.deb
-          # Authenticate gh using the PAT from secrets
-          gh auth login --with-token <<< "$GH_TOKEN"
-          # Update the repository secret with the new private key
-          printf "%s" "${{ env.PRIV }}" | gh secret set VPS_SSH_KEY -R "$GITHUB_REPOSITORY" -b -
-
-      - name: Test SSH using new key
-        env:
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-        run: |
-          set -euo pipefail
-          mkdir -p ~/.ssh
-          echo "${{ env.PRIV }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh -o StrictHostKeyChecking=no "$VPS_USER@$VPS_HOST" "whoami"
-
-      - name: Remove old public key from VPS (optional)
-        if: ${{ success() }}
-        env:
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          OLD_PUB: ${{ secrets.VPS_OLD_PUBKEY }}
-        run: |
-          set -euo pipefail
-          if [ -n "${OLD_PUB:-}" ]; then
-            ssh -o StrictHostKeyChecking=no "$VPS_USER@$VPS_HOST" "grep -v -F \"$OLD_PUB\" ~/.ssh/authorized_keys > ~/.ssh/authorized_keys.new && mv ~/.ssh/authorized_keys.new ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
-          fi
+          echo "🎉 SSH key successfully installed on VPS"
+          echo ""
+          echo "📋 Next steps:"
+          echo "1. Test connection: ssh -i github_vps_new ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}"
+          echo "2. Update GitHub secret VPS_SSH_KEY with content of github_vps_new"
+          echo "3. Test GitHub Actions deployment"
