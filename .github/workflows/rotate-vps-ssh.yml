@@ -25,24 +25,26 @@ jobs:
           echo "✅ Public key format valid"
 
       - name: Install new public key on VPS
-        env:
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
-        run: |
-          set -euo pipefail
-          mkdir -p ~/.ssh
-          echo "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          # Add new public key to authorized_keys
-          ssh -o StrictHostKeyChecking=no "$VPS_USER@$VPS_HOST" "mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo '${{ inputs.new_public_key }}' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
-          echo "✅ New public key installed on VPS"
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script: |
+            set -e
+            echo "🔐 Installing new SSH public key..."
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+            echo "${{ inputs.new_public_key }}" >> ~/.ssh/authorized_keys
+            chmod 600 ~/.ssh/authorized_keys
+            echo "✅ New public key installed successfully"
 
       - name: Success message
         run: |
           echo "🎉 SSH key successfully installed on VPS"
           echo ""
           echo "📋 Next steps:"
-          echo "1. Test connection: ssh -i github_vps_new ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}"
+          echo "1. Test connection: ssh -i ~/github_vps_new ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}"
           echo "2. Update GitHub secret VPS_SSH_KEY with content of github_vps_new"
           echo "3. Test GitHub Actions deployment"
